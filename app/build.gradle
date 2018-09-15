@@ -33,6 +33,9 @@ dependencies {
     implementation 'androidx.preference:preference:1.0.0-rc02'
     implementation 'androidx.annotation:annotation:1.0.0-rc02'
 
+    // Mobile Vision API
+    implementation 'com.google.android.gms:play-services-vision:15.0.2'
+
     // https://github.com/material-components/material-components-android - Apache v2
     implementation 'com.google.android.material:material:1.0.0-rc02'
 
