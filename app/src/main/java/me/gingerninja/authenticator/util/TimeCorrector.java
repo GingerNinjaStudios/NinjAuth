@@ -2,7 +2,17 @@ package me.gingerninja.authenticator.util;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class TimeCorrector {
+
+    @Inject
+    public TimeCorrector() {
+
+    }
+
     /**
      * Returns the time different between the {@link System#currentTimeMillis()} and the actual time
      * in milliseconds. The value is positive if the system time is ahead of the current time.

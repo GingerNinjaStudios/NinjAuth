@@ -12,12 +12,15 @@ import java.util.concurrent.TimeUnit;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
 import me.gingerninja.authenticator.data.db.entity.Account;
 
+@Singleton
 public class CodeGenerator {
     private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
     private static final char[] BASE32_ARRAY = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".toCharArray();
@@ -44,6 +47,7 @@ public class CodeGenerator {
         }
     }
 
+    @Inject
     public CodeGenerator(@NonNull TimeCorrector timeCorrector) {
         this.timeCorrector = timeCorrector;
     }
