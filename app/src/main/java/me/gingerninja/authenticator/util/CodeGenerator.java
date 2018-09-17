@@ -8,6 +8,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -58,7 +59,7 @@ public class CodeGenerator {
      * @throws NoSuchAlgorithmException if the given crypto algorithm is non-existent
      */
     private long getTOTP(@NonNull String secret, long period, long steps, @NonNull @Algorithm String algorithm, @IntRange(from = 1) int digits) throws InvalidKeyException, NoSuchAlgorithmException {
-        long T = (long) (Math.floor(((System.currentTimeMillis() - timeCorrector.getDelta()) / 1000) / period) + steps);
+        long T = (long) (Math.floor(timeCorrector.getCurrentTime(TimeUnit.SECONDS) / period) + steps);
 
         StringBuilder timeStr = new StringBuilder(Long.toHexString(T).toUpperCase());
         while (timeStr.length() < 16) {
