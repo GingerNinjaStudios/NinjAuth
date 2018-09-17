@@ -4,7 +4,6 @@ import android.util.Log;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -13,6 +12,7 @@ import java.util.Locale;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
 import me.gingerninja.authenticator.data.db.entity.Account;
@@ -33,6 +33,9 @@ public class CodeGenerator {
     @interface Algorithm {
     }
 
+    @NonNull
+    private TimeCorrector timeCorrector;
+
     static {
         BASE32_CHAR_MAP = new HashMap<>();
         for (int i = 0; i < BASE32_ARRAY.length; i++) {
@@ -40,34 +43,40 @@ public class CodeGenerator {
         }
     }
 
+    public CodeGenerator(@NonNull TimeCorrector timeCorrector) {
+        this.timeCorrector = timeCorrector;
+    }
+
     /**
-     * @param secret           the shared secret
-     * @param period           the period in seconds
-     * @param deltaPeriodCount the period number
-     * @param algorithm        the algorithm to use
-     * @param digits           number of digits to use between 0 and 8
+     * @param secret    the shared secret
+     * @param period    the period in seconds
+     * @param steps     the extra period count (can be negative)
+     * @param algorithm the algorithm to use
+     * @param digits    number of digits to use between 0 and 8
      * @return the OTP
      * @throws InvalidKeyException      if the generated key is invalid
      * @throws NoSuchAlgorithmException if the given crypto algorithm is non-existent
      */
-    private long getTOTP(@NonNull String secret, long period, long deltaPeriodCount, long t0, @NonNull @Algorithm String algorithm, int digits) throws InvalidKeyException, NoSuchAlgorithmException {
-        long T = (long) (Math.floor((System.currentTimeMillis() - t0) / period) + deltaPeriodCount);
+    private long getTOTP(@NonNull String secret, long period, long steps, @NonNull @Algorithm String algorithm, @IntRange(from = 1) int digits) throws InvalidKeyException, NoSuchAlgorithmException {
+        long T = (long) (Math.floor(((System.currentTimeMillis() - timeCorrector.getDelta()) / 1000) / period) + steps);
 
         StringBuilder timeStr = new StringBuilder(Long.toHexString(T).toUpperCase());
-        while (timeStr.length() < 16) timeStr.insert(0, "0");
+        while (timeStr.length() < 16) {
+            timeStr.insert(0, "0");
+        }
 
         return getHOTP(secret, hexToBytes(timeStr.toString()), algorithm, digits);
     }
 
-    private long getHOTP(@NonNull String secret, long data, @NonNull @Algorithm String algorithm, int digits) throws InvalidKeyException, NoSuchAlgorithmException {
-        ByteBuffer buffer = ByteBuffer.wrap(new byte[8]);
-        buffer.order(ByteOrder.BIG_ENDIAN);
+    private long getHOTP(@NonNull String secret, long data, @NonNull @Algorithm String algorithm, @IntRange(from = 1) int digits) throws InvalidKeyException, NoSuchAlgorithmException {
+        ByteBuffer buffer = ByteBuffer.allocate(8);
+        //buffer.order(ByteOrder.BIG_ENDIAN);
         buffer.putLong(data);
 
         return getHOTP(secret, buffer.array(), algorithm, digits);
     }
 
-    private long getHOTP(@NonNull String secret, byte[] data, @NonNull @Algorithm String algorithm, int digits) throws InvalidKeyException, NoSuchAlgorithmException {
+    private long getHOTP(@NonNull String secret, byte[] data, @NonNull @Algorithm String algorithm, @IntRange(from = 1) int digits) throws InvalidKeyException, NoSuchAlgorithmException {
         byte[] hash = getRawHMAC(data, decodeBase32(secret), algorithm);
 
         // DT
@@ -97,7 +106,7 @@ public class CodeGenerator {
                     code = getHOTP(secret, account.getCounter(), algo, digits);
                     break;
                 case Account.TYPE_TOTP:
-                    code = getTOTP(secret, account.getPeriod(), 0, 0, algo, digits);
+                    code = getTOTP(secret, account.getPeriod(), 0, algo, digits);
                     break;
                 default:
                     throw new IllegalArgumentException("No suitable account type found: " + account.getType());
@@ -108,6 +117,20 @@ public class CodeGenerator {
             Log.e("CodeGenerator", "Error while generating OTP", e);
         }
         return null;
+    }
+
+    @NonNull
+    public String formatCode(String code, @IntRange(from = 1) int digits) {
+        StringBuilder stringBuilder = new StringBuilder(digits);
+        stringBuilder.append(code);
+
+        while (stringBuilder.length() < digits) {
+            stringBuilder.insert(0, "0");
+        }
+
+        // TODO spacing or something
+
+        return stringBuilder.toString();
     }
 
     private static String getAccountAlgorithm(@NonNull Account account) {
@@ -123,9 +146,18 @@ public class CodeGenerator {
         throw new IllegalArgumentException("No suitable algorithm found: " + account.getAlgorithm());
     }
 
+    /*public static byte[] longToBytes(long l) {
+        byte[] result = new byte[Long.SIZE / Byte.SIZE];
+        for (int i = 7; i >= 0; i--) {
+            result[i] = (byte) (l & 0xFF);
+            l >>= Byte.SIZE;
+        }
+        return result;
+    }*/
+
     @NonNull
     private static byte[] getRawHMAC(@NonNull byte[] data, @NonNull byte[] key, @NonNull @Algorithm String algorithm) throws NoSuchAlgorithmException, InvalidKeyException {
-        SecretKeySpec signingKey = new SecretKeySpec(key, "RAW");
+        SecretKeySpec signingKey = new SecretKeySpec(key, algorithm); // algorithm was "RAW" here?
         Mac mac = Mac.getInstance(algorithm);
         mac.init(signingKey);
 
