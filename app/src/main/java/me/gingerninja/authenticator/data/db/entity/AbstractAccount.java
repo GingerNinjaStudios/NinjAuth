@@ -2,9 +2,12 @@ package me.gingerninja.authenticator.data.db.entity;
 
 import io.requery.Column;
 import io.requery.Entity;
+import io.requery.ForeignKey;
 import io.requery.Generated;
 import io.requery.Key;
+import io.requery.ManyToOne;
 import io.requery.Nullable;
+import io.requery.ReferentialAction;
 
 @Entity
 abstract class AbstractAccount {
@@ -36,14 +39,22 @@ abstract class AbstractAccount {
     String issuer;
 
     @Column(value = ALGO_SHA1, nullable = false)
-    String algorithm;
+    String algorithm = ALGO_SHA1;
 
     @Column(value = "6")
-    int digits;
+    int digits = 6;
 
     @Column(value = "0")
-    long counter;
+    long counter = 0;
 
     @Column(value = "30")
-    long period;
+    long period = 30;
+
+    @ManyToOne
+    @ForeignKey(delete = ReferentialAction.SET_NULL)
+    Category category;
+
+    @Column(value = "0")
+    int position = 0;
+
 }
