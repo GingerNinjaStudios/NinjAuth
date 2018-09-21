@@ -9,13 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
-import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.google.android.material.snackbar.Snackbar;
-
-import java.io.IOException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,7 +24,6 @@ import me.gingerninja.authenticator.util.Parser;
 import me.gingerninja.authenticator.util.RequestCodes;
 
 public class AddAccountFromCameraFragment extends BaseFragment<AccountFromCameraFragmentBinding> implements Detector.Processor<Barcode> {
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,30 +41,18 @@ public class AddAccountFromCameraFragment extends BaseFragment<AccountFromCamera
             return;
         }
 
-        BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(context)
-                .setBarcodeFormats(Barcode.QR_CODE)
-                .build();
-        barcodeDetector.setProcessor(this);
+        BarcodeCameraPreview cameraPreview = getDataBinding().cameraPreview;
 
-        if (barcodeDetector.isOperational()) {
-
-            CameraSource cameraSource = new CameraSource.Builder(context, barcodeDetector)
-                    .setFacing(CameraSource.CAMERA_FACING_BACK)
-                    .setRequestedPreviewSize(1024, 1024)
-                    .setAutoFocusEnabled(true)
-                    .build();
-            try {
-                getDataBinding().cameraPreview.start(cameraSource);
-            } catch (IOException e) {
-                // TODO handle exception
-            }
+        if (cameraPreview.isDetectorOperational()) {
+            cameraPreview.setBarcodeProcessor(this);
+            cameraPreview.start();
         } else {
             // TODO wait until operational
         }
     }
 
     private void stopDetection() {
-        getDataBinding().cameraPreview.stop();
+        getDataBinding().cameraPreview.releaseCamera();
     }
 
     @Override
@@ -86,7 +69,7 @@ public class AddAccountFromCameraFragment extends BaseFragment<AccountFromCamera
 
     @Override
     public void onDestroyView() {
-        getDataBinding().cameraPreview.release();
+        getDataBinding().cameraPreview.releaseCamera();
         super.onDestroyView();
     }
 
@@ -108,7 +91,7 @@ public class AddAccountFromCameraFragment extends BaseFragment<AccountFromCamera
 
     @Override
     public void release() {
-
+        Log.d("AddAccountFromCamera", "release()");
     }
 
     @Override
@@ -124,7 +107,7 @@ public class AddAccountFromCameraFragment extends BaseFragment<AccountFromCamera
                     Snackbar.make(getView(), account.getAccountName() + " by " + account.getIssuer() + " found", Snackbar.LENGTH_LONG).show();
                     // TODO found QR code
                     //stopDetection();
-                    getNavController().navigateUp();
+                    getNavController().popBackStack();
                 }
             }
 
