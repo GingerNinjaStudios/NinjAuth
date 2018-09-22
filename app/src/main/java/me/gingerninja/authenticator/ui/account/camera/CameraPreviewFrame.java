@@ -61,6 +61,7 @@ public class CameraPreviewFrame extends FrameLayout implements SurfaceHolder.Cal
     private BarcodeDetector barcodeDetector;
     private Detector.Processor<Barcode> barcodeProcessor;
     private CameraSource cameraSource;
+    private int[] selectedPreviewSize = new int[]{-1, -1};
 
     {
         cameraSurfaceView = new SurfaceView(getContext());
@@ -86,21 +87,42 @@ public class CameraPreviewFrame extends FrameLayout implements SurfaceHolder.Cal
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    @Override
+    /*@Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int w = MeasureSpec.getSize(widthMeasureSpec);
         int h = MeasureSpec.getSize(heightMeasureSpec);
 
-        Log.d(TAG, "onMeasure() #1: " + w + "x" + h);
+        Log.d(TAG, "onMeasure(): " + w + "x" + h);
 
         if (!cameraPreviewAttached && PermissionChecker.PERMISSION_GRANTED == PermissionChecker.checkSelfPermission(getContext(), Manifest.permission.CAMERA)) {
             attachCameraView(w, h);
         }
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }*/
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+
+        int w = Math.abs(right - left);
+        int h = Math.abs(bottom - top);
+
+        Log.d(TAG, "onLayout(): " + w + "x" + h);
+
+        if (!cameraPreviewAttached) {
+            attachCameraView(w, h);
+        }
+    }
+
+    public void permissionReceived() {
+        requestLayout();
     }
 
     private void attachCameraView(int w, int h) {
+        if (PermissionChecker.PERMISSION_GRANTED != PermissionChecker.checkSelfPermission(getContext(), Manifest.permission.CAMERA)) {
+            return;
+        }
         cameraPreviewAttached = true;
 
         //int w = getMeasuredWidth();
@@ -108,6 +130,9 @@ public class CameraPreviewFrame extends FrameLayout implements SurfaceHolder.Cal
 
         findOptimalSize(w, h, (optW, optH) -> {
             Log.v(TAG, "Optimal size for " + w + "x" + h + " is " + optW + "x" + optH);
+
+            selectedPreviewSize[0] = optW;
+            selectedPreviewSize[1] = optH;
 
             int surfaceW, surfaceH;
 
@@ -298,9 +323,13 @@ public class CameraPreviewFrame extends FrameLayout implements SurfaceHolder.Cal
 
         CameraSource.Builder cameraSourceBuilder = new CameraSource.Builder(getContext(), barcodeDetector)
                 .setAutoFocusEnabled(true)
-                .setFacing(CameraSource.CAMERA_FACING_BACK)
-                .setRequestedPreviewSize(width, height);
+                .setFacing(CameraSource.CAMERA_FACING_BACK);
+        //.setRequestedPreviewSize(width, height);
         //.setRequestedFps(15f);
+
+        if (selectedPreviewSize[0] > -1 && selectedPreviewSize[1] > -1) {
+            cameraSourceBuilder.setRequestedPreviewSize(selectedPreviewSize[0], selectedPreviewSize[1]);
+        }
 
         cameraSource = cameraSourceBuilder.build();
 

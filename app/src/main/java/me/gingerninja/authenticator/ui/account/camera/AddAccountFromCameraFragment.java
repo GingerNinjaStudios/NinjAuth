@@ -42,18 +42,13 @@ public class AddAccountFromCameraFragment extends BaseFragment<AccountFromCamera
     private void openCamera() {
         Context context = getContext();
 
-        if (PermissionChecker.PERMISSION_GRANTED != PermissionChecker.checkSelfPermission(context, Manifest.permission.CAMERA)) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, RequestCodes.PERMISSION_CAMERA);
-            return;
-        }
-
         CameraPreviewFrame cameraPreview = getDataBinding().cameraPreview;
 
-        if (cameraPreview.isDetectorOperational()) {
-            cameraPreview.setBarcodeProcessor(this);
-            cameraPreview.start();
-        } else {
-            // TODO wait until operational
+        cameraPreview.setBarcodeProcessor(this);
+        cameraPreview.start();
+
+        if (PermissionChecker.PERMISSION_GRANTED != PermissionChecker.checkSelfPermission(context, Manifest.permission.CAMERA)) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, RequestCodes.PERMISSION_CAMERA);
         }
     }
 
@@ -88,7 +83,11 @@ public class AddAccountFromCameraFragment extends BaseFragment<AccountFromCamera
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case RequestCodes.PERMISSION_CAMERA:
-                openCamera();
+                if (grantResults[0] == PermissionChecker.PERMISSION_GRANTED) {
+                    getDataBinding().cameraPreview.permissionReceived();
+                } else {
+                    getNavController().popBackStack();
+                }
                 break;
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
