@@ -47,7 +47,7 @@ public class AddAccountFromCameraFragment extends BaseFragment<AccountFromCamera
             return;
         }
 
-        BarcodeCameraPreview cameraPreview = getDataBinding().cameraPreview;
+        CameraPreviewFrame cameraPreview = getDataBinding().cameraPreview;
 
         if (cameraPreview.isDetectorOperational()) {
             cameraPreview.setBarcodeProcessor(this);
@@ -61,7 +61,7 @@ public class AddAccountFromCameraFragment extends BaseFragment<AccountFromCamera
         if (detectionEnabled.compareAndSet(true, false)) {
             Single.just(getDataBinding().cameraPreview)
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(c -> c.releaseCamera());
+                    .subscribe(c -> c.release());
         }
         //getDataBinding().cameraPreview.releaseCamera();
     }
@@ -80,7 +80,7 @@ public class AddAccountFromCameraFragment extends BaseFragment<AccountFromCamera
 
     @Override
     public void onDestroyView() {
-        getDataBinding().cameraPreview.releaseCamera();
+        getDataBinding().cameraPreview.release();
         super.onDestroyView();
     }
 
