@@ -13,9 +13,13 @@ import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.PermissionChecker;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.databinding.AccountFromCameraFragmentBinding;
@@ -24,6 +28,8 @@ import me.gingerninja.authenticator.util.Parser;
 import me.gingerninja.authenticator.util.RequestCodes;
 
 public class AddAccountFromCameraFragment extends BaseFragment<AccountFromCameraFragmentBinding> implements Detector.Processor<Barcode> {
+    private AtomicBoolean detectionEnabled = new AtomicBoolean(true);
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +58,12 @@ public class AddAccountFromCameraFragment extends BaseFragment<AccountFromCamera
     }
 
     private void stopDetection() {
-        getDataBinding().cameraPreview.releaseCamera();
+        if (detectionEnabled.compareAndSet(true, false)) {
+            Single.just(getDataBinding().cameraPreview)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(c -> c.releaseCamera());
+        }
+        //getDataBinding().cameraPreview.releaseCamera();
     }
 
     @Override
@@ -91,11 +102,14 @@ public class AddAccountFromCameraFragment extends BaseFragment<AccountFromCamera
 
     @Override
     public void release() {
-        Log.d("AddAccountFromCamera", "release()");
     }
 
     @Override
     public void receiveDetections(Detector.Detections<Barcode> detections) {
+        if (!detectionEnabled.get()) {
+            return;
+        }
+
         if (detections.detectorIsOperational()) {
             SparseArray<Barcode> items = detections.getDetectedItems();
             for (int i = 0; i < items.size(); i++) {
@@ -106,7 +120,7 @@ public class AddAccountFromCameraFragment extends BaseFragment<AccountFromCamera
                 if (account != null) {
                     Snackbar.make(getView(), account.getAccountName() + " by " + account.getIssuer() + " found", Snackbar.LENGTH_LONG).show();
                     // TODO found QR code
-                    //stopDetection();
+                    stopDetection();
                     getNavController().popBackStack();
                 }
             }

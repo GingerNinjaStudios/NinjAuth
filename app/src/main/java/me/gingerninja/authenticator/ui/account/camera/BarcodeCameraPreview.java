@@ -26,6 +26,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class BarcodeCameraPreview extends SurfaceView implements SurfaceHolder.Callback, Detector.Processor<Barcode> {
+    private static final String TAG = BarcodeCameraPreview.class.getSimpleName();
+
     private boolean startRequested;
     private boolean isPlaying;
     private boolean surfaceReady;
@@ -118,8 +120,21 @@ public class BarcodeCameraPreview extends SurfaceView implements SurfaceHolder.C
         this.barcodeProcessor = processor;
     }
 
+    /*@Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        int w = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
+        int h = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
+
+        Log.d(TAG, "onMeasure(): " + w + "x" + h);
+
+        setMeasuredDimension(w, h);
+    }*/
+
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        //getHolder().setFixedSize(1024, 1024);
         surfaceReady = true;
     }
 
@@ -139,12 +154,18 @@ public class BarcodeCameraPreview extends SurfaceView implements SurfaceHolder.C
         release();
 
         optimalSizeDisposable = findOptimalSize(width, height, (w, h) -> {
-            cameraSource = new CameraSource.Builder(getContext(), barcodeDetector)
+            CameraSource.Builder cameraSourceBuilder = new CameraSource.Builder(getContext(), barcodeDetector)
                     .setAutoFocusEnabled(true)
                     .setFacing(CameraSource.CAMERA_FACING_BACK)
-                    .setRequestedFps(15f)
-                    .setRequestedPreviewSize(w, h)
-                    .build();
+                    .setRequestedFps(15f);
+
+            Log.d(TAG, "Optimal size: " + w + "x" + h);
+
+            if (w > -1 && h > -1) {
+                cameraSourceBuilder.setRequestedPreviewSize(w, h);
+            }
+
+            cameraSource = cameraSourceBuilder.build();
 
             internalStart();
         });
@@ -165,6 +186,7 @@ public class BarcodeCameraPreview extends SurfaceView implements SurfaceHolder.C
     }
 
     public Disposable findOptimalSize(int w, int h, OptimalSizeCallback callback) {
+        Log.d(TAG, "Finding optimal size for " + w + "x" + h);
         return Single
                 .<Integer>create(emitter -> {
                     final int n = Camera.getNumberOfCameras();
@@ -203,8 +225,23 @@ public class BarcodeCameraPreview extends SurfaceView implements SurfaceHolder.C
 
     @Nullable
     public static Camera.Size getOptimalPreviewSize(@Nullable List<Camera.Size> sizes, int w, int h) {
+        Log.d(TAG, "getOptimalPreviewSize()");
+        if (sizes != null) {
+            for (Camera.Size size : sizes) {
+                Log.d(TAG, "-- size: " + size.width + "x" + size.height);
+            }
+        }
+        /*if (w > h) {
+            int tmp = h;
+            h = w;
+            w = tmp;
+        }*/
+
         final double ASPECT_TOLERANCE = 0.1;
         double targetRatio = (double) h / w;
+        //double targetRatio = h > w ? (double) h / w : (double) w / h;
+
+        Log.d(TAG, "Target ratio: " + targetRatio);
 
         if (sizes == null) return null;
 
