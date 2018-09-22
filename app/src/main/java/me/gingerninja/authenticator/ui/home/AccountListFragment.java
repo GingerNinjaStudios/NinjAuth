@@ -1,6 +1,7 @@
 package me.gingerninja.authenticator.ui.home;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,17 @@ import me.gingerninja.authenticator.databinding.AccountListFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
 
 public class AccountListFragment extends BaseFragment<AccountListFragmentBinding> {
+    private static final String TAG = "AccountListFragment";
+
     private AccountListViewModel viewModel;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle args = getArguments();
+        Log.v(TAG, "args: " + args);
+    }
 
     @Override
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, AccountListFragmentBinding viewDataBinding) {
@@ -36,6 +47,11 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
                         }
                     }
                 });
+
+        binding.appBar.setNavigationOnClickListener(v -> {
+            BottomNavigationFragment bottomNavFragment = new BottomNavigationFragment();
+            bottomNavFragment.show(getChildFragmentManager(), "bottomNavFrag");
+        });
     }
 
     @Override

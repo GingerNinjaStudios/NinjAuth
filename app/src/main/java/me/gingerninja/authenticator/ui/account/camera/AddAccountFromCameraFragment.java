@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.PermissionChecker;
+import androidx.navigation.NavOptions;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import me.gingerninja.authenticator.R;
@@ -120,7 +121,11 @@ public class AddAccountFromCameraFragment extends BaseFragment<AccountFromCamera
                     Snackbar.make(getView(), account.getAccountName() + " by " + account.getIssuer() + " found", Snackbar.LENGTH_LONG).show();
                     // TODO found QR code
                     stopDetection();
-                    getNavController().popBackStack();
+                    //getNavController().popBackStack();
+                    Bundle args = new Bundle();
+                    args.putString("url", barcode.rawValue);
+                    getNavController().navigate(R.id.accountListFragment, args, new NavOptions.Builder().setPopUpTo(R.id.accountListFragment, true).build());
+
                 }
             }
 
