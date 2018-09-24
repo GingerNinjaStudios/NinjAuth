@@ -8,6 +8,16 @@
         android:id="@+id/accountListFragment"
         android:name="me.gingerninja.authenticator.ui.home.AccountListFragment"
         android:label="AccountListFragment">
+        <argument
+            android:name="accountName"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="accountOperation"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
         <action
             android:id="@+id/action_accountListFragment_to_addAccountFromCameraFragment"
             app:destination="@id/addAccountFromCameraFragment"
@@ -35,5 +45,10 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/saveNewAccountAction"
+            app:destination="@id/accountListFragment"
+            app:popUpTo="@+id/accountListFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>

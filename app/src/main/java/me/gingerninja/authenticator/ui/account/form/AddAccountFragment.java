@@ -8,10 +8,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.navigation.NavOptions;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.databinding.AccountFormFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
+import me.gingerninja.authenticator.ui.home.AccountListFragment;
 
 public class AddAccountFragment extends BaseFragment<AccountFormFragmentBinding> {
 
@@ -25,12 +25,16 @@ public class AddAccountFragment extends BaseFragment<AccountFormFragmentBinding>
         viewModel.init(args);
         binding.setViewModel(viewModel);
 
-        viewModel.getNavigationAction().observe(this, singleEvent -> {
-            String event = singleEvent.getContentAndMarkHandled();
-            if (event != null) {
-                switch (event) {
+        viewModel.getNavigationAction().observe(this, event -> {
+            if (event.handle()) {
+                String eventId = event.getId();
+                switch (eventId) {
                     case AddAccountViewModel.NAV_ACTION_SAVE:
-                        getNavController().navigate(R.id.accountListFragment, args, new NavOptions.Builder().setPopUpTo(R.id.accountListFragment, true).build());
+                        AddAccountFragmentDirections.SaveNewAccountAction action = AddAccountFragmentDirections.saveNewAccountAction()
+                                .setAccountName(event.getContent())
+                                .setAccountOperation(AccountListFragment.ACCOUNT_OP_ADD);
+                        getNavController().navigate(action);
+                        //getNavController().navigate(R.id.accountListFragment, args, new NavOptions.Builder().setPopUpTo(R.id.accountListFragment, true).build());
                         break;
                 }
             }

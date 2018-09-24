@@ -37,11 +37,20 @@ public class AddAccountViewModel extends ViewModel {
         this.accountRepository = accountRepository;
     }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+
+        if (saveDisposable != null) {
+            saveDisposable.dispose();
+        }
+    }
+
     public void onSaveClick(View view) {
         if (prepareAndCheckData()) {
             saveDisposable = accountRepository
                     .addAccount(initAccount)
-                    .subscribe(account -> navAction.postValue(new SingleEvent<>(NAV_ACTION_SAVE)));
+                    .subscribe(account -> navAction.postValue(new SingleEvent<>(NAV_ACTION_SAVE, account.getTitle())));
 
         }
     }
