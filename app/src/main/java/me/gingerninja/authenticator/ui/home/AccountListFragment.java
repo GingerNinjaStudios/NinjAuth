@@ -1,30 +1,25 @@
 package me.gingerninja.authenticator.ui.home;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 import me.gingerninja.authenticator.R;
+import me.gingerninja.authenticator.data.adapter.AccountListAdapter;
 import me.gingerninja.authenticator.databinding.AccountListFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
 
 public class AccountListFragment extends BaseFragment<AccountListFragmentBinding> {
     private static final String TAG = "AccountListFragment";
 
-    private AccountListViewModel viewModel;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle args = getArguments();
-        Log.v(TAG, "args: " + args);
-    }
+    @Inject
+    AccountListAdapter accountListAdapter;
 
     @Override
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, AccountListFragmentBinding viewDataBinding) {
@@ -32,7 +27,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
     }
 
     private void subscribeToUi(AccountListFragmentBinding binding) {
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountListViewModel.class);
+        AccountListViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountListViewModel.class);
         binding.setViewModel(viewModel);
 
         viewModel
@@ -47,6 +42,10 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
                         }
                     }
                 });
+
+        viewModel.getAccountList().observe(this, accountListAdapter::setAccountList);
+
+        binding.accountList.setAdapter(accountListAdapter);
 
         binding.appBar.setNavigationOnClickListener(v -> {
             BottomNavigationFragment bottomNavFragment = new BottomNavigationFragment();

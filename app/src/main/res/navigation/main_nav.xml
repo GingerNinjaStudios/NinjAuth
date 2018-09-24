@@ -13,9 +13,27 @@
             app:destination="@id/addAccountFromCameraFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/createNewAccountAction"
+            app:destination="@id/addAccountFragment" />
     </fragment>
     <fragment
         android:id="@+id/addAccountFromCameraFragment"
         android:name="me.gingerninja.authenticator.ui.account.camera.AddAccountFromCameraFragment"
-        android:label="AddAccountFromCameraFragment" />
+        android:label="AddAccountFromCameraFragment">
+        <action
+            android:id="@+id/createNewAccountFromCameraAction"
+            app:destination="@id/addAccountFragment"
+            app:popUpTo="@+id/accountListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addAccountFragment"
+        android:name="me.gingerninja.authenticator.ui.account.form.AddAccountFragment"
+        android:label="AddAccountFragment">
+        <argument
+            android:name="url"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
 </navigation>

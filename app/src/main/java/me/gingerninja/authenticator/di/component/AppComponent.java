@@ -12,6 +12,7 @@ import me.gingerninja.authenticator.MyApplication;
 import me.gingerninja.authenticator.di.builder.ActivityBuilder;
 import me.gingerninja.authenticator.di.builder.FragmentBuilder;
 import me.gingerninja.authenticator.di.module.AppModule;
+import me.gingerninja.authenticator.di.module.DataModule;
 import me.gingerninja.authenticator.di.module.ViewModelModule;
 
 @Singleton
@@ -19,6 +20,7 @@ import me.gingerninja.authenticator.di.module.ViewModelModule;
         AndroidInjectionModule.class,
         AndroidSupportInjectionModule.class,
         AppModule.class,
+        DataModule.class,
         ActivityBuilder.class,
         FragmentBuilder.class,
         ViewModelModule.class

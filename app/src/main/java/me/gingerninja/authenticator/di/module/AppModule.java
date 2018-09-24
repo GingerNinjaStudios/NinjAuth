@@ -7,6 +7,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import me.gingerninja.authenticator.util.CodeGenerator;
+import me.gingerninja.authenticator.util.TimeCorrector;
 
 @Module
 public class AppModule {

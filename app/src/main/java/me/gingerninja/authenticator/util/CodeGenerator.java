@@ -17,6 +17,7 @@ import javax.inject.Singleton;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import me.gingerninja.authenticator.data.db.entity.Account;
 
@@ -122,6 +123,17 @@ public class CodeGenerator {
             Log.e("CodeGenerator", "Error while generating OTP", e);
         }
         return null;
+    }
+
+    @Nullable
+    public String getFormattedCode(@NonNull Account account) {
+        String code = getCode(account);
+
+        if (code != null) {
+            code = formatCode(code, account.getDigits());
+        }
+
+        return code;
     }
 
     @NonNull
