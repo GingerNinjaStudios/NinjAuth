@@ -1,15 +1,17 @@
 package me.gingerninja.authenticator.data.db.entity;
 
+import java.util.Set;
+
 import io.requery.Column;
 import io.requery.Entity;
-import io.requery.ForeignKey;
 import io.requery.Generated;
+import io.requery.JunctionTable;
 import io.requery.Key;
-import io.requery.ManyToOne;
+import io.requery.ManyToMany;
 import io.requery.Nullable;
-import io.requery.ReferentialAction;
+import io.requery.PropertyNameStyle;
 
-@Entity
+@Entity(propertyNameStyle = PropertyNameStyle.FLUENT_BEAN)
 abstract class AbstractAccount {
     public static final String TYPE_TOTP = "totp";
     public static final String TYPE_HOTP = "hotp";
@@ -50,9 +52,9 @@ abstract class AbstractAccount {
     @Column(value = "30")
     long period = 30;
 
-    @ManyToOne
-    @ForeignKey(delete = ReferentialAction.SET_NULL)
-    Category category;
+    @ManyToMany
+    @JunctionTable(type = AbstractAccountHasLabel.class)
+    Set<AbstractLabel> labels;
 
     @Column(value = "0")
     int position = 0;
