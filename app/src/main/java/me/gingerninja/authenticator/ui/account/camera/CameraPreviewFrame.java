@@ -5,16 +5,19 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.FrameLayout;
 
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
+import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
@@ -45,7 +48,50 @@ public class CameraPreviewFrame extends FrameLayout implements SurfaceHolder.Cal
         @Override
         public void receiveDetections(Detector.Detections<Barcode> detections) {
             if (barcodeProcessor != null) {
-                // TODO filter detection within the view's bounds
+                int w = getMeasuredWidth();
+                int h = getMeasuredHeight();
+                float ratio = w / (float) h;
+
+                Frame.Metadata meta = detections.getFrameMetadata();
+                int metaW = meta.getWidth();
+                int metaH = meta.getHeight();
+                float metaRatio = metaW / (float) metaH;
+
+                float mutualRatio = ratio / metaRatio;
+
+                Rect cameraRect;
+                if (mutualRatio > 1f) {
+                    // width is 1.0
+                    // height is dynamic
+                    cameraRect = new Rect(0, 0, meta.getWidth(), (int) (meta.getHeight() / mutualRatio));
+                } else {
+                    cameraRect = new Rect(0, 0, (int) (meta.getWidth() * mutualRatio), meta.getHeight());
+                }
+
+                cameraRect.offset((metaW - cameraRect.width()) / 2, (metaH - cameraRect.height()) / 2);
+                cameraRect.inset(-(cameraRect.width() / 100), -(cameraRect.height() / 100));
+
+                //Timber.d("View dimensions: %dx%d, frame dims: %dx%d", getMeasuredWidth(), getMeasuredHeight(), meta.getWidth(), meta.getHeight());
+                // Timber.d("Camera rect: %s", cameraRect.toShortString());
+
+                SparseArray<Barcode> detectedItems = detections.getDetectedItems();
+                int[] ignoredKeys = new int[detectedItems.size()];
+                int ignoredKeysIndex = 0;
+
+                for (int i = 0; i < detectedItems.size(); i++) {
+                    Barcode barcode = detectedItems.valueAt(i);
+                    if (!cameraRect.contains(barcode.getBoundingBox())) {
+                        ignoredKeys[ignoredKeysIndex++] = detectedItems.keyAt(i);
+                    }
+                    //Timber.d("Barcode bounding box: %s, is inside the camera view: %s", barcode.getBoundingBox().toShortString(), cameraRect.contains(barcode.getBoundingBox()));
+                    //2018-09-25 17:28:06.006 32216-32472/me.gingerninja.authenticator D/CameraPreviewFrame: View dimensions: 1080x1080, frame dims: 960x1280
+                    //2018-09-25 17:28:06.006 32216-32472/me.gingerninja.authenticator D/CameraPreviewFrame: Barcode bounding box: [382,59][628,373]
+                }
+
+                for (int i = 0; i < ignoredKeysIndex; i++) {
+                    detectedItems.remove(ignoredKeys[i]);
+                }
+
                 barcodeProcessor.receiveDetections(detections);
             }
         }
