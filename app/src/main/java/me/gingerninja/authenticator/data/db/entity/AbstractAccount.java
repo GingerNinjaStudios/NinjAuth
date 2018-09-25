@@ -20,6 +20,9 @@ abstract class AbstractAccount {
     public static final String ALGO_SHA256 = "sha256";
     public static final String ALGO_SHA512 = "sha512";
 
+    public static final String SOURCE_URI = "uri";
+    public static final String SOURCE_MANUAL = "manual";
+
     @Key
     @Generated
     long id;
@@ -31,6 +34,8 @@ abstract class AbstractAccount {
     String title;
 
     String type;
+
+    String source;
 
     @Column(nullable = false)
     String accountName;

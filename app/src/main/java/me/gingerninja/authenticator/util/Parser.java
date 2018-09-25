@@ -72,6 +72,8 @@ public class Parser {
                 }
             }
 
+            account.setSource(Account.SOURCE_URI);
+
             return account;
         }
 
