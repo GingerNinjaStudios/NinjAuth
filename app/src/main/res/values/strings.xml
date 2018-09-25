@@ -7,6 +7,19 @@
     <string name="account_name_desc">The name of the account (e.g. joe@example.com)</string>
     <string name="account_issuer_text">Issuer</string>
     <string name="account_issuer_desc">The name of the issuer (e.g. ACME Co)</string>
+    <string name="account_type_text">Type</string>
+    <string name="account_type_desc">The type of the account</string>
+    <string name="account_algo_text">Algorithm</string>
+    <string name="account_algo_desc">The algorithm used for code generation</string>
+
+    <string name="account_type_spec_hotp_text">Counter</string>
+    <string name="account_type_spec_hotp_desc">Data where to start code generation</string>
+
+    <string name="account_type_spec_totp_text">Period</string>
+    <string name="account_type_spec_totp_desc">Seconds between new code generations</string>
+
+    <string name="account_type_totp">Time-Based One-Time Password (TOTP)</string>
+    <string name="account_type_hotp">HMAC-Based One-Time Password (HOTP)</string>
 
     <string name="save">Save</string>
 </resources>

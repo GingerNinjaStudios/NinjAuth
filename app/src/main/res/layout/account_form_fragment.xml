@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="viewModel"
             type="me.gingerninja.authenticator.ui.account.form.AddAccountViewModel" />
+
+        <import type="android.text.InputType" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -93,13 +96,89 @@
                         android:text="@={viewModel.data.issuer}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <View
+                    android:id="@+id/account_advanced_divider"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:background="?colorControlHighlight"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/account_issuer" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/account_type"
+                    style="@style/Widget.Form.TextInputLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/account_type_text"
+                    app:helperText="@string/account_type_desc"
+                    app:helperTextEnabled="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/account_advanced_divider">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableEnd="@drawable/ic_arrow_drop_down_24dp"
+                        android:editable="false"
+                        android:inputType="none"
+                        android:text="@={viewModel.data.type}" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/account_type_specific_data"
+                    style="@style/Widget.Form.TextInputLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:hint="@string/account_type_spec_totp_text"
+                    app:helperText="@string/account_type_spec_totp_desc"
+                    app:helperTextEnabled="true"
+                    app:layout_constraintEnd_toStartOf="@+id/account_algo"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/account_type">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:text="@={viewModel.data.typeSpecificData}" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/account_algo"
+                    style="@style/Widget.Form.TextInputLayout"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/account_algo_text"
+                    app:helperText="@string/account_algo_desc"
+                    app:helperTextEnabled="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/account_type">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableEnd="@drawable/ic_arrow_drop_down_24dp"
+                        android:editable="false"
+                        android:inputType="none"
+                        android:singleLine="true"
+                        android:text="@={viewModel.data.algorithm}"
+                        tools:text="SHA512" />
+                </com.google.android.material.textfield.TextInputLayout>
+
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
                     android:gravity="end"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent">
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/account_algo"
+                    app:layout_constraintVertical_bias="1.0">
 
                     <com.google.android.material.button.MaterialButton
                         style="@style/Widget.MaterialComponents.Button"
@@ -108,6 +187,7 @@
                         android:onClick="@{viewModel::onSaveClick}"
                         android:text="@string/save" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
