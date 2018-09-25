@@ -90,7 +90,7 @@ public abstract class BaseAccountViewModel extends ViewModel {
             }
 
             if (!TextUtils.isEmpty(rawType) && !TextUtils.isEmpty(rawTypeSpecificData) && TextUtils.isDigitsOnly(rawTypeSpecificData)) {
-                long parsedData = Long.parseLong(rawDigits);
+                long parsedData = Long.parseLong(rawTypeSpecificData);
                 switch (rawType) {
                     case Account.TYPE_TOTP:
                     case Account.TYPE_HOTP:
