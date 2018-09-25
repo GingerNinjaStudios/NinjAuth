@@ -109,10 +109,10 @@ public class CodeGenerator {
         try {
             switch (account.getType()) {
                 case Account.TYPE_HOTP:
-                    code = getHOTP(secret, account.getCounter(), algo, digits);
+                    code = getHOTP(secret, account.getTypeSpecificData(), algo, digits);
                     break;
                 case Account.TYPE_TOTP:
-                    code = getTOTP(secret, account.getPeriod(), 0, algo, digits);
+                    code = getTOTP(secret, account.getTypeSpecificData(), 0, algo, digits);
                     break;
                 default:
                     throw new IllegalArgumentException("No suitable account type found: " + account.getType());

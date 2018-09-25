@@ -13,6 +13,9 @@ import io.requery.PropertyNameStyle;
 
 @Entity(propertyNameStyle = PropertyNameStyle.FLUENT_BEAN)
 abstract class AbstractAccount {
+    public static final long DEFAULT_COUNTER = 0;
+    public static final long DEFAULT_PERIOD = 30;
+
     public static final String TYPE_TOTP = "totp";
     public static final String TYPE_HOTP = "hotp";
 
@@ -51,11 +54,7 @@ abstract class AbstractAccount {
     @Column(value = "6")
     int digits = 6;
 
-    @Column(value = "0")
-    long counter = 0;
-
-    @Column(value = "30")
-    long period = 30;
+    long typeSpecificData;
 
     @ManyToMany
     @JunctionTable(type = AbstractAccountHasLabel.class)

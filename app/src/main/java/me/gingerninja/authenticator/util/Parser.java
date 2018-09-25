@@ -32,9 +32,11 @@ public class Parser {
                             // TODO throw error
                         }
                         account.setType(Account.TYPE_HOTP);
+                        account.setTypeSpecificData(Account.DEFAULT_COUNTER);
                         break;
                     case "totp":
                         account.setType(Account.TYPE_TOTP);
+                        account.setTypeSpecificData(Account.DEFAULT_PERIOD);
                         break;
                     default:
                         // TODO throw error?
@@ -102,10 +104,8 @@ public class Parser {
                 account.setDigits(Integer.parseInt(value));
                 break;
             case "counter":
-                account.setCounter(Long.parseLong(value));
-                break;
             case "period":
-                account.setPeriod(Long.parseLong(value));
+                account.setTypeSpecificData(Long.parseLong(value));
                 break;
         }
     }

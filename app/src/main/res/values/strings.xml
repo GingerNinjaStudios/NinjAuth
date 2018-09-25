@@ -3,4 +3,10 @@
 
     <string name="account_title_text">Title</string>
     <string name="account_title_desc">Title that will be shown on the card</string>
+    <string name="account_name_text">Account name</string>
+    <string name="account_name_desc">The name of the account (e.g. joe@example.com)</string>
+    <string name="account_issuer_text">Issuer</string>
+    <string name="account_issuer_desc">The name of the issuer (e.g. ACME Co)</string>
+
+    <string name="save">Save</string>
 </resources>

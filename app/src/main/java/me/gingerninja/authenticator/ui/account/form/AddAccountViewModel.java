@@ -1,99 +1,40 @@
 package me.gingerninja.authenticator.ui.account.form;
 
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.View;
 
 import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.databinding.ObservableField;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
-import io.reactivex.disposables.Disposable;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.data.repo.AccountRepository;
+import me.gingerninja.authenticator.ui.account.BaseEditableAccountViewModel;
 import me.gingerninja.authenticator.util.Parser;
-import me.gingerninja.authenticator.util.SingleEvent;
 
-public class AddAccountViewModel extends ViewModel {
-    public static final String NAV_ACTION_SAVE = "addAccount.save";
+public class AddAccountViewModel extends BaseEditableAccountViewModel {
+    @Inject
+    AddAccountViewModel(@NonNull AccountRepository accountRepository) {
+        super(accountRepository);
+    }
 
     @NonNull
-    private AccountRepository accountRepository;
-
-    private Account initAccount;
-
-    private MutableLiveData<SingleEvent<String>> navAction = new MutableLiveData<>();
-
-    private Disposable saveDisposable;
-
-    public ObservableField<String> title = new ObservableField<>();
-
-    @Inject
-    public AddAccountViewModel(@NonNull AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
-    }
-
     @Override
-    protected void onCleared() {
-        super.onCleared();
-
-        if (saveDisposable != null) {
-            saveDisposable.dispose();
-        }
-    }
-
-    public void onSaveClick(View view) {
-        if (prepareAndCheckData()) {
-            saveDisposable = accountRepository
-                    .addAccount(initAccount)
-                    .subscribe(account -> navAction.postValue(new SingleEvent<>(NAV_ACTION_SAVE, account.getTitle())));
-
-        }
-    }
-
-    private boolean prepareAndCheckData() {
-        boolean hasError = false;
-
-        String rawTitle = title.get();
-        if (TextUtils.isEmpty(rawTitle) || TextUtils.isEmpty(rawTitle.trim())) {
-            hasError = true;
-        }
-
-        initAccount.setTitle(title.get());
-
-        return !hasError;
-    }
-
-    public LiveData<SingleEvent<String>> getNavigationAction() {
-        return navAction;
-    }
-
-    public void init(Bundle bundle) {
-        if (initAccount != null) {
-            return;
-        }
+    protected Account initAccount(@Nullable Bundle bundle) {
+        Account account;
 
         if (bundle != null) {
             AddAccountFragmentArgs args = AddAccountFragmentArgs.fromBundle(bundle);
-
             if (args.getUrl() != null) {
-                initAccount = Parser.parseUrl(args.getUrl());
-                initFieldsFromAccount(initAccount);
+                account = Parser.parseUrl(args.getUrl());
             } else {
-
+                account = new Account();
             }
-        }
-    }
-
-    private void initFieldsFromAccount(@Nullable Account account) {
-        if (account == null) {
-            return;
+        } else {
+            account = new Account();
         }
 
-        title.set(account.getTitle());
+        // Parser.parseUrl(...) _could_ return null, but not in this case
+        //noinspection ConstantConditions
+        return account;
     }
 }

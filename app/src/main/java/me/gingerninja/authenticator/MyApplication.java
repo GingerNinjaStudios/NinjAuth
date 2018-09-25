@@ -13,6 +13,7 @@ import dagger.android.HasActivityInjector;
 import dagger.android.HasServiceInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 import me.gingerninja.authenticator.di.component.DaggerAppComponent;
+import timber.log.Timber;
 
 public class MyApplication extends Application implements HasActivityInjector, HasServiceInjector, HasSupportFragmentInjector {
     @Inject
@@ -27,7 +28,9 @@ public class MyApplication extends Application implements HasActivityInjector, H
     @Override
     public void onCreate() {
         super.onCreate();
-        // SqlCipherDatabaseSource a = new SqlCipherDatabaseSource(this, null, "name", "pass", 1);
+
+        Timber.plant(new Timber.DebugTree());
+
         DaggerAppComponent
                 .builder()
                 .application(this)
