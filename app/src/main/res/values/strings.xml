@@ -21,5 +21,10 @@
     <string name="account_type_totp">Time-Based One-Time Password (TOTP)</string>
     <string name="account_type_hotp">HMAC-Based One-Time Password (HOTP)</string>
 
+    <string name="error_field_empty">The field cannot be empty</string>
+    <string name="error_field_number_zero">Must be more than 0</string>
+    <string name="error_field_number_too_large">Too large number</string>
+    <string name="error_field_number_1to8">Must be between 1 and 8</string>
+
     <string name="save">Save</string>
 </resources>

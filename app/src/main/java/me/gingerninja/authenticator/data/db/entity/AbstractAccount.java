@@ -36,8 +36,10 @@ abstract class AbstractAccount {
     @Nullable
     String title;
 
+    @Column(nullable = false)
     String type;
 
+    @Column(nullable = false)
     String source;
 
     @Column(nullable = false)
@@ -46,6 +48,7 @@ abstract class AbstractAccount {
     @Column(nullable = false)
     String secret;
 
+    @Nullable
     String issuer;
 
     @Column(value = ALGO_SHA1, nullable = false)

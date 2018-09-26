@@ -25,6 +25,13 @@ public class AddAccountFragment extends BaseFragment<AccountFormFragmentBinding>
         viewModel.init(args);
         binding.setViewModel(viewModel);
 
+        /*binding.accountType.getEditText().setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(getContext(), v);
+            MenuInflater inflater = popup.getMenuInflater();
+            inflater.inflate(R.menu.navigation_menu, popup.getMenu());
+            popup.show();
+        });*/
+
         viewModel.getNavigationAction().observe(this, event -> {
             if (event.handle()) {
                 String eventId = event.getId();

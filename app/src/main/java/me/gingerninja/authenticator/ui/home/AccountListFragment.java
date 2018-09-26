@@ -17,8 +17,10 @@ import me.gingerninja.authenticator.data.adapter.AccountListAdapter;
 import me.gingerninja.authenticator.databinding.AccountListFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
 
-public class AccountListFragment extends BaseFragment<AccountListFragmentBinding> {
+public class AccountListFragment extends BaseFragment<AccountListFragmentBinding> implements BottomNavigationFragment.BottomNavigationListener {
     private static final String TAG = "AccountListFragment";
+    private static final String BOTTOM_NAV_TAG = "bottomNavFrag";
+    private static final String ADD_ACCOUNT_TAG = "newAccount";
 
     public static final String ACCOUNT_OP_ADD = "accountAdded";
     public static final String ACCOUNT_OP_UPDATE = "accountUpdated";
@@ -43,7 +45,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
                         String eventId = rawEvent.getId();
                         switch (eventId) {
                             case AccountListViewModel.NAV_ADD_ACCOUNT_FROM_CAMERA:
-                                getNavController().navigate(R.id.addAccountFromCameraFragment);
+                                showAddNewAccountMenu();
                                 break;
                         }
                     }
@@ -66,13 +68,42 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
         }
 
         binding.appBar.setNavigationOnClickListener(v -> {
-            BottomNavigationFragment bottomNavFragment = new BottomNavigationFragment();
-            bottomNavFragment.show(getChildFragmentManager(), "bottomNavFrag");
+            BottomNavigationFragment bottomNavFragment = BottomNavigationFragment.create(R.menu.navigation_menu);
+            bottomNavFragment.show(getChildFragmentManager(), BOTTOM_NAV_TAG);
         });
     }
 
     @Override
     protected int getLayoutId() {
         return R.layout.account_list_fragment;
+    }
+
+    private void showAddNewAccountMenu() {
+        BottomNavigationFragment bottomNavFragment = BottomNavigationFragment.create(R.menu.add_account_menu);
+        bottomNavFragment.show(getChildFragmentManager(), ADD_ACCOUNT_TAG);
+    }
+
+    @Override
+    public void onBottomNavigationSelected(@Nullable String tag, int id) {
+        if (tag == null) {
+            return;
+        }
+
+        switch (tag) {
+            case ADD_ACCOUNT_TAG:
+                handleAddAccountMenu(id);
+                break;
+        }
+    }
+
+    private void handleAddAccountMenu(int id) {
+        switch (id) {
+            case R.id.menu_add_account_from_camera:
+                getNavController().navigate(R.id.addAccountFromCameraFragment);
+                break;
+            case R.id.menu_add_account_manual:
+                getNavController().navigate(R.id.addAccountFragment);
+                break;
+        }
     }
 }

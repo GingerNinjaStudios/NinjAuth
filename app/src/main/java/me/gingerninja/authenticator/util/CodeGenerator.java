@@ -64,6 +64,10 @@ public class CodeGenerator {
      * @throws NoSuchAlgorithmException if the given crypto algorithm is non-existent
      */
     private long getTOTP(@NonNull String secret, long period, long steps, @NonNull @Algorithm String algorithm, @IntRange(from = 1) int digits) throws InvalidKeyException, NoSuchAlgorithmException {
+        //    long value = -1; // 18446744073709551615
+        //    BigDecimal maxLong = new BigDecimal(Long.MAX_VALUE).add(BigDecimal.ONE).multiply(new BigDecimal(2));
+        //    BigDecimal bigValue = new BigDecimal(value);
+        //    BigDecimal actualValue = (value < 0) ? bigValue.add(maxLong) : bigValue;
         long T = (long) (Math.floor(timeCorrector.getCurrentTime(TimeUnit.SECONDS) / period) + steps);
 
         StringBuilder timeStr = new StringBuilder(Long.toHexString(T).toUpperCase());
