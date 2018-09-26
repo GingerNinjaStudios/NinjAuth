@@ -12,10 +12,13 @@ import javax.inject.Inject;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.adapter.AccountListAdapter;
 import me.gingerninja.authenticator.databinding.AccountListFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
+import timber.log.Timber;
 
 public class AccountListFragment extends BaseFragment<AccountListFragmentBinding> implements BottomNavigationFragment.BottomNavigationListener {
     private static final String TAG = "AccountListFragment";
@@ -54,6 +57,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
         viewModel.getAccountList().observe(this, accountListAdapter::setAccountList);
 
         binding.accountList.setAdapter(accountListAdapter);
+        enableListDrag(binding);
 
         if (getArguments() != null) {
             AccountListFragmentArgs args = AccountListFragmentArgs.fromBundle(getArguments());
@@ -71,6 +75,36 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
             BottomNavigationFragment bottomNavFragment = BottomNavigationFragment.create(R.menu.navigation_menu);
             bottomNavFragment.show(getChildFragmentManager(), BOTTOM_NAV_TAG);
         });
+    }
+
+    private void enableListDrag(AccountListFragmentBinding binding) {
+        ItemTouchHelper dragHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
+
+            @Override
+            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                super.clearView(recyclerView, viewHolder);
+                // TODO save list order
+                Timber.v("clearView() - Drag finished");
+            }
+
+            @Override
+            public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
+                super.onSelectedChanged(viewHolder, actionState);
+                // TODO
+                Timber.v("onSelectedChanged() - actionState: %d", actionState);
+            }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return accountListAdapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+            }
+        });
+        dragHelper.attachToRecyclerView(binding.accountList);
     }
 
     @Override

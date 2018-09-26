@@ -3,6 +3,7 @@ package me.gingerninja.authenticator.data.adapter;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -56,7 +57,26 @@ public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> 
     }
 
     @Override
+    public long getItemId(int position) {
+        return accountList == null ? RecyclerView.NO_ID : accountList.get(position).getId();
+    }
+
+    @Override
     public int getItemCount() {
         return accountList != null ? accountList.size() : 0;
+    }
+
+    public boolean onItemMove(int fromPosition, int toPosition) {
+        if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                Collections.swap(accountList, i, i + 1);
+            }
+        } else {
+            for (int i = fromPosition; i > toPosition; i--) {
+                Collections.swap(accountList, i, i - 1);
+            }
+        }
+        notifyItemMoved(fromPosition, toPosition);
+        return true;
     }
 }
