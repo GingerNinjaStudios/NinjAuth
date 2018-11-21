@@ -24,6 +24,13 @@ public class AccountDaoImpl implements AccountDao {
     }
 
     @Override
+    public Single<Account> get(long id) {
+        return getStore()
+                .findByKey(Account.class, id)
+                .toSingle();
+    }
+
+    @Override
     public Observable<List<Account>> getAll() {
         return getStore()
                 .select(Account.class)

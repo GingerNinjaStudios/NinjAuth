@@ -10,6 +10,9 @@ import me.gingerninja.authenticator.data.db.entity.Account;
 
 public interface AccountDao {
     @CheckResult
+    Single<Account> get(long id);
+
+    @CheckResult
     Observable<List<Account>> getAll();
 
     @CheckResult

@@ -8,6 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowTranslucentStatus" tools:targetApi="kitkat">true</item>
         <item name="themeOverlay">@style/ThemeOverlay.MaterialComponents.Dark</item>
+        <item name="popupMenuStyle">@style/Widget.MaterialComponents.PopupMenu.Overflow</item>
     </style>
 
 </resources>

@@ -1,15 +1,20 @@
 package me.gingerninja.authenticator.ui.home.list;
 
+import android.view.MenuItem;
+import android.view.View;
+
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import me.gingerninja.authenticator.BR;
+import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.util.CodeGenerator;
 
@@ -32,12 +37,19 @@ public class AccountListItemViewModel extends BaseObservable {
 
     private Disposable clockDisposable;
 
+    private AccountMenuItemClickListener menuItemClickListener;
+
     @Mode
     private int mode = MODE_IDLE;
 
     public AccountListItemViewModel(@NonNull Account account, @NonNull CodeGenerator codeGenerator) {
         this.account = account;
         this.codeGenerator = codeGenerator;
+    }
+
+    public AccountListItemViewModel setMenuItemClickListener(AccountMenuItemClickListener menuItemClickListener) {
+        this.menuItemClickListener = menuItemClickListener;
+        return this;
     }
 
     public void startClock(Observable<Long> clock) {
@@ -58,8 +70,22 @@ public class AccountListItemViewModel extends BaseObservable {
         notifyPropertyChanged(BR.currentProgress);
     }
 
+    public void onOverflowClick(View v) {
+        PopupMenu popupMenu = new PopupMenu(v.getContext(), v);
+        popupMenu.inflate(R.menu.account_list_item_menu);
+        popupMenu.setOnMenuItemClickListener(item -> {
+            if (menuItemClickListener != null) {
+                menuItemClickListener.onAccountMenuItemClicked(item, account);
+                return true;
+            }
+
+            return false;
+        });
+        popupMenu.show();
+    }
+
     public String getAccountName() {
-        return account.getAccountName();
+        return account.getTitle();
     }
 
     @Bindable
@@ -97,5 +123,9 @@ public class AccountListItemViewModel extends BaseObservable {
     public void setMode(@Mode int mode) {
         this.mode = mode;
         notifyPropertyChanged(BR.mode);
+    }
+
+    public interface AccountMenuItemClickListener {
+        void onAccountMenuItemClicked(MenuItem item, Account account);
     }
 }

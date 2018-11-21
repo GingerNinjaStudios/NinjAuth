@@ -9,6 +9,7 @@ import dagger.multibindings.IntoMap;
 import me.gingerninja.authenticator.di.ViewModelKey;
 import me.gingerninja.authenticator.ui.account.camera.AddAccountFromCameraViewModel;
 import me.gingerninja.authenticator.ui.account.form.AddAccountViewModel;
+import me.gingerninja.authenticator.ui.account.form.EditAccountViewModel;
 import me.gingerninja.authenticator.ui.home.AccountListViewModel;
 import me.gingerninja.authenticator.viewmodel.NinjaViewModelFactory;
 
@@ -28,6 +29,11 @@ public abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(AddAccountViewModel.class)
     abstract ViewModel bindAddAccountViewModel(AddAccountViewModel myViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(EditAccountViewModel.class)
+    abstract ViewModel bindEditAccountViewModel(EditAccountViewModel myViewModel);
 
     @Binds
     abstract ViewModelProvider.Factory bindViewModelFactory(NinjaViewModelFactory factory);

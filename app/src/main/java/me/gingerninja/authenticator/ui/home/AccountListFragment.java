@@ -2,6 +2,7 @@ package me.gingerninja.authenticator.ui.home;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -16,11 +17,13 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.adapter.AccountListAdapter;
+import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.databinding.AccountListFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
+import me.gingerninja.authenticator.ui.home.list.AccountListItemViewModel;
 import timber.log.Timber;
 
-public class AccountListFragment extends BaseFragment<AccountListFragmentBinding> implements BottomNavigationFragment.BottomNavigationListener {
+public class AccountListFragment extends BaseFragment<AccountListFragmentBinding> implements BottomNavigationFragment.BottomNavigationListener, AccountListItemViewModel.AccountMenuItemClickListener {
     private static final String TAG = "AccountListFragment";
     private static final String BOTTOM_NAV_TAG = "bottomNavFrag";
     private static final String ADD_ACCOUNT_TAG = "newAccount";
@@ -31,6 +34,12 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
 
     @Inject
     AccountListAdapter accountListAdapter;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        accountListAdapter.setMenuItemClickListener(this);
+    }
 
     @Override
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, AccountListFragmentBinding viewDataBinding) {
@@ -148,6 +157,19 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
                 break;
             case R.id.menu_add_account_manual:
                 getNavController().navigate(R.id.addAccountFragment);
+                break;
+        }
+    }
+
+    @Override
+    public void onAccountMenuItemClicked(MenuItem item, Account account) {
+        switch (item.getItemId()) {
+            case R.id.menu_account_edit:
+                AccountListFragmentDirections.EditAccountAction action = AccountListFragmentDirections.editAccountAction(account.getId());
+                getNavController().navigate(action);
+                break;
+            case R.id.menu_account_delete:
+                Snackbar.make(getView(), "Delete: " + account, Snackbar.LENGTH_SHORT).show();
                 break;
         }
     }

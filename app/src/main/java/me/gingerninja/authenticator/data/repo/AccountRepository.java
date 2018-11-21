@@ -27,6 +27,10 @@ public class AccountRepository {
         return accountDao.save(account);
     }
 
+    public Single<Account> get(long id){
+        return accountDao.get(id);
+    }
+
     public Observable<List<Account>> getAll() {
         return accountDao.getAll();
     }

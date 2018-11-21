@@ -1,6 +1,7 @@
 package me.gingerninja.authenticator.data.adapter;
 
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.ViewGroup;
 
 import java.util.Collections;
@@ -20,11 +21,12 @@ import me.gingerninja.authenticator.databinding.AccountListItemBinding;
 import me.gingerninja.authenticator.ui.home.list.AccountListItemViewModel;
 import me.gingerninja.authenticator.util.CodeGenerator;
 
-public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> {
+public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> implements AccountListItemViewModel.AccountMenuItemClickListener {
     public static final int TYPE_ACCOUNT_TOTP = 1;
 
     private List<Account> accountList;
     private CodeGenerator codeGenerator;
+    private AccountListItemViewModel.AccountMenuItemClickListener menuItemClickListener;
 
     private Disposable disposable;
     private BehaviorSubject<Long> clock = BehaviorSubject.create();
@@ -43,12 +45,14 @@ public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> 
         return this;
     }
 
+    public void setMenuItemClickListener(AccountListItemViewModel.AccountMenuItemClickListener menuItemClickListener) {
+        this.menuItemClickListener = menuItemClickListener;
+    }
+
     public void startClock() {
         stopClock();
 
-        disposable = Observable.interval(100, TimeUnit.MILLISECONDS).subscribe(v -> {
-            clock.onNext(v);
-        });
+        disposable = Observable.interval(100, TimeUnit.MILLISECONDS).subscribe(clock::onNext);
     }
 
     public void stopClock() {
@@ -77,7 +81,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> 
             oldViewModel.stopClock();
         }
 
-        listItemBinding.setViewModel(new AccountListItemViewModel(accountList.get(position), codeGenerator));
+        listItemBinding.setViewModel(new AccountListItemViewModel(accountList.get(position), codeGenerator).setMenuItemClickListener(this));
 
         /*Account account = accountList.get(position);
 
@@ -168,6 +172,13 @@ public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> 
                     viewModel.setMode(isDragging ? AccountListItemViewModel.MODE_DRAG : AccountListItemViewModel.MODE_IDLE);
                 }
                 break;
+        }
+    }
+
+    @Override
+    public void onAccountMenuItemClicked(MenuItem item, Account account) {
+        if (menuItemClickListener != null) {
+            menuItemClickListener.onAccountMenuItemClicked(item, account);
         }
     }
 }
