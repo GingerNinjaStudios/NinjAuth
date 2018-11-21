@@ -234,15 +234,15 @@ public class CodeGenerator {
 
     @NonNull
     private static byte[] decodeBase32(@NonNull String data) {
-        final int n = data.length();
+        int n = data.length();
 
-        if (n % 16 != 0) {
+        /*if (n % 16 != 0) {
             throw new IllegalArgumentException("The data's length must be a mod of 16");
-        }
+        }*/
 
         data = data.toUpperCase(Locale.US);
 
-        byte[] bytes = new byte[n / 8 * 5];
+        byte[] bytes = new byte[n * 5 / 8];
 
         int buffer = 0, remBits = 0;
         int i = 0;
