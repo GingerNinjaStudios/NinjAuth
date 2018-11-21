@@ -2,6 +2,7 @@ package me.gingerninja.authenticator.ui.home.list;
 
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
@@ -13,13 +14,15 @@ import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.util.CodeGenerator;
 
 public class AccountListItemViewModel extends BaseObservable {
-    public static final CircularProgressIndicator.ProgressTextAdapter TEXT_ADAPTER = new CircularProgressIndicator.ProgressTextAdapter() {
-        @NonNull
-        @Override
-        public String formatText(double value) {
-            return "";
-        }
-    };
+    public static final int MODE_IDLE = 0;
+    public static final int MODE_DRAG = 1;
+    public static final int MODE_EDIT = 2;
+
+    @IntDef({MODE_IDLE, MODE_DRAG, MODE_EDIT})
+    @interface Mode {
+    }
+
+    public static final CircularProgressIndicator.ProgressTextAdapter TEXT_ADAPTER = value -> "";
 
     @NonNull
     private final Account account;
@@ -28,6 +31,9 @@ public class AccountListItemViewModel extends BaseObservable {
     private final CodeGenerator codeGenerator;
 
     private Disposable clockDisposable;
+
+    @Mode
+    private int mode = MODE_IDLE;
 
     public AccountListItemViewModel(@NonNull Account account, @NonNull CodeGenerator codeGenerator) {
         this.account = account;
@@ -80,5 +86,16 @@ public class AccountListItemViewModel extends BaseObservable {
     public double getCurrentProgress() {
         long period = TimeUnit.MILLISECONDS.convert(Math.max(1, account.getTypeSpecificData()), TimeUnit.SECONDS);
         return codeGenerator.getRemainingTime(account, TimeUnit.MILLISECONDS) * 1000d / period;
+    }
+
+    @Mode
+    @Bindable
+    public int getMode() {
+        return mode;
+    }
+
+    public void setMode(@Mode int mode) {
+        this.mode = mode;
+        notifyPropertyChanged(BR.mode);
     }
 }

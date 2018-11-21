@@ -16,5 +16,8 @@ public interface AccountDao {
     Single<Account> save(Account account);
 
     @CheckResult
+    Completable saveAll(List<Account> accountList);
+
+    @CheckResult
     Completable delete(Account account);
 }

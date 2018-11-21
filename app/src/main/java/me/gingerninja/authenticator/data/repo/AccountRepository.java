@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import me.gingerninja.authenticator.data.db.dao.AccountDao;
@@ -28,5 +29,9 @@ public class AccountRepository {
 
     public Observable<List<Account>> getAll() {
         return accountDao.getAll();
+    }
+
+    public Completable saveAccounts(List<Account> accountList) {
+        return accountDao.saveAll(accountList);
     }
 }

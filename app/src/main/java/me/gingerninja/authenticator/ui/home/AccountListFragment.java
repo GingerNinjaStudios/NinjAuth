@@ -87,20 +87,22 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
     }
 
     private void enableListDrag(AccountListFragmentBinding binding) {
+        AccountListViewModel viewModel = binding.getViewModel();
         ItemTouchHelper dragHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
 
             @Override
             public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
                 super.clearView(recyclerView, viewHolder);
-                // TODO save list order
+                accountListAdapter.onItemDrag(viewHolder, false);
+                viewModel.saveList(accountListAdapter.getAccountList());
                 Timber.v("clearView() - Drag finished");
             }
 
             @Override
             public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
                 super.onSelectedChanged(viewHolder, actionState);
-                // TODO
                 Timber.v("onSelectedChanged() - actionState: %d", actionState);
+                accountListAdapter.onItemDrag(viewHolder, actionState == ItemTouchHelper.ACTION_STATE_DRAG);
             }
 
             @Override

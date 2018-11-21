@@ -21,6 +21,8 @@ import me.gingerninja.authenticator.ui.home.list.AccountListItemViewModel;
 import me.gingerninja.authenticator.util.CodeGenerator;
 
 public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> {
+    public static final int TYPE_ACCOUNT_TOTP = 1;
+
     private List<Account> accountList;
     private CodeGenerator codeGenerator;
 
@@ -29,6 +31,10 @@ public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> 
 
     public AccountListAdapter(@NonNull CodeGenerator codeGenerator) {
         this.codeGenerator = codeGenerator;
+    }
+
+    public List<Account> getAccountList() {
+        return accountList;
     }
 
     public AccountListAdapter setAccountList(List<Account> accountList) {
@@ -49,6 +55,11 @@ public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> 
         if (disposable != null && !disposable.isDisposed()) {
             disposable.dispose();
         }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return TYPE_ACCOUNT_TOTP;
     }
 
     @NonNull
@@ -78,30 +89,34 @@ public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> 
     @Override
     public void onViewAttachedToWindow(@NonNull BindingViewHolder holder) {
         super.onViewAttachedToWindow(holder);
-        // TODO add listener
 
+        int viewType = holder.getItemViewType();
         ViewDataBinding binding = holder.getBinding();
 
-        if (binding instanceof AccountListItemBinding) {
-            AccountListItemViewModel viewModel = ((AccountListItemBinding) binding).getViewModel();
-            if (viewModel != null) {
-                viewModel.startClock(clock);
-            }
+        switch (viewType) {
+            case TYPE_ACCOUNT_TOTP:
+                AccountListItemViewModel viewModel = ((AccountListItemBinding) binding).getViewModel();
+                if (viewModel != null) {
+                    viewModel.startClock(clock);
+                }
+                break;
         }
     }
 
     @Override
     public void onViewDetachedFromWindow(@NonNull BindingViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
-        // TODO remove listener
 
+        int viewType = holder.getItemViewType();
         ViewDataBinding binding = holder.getBinding();
 
-        if (binding instanceof AccountListItemBinding) {
-            AccountListItemViewModel viewModel = ((AccountListItemBinding) binding).getViewModel();
-            if (viewModel != null) {
-                viewModel.stopClock();
-            }
+        switch (viewType) {
+            case TYPE_ACCOUNT_TOTP:
+                AccountListItemViewModel viewModel = ((AccountListItemBinding) binding).getViewModel();
+                if (viewModel != null) {
+                    viewModel.stopClock();
+                }
+                break;
         }
     }
 
@@ -125,7 +140,34 @@ public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> 
                 Collections.swap(accountList, i, i - 1);
             }
         }
+
+        for (int i = 0; i < accountList.size(); i++) {
+            Account account = accountList.get(i);
+            if (account.getPosition() != i) {
+                account.setPosition(i);
+            }
+        }
+
         notifyItemMoved(fromPosition, toPosition);
         return true;
+    }
+
+    public void onItemDrag(RecyclerView.ViewHolder viewHolder, boolean isDragging) {
+        if (viewHolder == null) {
+            return;
+        }
+
+        int viewType = viewHolder.getItemViewType();
+        BindingViewHolder holder = (BindingViewHolder) viewHolder;
+        ViewDataBinding binding = holder.getBinding();
+
+        switch (viewType) {
+            case AccountListAdapter.TYPE_ACCOUNT_TOTP:
+                AccountListItemViewModel viewModel = ((AccountListItemBinding) binding).getViewModel();
+                if (viewModel != null) {
+                    viewModel.setMode(isDragging ? AccountListItemViewModel.MODE_DRAG : AccountListItemViewModel.MODE_IDLE);
+                }
+                break;
+        }
     }
 }

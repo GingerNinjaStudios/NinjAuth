@@ -56,6 +56,10 @@ public class AccountListViewModel extends ViewModel {
         return navAction;
     }
 
+    void saveList(List<Account> accounts) {
+        accountRepo.saveAccounts(accounts).subscribe();
+    }
+
     public void onAddAccountFromCameraClick(View view) {
         navAction.setValue(new SingleEvent<>(NAV_ADD_ACCOUNT_FROM_CAMERA));
         /*if (PermissionChecker.PERMISSION_GRANTED == PermissionChecker.checkSelfPermission(application, Manifest.permission.CAMERA)) {
