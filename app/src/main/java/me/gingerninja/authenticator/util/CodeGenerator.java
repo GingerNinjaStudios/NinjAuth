@@ -103,6 +103,14 @@ public class CodeGenerator {
         //return binary % (long) Math.pow(10, digits);
     }
 
+    public long getRemainingTime(@NonNull Account account, TimeUnit timeUnit) {
+        long period = timeUnit.convert(Math.max(account.getTypeSpecificData(), 1), TimeUnit.SECONDS);
+        long time = timeCorrector.getCurrentTime(timeUnit);
+        long fracturedTime = (time / period) * period;
+
+        return period - (time - fracturedTime);
+    }
+
     public String getCode(@NonNull Account account) {
         final String secret = account.getSecret();
         final int digits = account.getDigits();

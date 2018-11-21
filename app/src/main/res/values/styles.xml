@@ -7,4 +7,8 @@
         <item name="android:layout_marginStart">4dp</item>
         <item name="android:layout_marginEnd">4dp</item>
     </style>
+
+    <style name="Widget.Account.Code" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textSize">32sp</item>
+    </style>
 </resources>

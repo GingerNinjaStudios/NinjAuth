@@ -47,6 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        return NavigationUI.navigateUp(drawerLayout, navController);
+        return NavigationUI.navigateUp(navController, drawerLayout);
     }
 }

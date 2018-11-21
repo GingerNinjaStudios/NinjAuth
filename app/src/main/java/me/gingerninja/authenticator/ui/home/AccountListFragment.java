@@ -35,6 +35,15 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
     @Override
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, AccountListFragmentBinding viewDataBinding) {
         subscribeToUi(viewDataBinding);
+
+        accountListAdapter.startClock();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        accountListAdapter.stopClock();
     }
 
     private void subscribeToUi(AccountListFragmentBinding binding) {

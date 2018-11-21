@@ -5,18 +5,27 @@ import android.view.ViewGroup;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.subjects.BehaviorSubject;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.databinding.AccountListItemBinding;
+import me.gingerninja.authenticator.ui.home.list.AccountListItemViewModel;
 import me.gingerninja.authenticator.util.CodeGenerator;
 
 public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> {
     private List<Account> accountList;
     private CodeGenerator codeGenerator;
+
+    private Disposable disposable;
+    private BehaviorSubject<Long> clock = BehaviorSubject.create();
 
     public AccountListAdapter(@NonNull CodeGenerator codeGenerator) {
         this.codeGenerator = codeGenerator;
@@ -26,6 +35,20 @@ public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> 
         this.accountList = accountList;
         notifyDataSetChanged();
         return this;
+    }
+
+    public void startClock() {
+        stopClock();
+
+        disposable = Observable.interval(100, TimeUnit.MILLISECONDS).subscribe(v -> {
+            clock.onNext(v);
+        });
+    }
+
+    public void stopClock() {
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+        }
     }
 
     @NonNull
@@ -38,22 +61,48 @@ public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> 
     public void onBindViewHolder(@NonNull BindingViewHolder holder, int position) {
         AccountListItemBinding listItemBinding = (AccountListItemBinding) holder.getBinding();
 
-        Account account = accountList.get(position);
+        AccountListItemViewModel oldViewModel = listItemBinding.getViewModel();
+        if (oldViewModel != null) {
+            oldViewModel.stopClock();
+        }
+
+        listItemBinding.setViewModel(new AccountListItemViewModel(accountList.get(position), codeGenerator));
+
+        /*Account account = accountList.get(position);
 
         listItemBinding.textAccount.setText(account.getAccountName());
-        listItemBinding.textCode.setText(codeGenerator.getFormattedCode(account));
+        listItemBinding.textCode.setText(codeGenerator.getFormattedCode(account));*/
     }
+
 
     @Override
     public void onViewAttachedToWindow(@NonNull BindingViewHolder holder) {
         super.onViewAttachedToWindow(holder);
         // TODO add listener
+
+        ViewDataBinding binding = holder.getBinding();
+
+        if (binding instanceof AccountListItemBinding) {
+            AccountListItemViewModel viewModel = ((AccountListItemBinding) binding).getViewModel();
+            if (viewModel != null) {
+                viewModel.startClock(clock);
+            }
+        }
     }
 
     @Override
     public void onViewDetachedFromWindow(@NonNull BindingViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
         // TODO remove listener
+
+        ViewDataBinding binding = holder.getBinding();
+
+        if (binding instanceof AccountListItemBinding) {
+            AccountListItemViewModel viewModel = ((AccountListItemBinding) binding).getViewModel();
+            if (viewModel != null) {
+                viewModel.stopClock();
+            }
+        }
     }
 
     @Override
