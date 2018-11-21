@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="account_list_card_elevation_normal">2dp</dimen>
+    <dimen name="account_list_card_elevation_dragging">8dp</dimen>
+</resources>
