@@ -5,7 +5,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "me.gingerninja.authenticator"
-        minSdkVersion 18
+        minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -88,4 +88,10 @@ dependencies {
 
     // Apache v2 - https://github.com/antonKozyriatskyi/CircularProgressIndicator
     implementation 'com.github.antonKozyriatskyi:CircularProgressIndicator:1.2.2'
+
+    // Apache v2 - http://www.lingala.net/zip4j/index.php
+    implementation 'net.lingala.zip4j:zip4j:1.3.2'
+
+    // Apache v2 - https://github.com/zxing/zxing
+    implementation 'com.google.zxing:core:3.3.0'
 }

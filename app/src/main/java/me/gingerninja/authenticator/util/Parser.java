@@ -14,6 +14,47 @@ import me.gingerninja.authenticator.data.db.entity.Account;
 public class Parser {
     private static final Pattern LABEL_PATTERN = Pattern.compile("(?:(.+)(?::|%3A|%3a)(?:(?:%20)| )*(.+))|(.+)");
 
+    @NonNull
+    public static String createUrl(@NonNull Account account) {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("otpauth");
+
+        builder.path("//" + account.getType());
+
+        switch (account.getType()) {
+            case Account.TYPE_TOTP:
+                builder.appendQueryParameter("period", Long.toString(account.getTypeSpecificData()));
+                break;
+            case Account.TYPE_HOTP:
+                builder.appendQueryParameter("counter", Long.toString(account.getTypeSpecificData()));
+                break;
+        }
+
+        builder.appendQueryParameter("secret", account.getSecret());
+        builder.appendQueryParameter("digits", Integer.toString(account.getDigits()));
+
+        if (!TextUtils.isEmpty(account.getIssuer())) {
+            builder.appendQueryParameter("issuer", account.getIssuer());
+            builder.appendPath(account.getIssuer() + ":" + account.getAccountName());
+        } else {
+            builder.appendPath(account.getAccountName());
+        }
+
+        switch (account.getAlgorithm()) {
+            case Account.ALGO_SHA1:
+                builder.appendQueryParameter("algorithm", "SHA1");
+                break;
+            case Account.ALGO_SHA256:
+                builder.appendQueryParameter("algorithm", "SHA256");
+                break;
+            case Account.ALGO_SHA512:
+                builder.appendQueryParameter("algorithm", "SHA512");
+                break;
+        }
+
+        return builder.build().toString();
+    }
+
     public static Account parseUrl(@NonNull String url) {
         Uri uri = Uri.parse(url);
 
