@@ -1,4 +1,4 @@
-package me.gingerninja.authenticator.util;
+package me.gingerninja.authenticator.util.backup;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 
+import com.google.gson.Gson;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
@@ -30,7 +31,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -44,17 +49,25 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import io.reactivex.Observable;
 import me.gingerninja.authenticator.data.db.entity.Account;
+import me.gingerninja.authenticator.data.pojo.BackupAccount;
+import me.gingerninja.authenticator.data.pojo.BackupFile;
+import me.gingerninja.authenticator.data.pojo.BackupLabel;
 import me.gingerninja.authenticator.data.repo.AccountRepository;
+import me.gingerninja.authenticator.util.Parser;
 
 @Singleton
 public class BackupUtils {
+    private static final String DATA_FILE_NAME = "_data.json";
+
     private final Context context;
     private final AccountRepository accountRepo;
+    private final Gson gson;
 
     @Inject
-    public BackupUtils(Context context, AccountRepository accountRepo) {
+    public BackupUtils(Context context, AccountRepository accountRepo, Gson gson) {
         this.context = context;
         this.accountRepo = accountRepo;
+        this.gson = gson;
     }
 
     public void backup(@NonNull Uri uri) throws ZipException, IOException {
@@ -74,12 +87,41 @@ public class BackupUtils {
         // Setting password
         zipParameters.setPassword("pass@123");
 
-        // this is how a stream can be added to the ZIP
-        /*zipParameters.setSourceExternalStream(true);
-        zipParameters.setFileNameInZip("data.json");
-        zipFile.addStream(null, zipParameters);*/ // TODO for all files
-        List<Account> accountList = accountRepo.getAll().blockingFirst(Collections.emptyList());
+        List<Account> accountList = accountRepo.getAllAccountAndListen().blockingFirst(Collections.emptyList());
 
+        // add data file to the ZIP
+        BackupFile backupFile = new BackupFile();
+
+        List<BackupAccount> backupAccounts = Observable
+                .fromIterable(accountList)
+                .map(BackupAccount::fromEntity)
+                .toList()
+                .blockingGet();
+
+        List<BackupLabel> backupLabels = accountRepo
+                .getAllLabel()
+                .map(BackupLabel::fromEntity)
+                .toList()
+                .blockingGet();
+
+        backupFile.setAccounts(backupAccounts);
+        backupFile.setLabels(backupLabels);
+
+        ByteArrayOutputStream dataBos = new ByteArrayOutputStream();
+        OutputStreamWriter dataOSW = new OutputStreamWriter(dataBos, StandardCharsets.UTF_8);
+        gson.toJson(backupFile, dataOSW);
+        dataOSW.flush();
+        dataOSW.close();
+
+        ByteArrayInputStream dataBis = new ByteArrayInputStream(dataBos.toByteArray());
+        zipParameters.setSourceExternalStream(true);
+        zipParameters.setFileNameInZip(DATA_FILE_NAME);
+        zipFile.addStream(dataBis, zipParameters);
+
+        dataBos.close();
+        dataBis.close();
+
+        // add QR code images to the ZIP
         Observable.fromIterable(accountList)
                 .blockingSubscribe(account -> {
                     String url = Parser.createUrl(account);
@@ -88,6 +130,8 @@ public class BackupUtils {
                     zipParameters.setSourceExternalStream(true);
                     zipParameters.setFileNameInZip(account.getPosition() + "-" + URLEncoder.encode(account.getAccountName(), "UTF-8") + ".png");
                     zipFile.addStream(is, zipParameters);
+
+                    is.close();
                 });
 
         ParcelFileDescriptor outputFd = context.getContentResolver().openFileDescriptor(uri, "w");
@@ -118,7 +162,7 @@ public class BackupUtils {
         }
     }
 
-    public void restore() throws ZipException {
+    public void restore() throws ZipException, IOException {
         File tmpFile = new File(context.getCacheDir(), "tmp_backup.zip");
         ZipFile zipFile = new ZipFile(tmpFile);
         // If it is encrypted then provide password
@@ -127,11 +171,14 @@ public class BackupUtils {
         }
         //zipFile.extractAll(destPath);
 
-        FileHeader dataFileHeader = zipFile.getFileHeader("_data.json");
+        FileHeader dataFileHeader = zipFile.getFileHeader(DATA_FILE_NAME);
         if (dataFileHeader == null) {
             // TODO this is not an appropriate file
         } else {
-            // TODO get the file and process it
+            Reader in = new InputStreamReader(zipFile.getInputStream(dataFileHeader), "UTF-8");
+            BackupFile backupFile = gson.fromJson(in, BackupFile.class);
+
+            // TODO process backup file
         }
     }
 
@@ -285,12 +332,15 @@ public class BackupUtils {
 
     @NonNull
     private InputStream bitmapToInputStream(@NonNull Bitmap bitmap) throws IOException {
-        //PipedOutputStream pipedOutputStream = new PipedOutputStream();
-        //PipedInputStream pipedInputStream = new PipedInputStream(pipedOutputStream);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        bitmap.recycle();
 
-        return new ByteArrayInputStream(baos.toByteArray());
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+
+        baos.close();
+
+        return bais;
     }
 }

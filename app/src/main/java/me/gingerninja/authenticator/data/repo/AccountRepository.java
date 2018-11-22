@@ -9,33 +9,54 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import me.gingerninja.authenticator.data.db.dao.AccountDao;
-import me.gingerninja.authenticator.data.db.dao.CategoryDao;
+import me.gingerninja.authenticator.data.db.dao.LabelDao;
 import me.gingerninja.authenticator.data.db.entity.Account;
+import me.gingerninja.authenticator.data.db.entity.Label;
 
 @Singleton
 public class AccountRepository {
     private final AccountDao accountDao;
-    private final CategoryDao categoryDao;
+    private final LabelDao labelDao;
 
     @Inject
-    public AccountRepository(AccountDao accountDao, CategoryDao categoryDao) {
+    public AccountRepository(AccountDao accountDao, LabelDao labelDao) {
         this.accountDao = accountDao;
-        this.categoryDao = categoryDao;
+        this.labelDao = labelDao;
     }
 
     public Single<Account> addAccount(Account account) {
         return accountDao.save(account);
     }
 
-    public Single<Account> get(long id){
+    public Single<Account> getAccount(long id) {
         return accountDao.get(id);
     }
 
-    public Observable<List<Account>> getAll() {
-        return accountDao.getAll();
+    public Observable<List<Account>> getAllAccountAndListen() {
+        return accountDao.getAllAndListen();
     }
 
     public Completable saveAccounts(List<Account> accountList) {
         return accountDao.saveAll(accountList);
+    }
+
+    public Completable deleteAccount(Account account) {
+        return accountDao.delete(account);
+    }
+
+    public Single<Label> addLabel(Label label) {
+        return labelDao.save(label);
+    }
+
+    public Single<Label> getLabel(long id) {
+        return labelDao.get(id);
+    }
+
+    public Observable<Label> getAllLabel() {
+        return labelDao.getAll();
+    }
+
+    public Completable deleteLabel(Label label) {
+        return labelDao.delete(label);
     }
 }

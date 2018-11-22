@@ -61,7 +61,7 @@ abstract class AbstractAccount {
 
     @ManyToMany
     @JunctionTable(type = AbstractAccountHasLabel.class)
-    Set<AbstractLabel> labels;
+    Set<Label> labels;
 
     @Column(value = "0")
     int position = 0;

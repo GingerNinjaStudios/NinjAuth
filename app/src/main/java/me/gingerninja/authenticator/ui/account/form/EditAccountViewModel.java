@@ -23,7 +23,7 @@ public class EditAccountViewModel extends BaseEditableAccountViewModel {
             EditAccountFragmentArgs args = EditAccountFragmentArgs.fromBundle(bundle);
             long accountId = args.getId();
 
-            return accountRepository.get(accountId).blockingGet();
+            return accountRepository.getAccount(accountId).blockingGet();
         }
 
         throw new IllegalArgumentException("The bundle must not be null");

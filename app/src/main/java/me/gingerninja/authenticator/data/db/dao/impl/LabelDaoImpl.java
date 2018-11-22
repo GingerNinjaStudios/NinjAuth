@@ -8,14 +8,14 @@ import io.reactivex.Single;
 import io.requery.Persistable;
 import io.requery.Transaction;
 import io.requery.reactivex.ReactiveEntityStore;
-import me.gingerninja.authenticator.data.db.dao.AccountDao;
-import me.gingerninja.authenticator.data.db.entity.Account;
+import me.gingerninja.authenticator.data.db.dao.LabelDao;
+import me.gingerninja.authenticator.data.db.entity.Label;
 import me.gingerninja.authenticator.data.db.provider.DatabaseHandler;
 
-public class AccountDaoImpl implements AccountDao {
+public class LabelDaoImpl implements LabelDao {
     private final DatabaseHandler databaseHandler;
 
-    public AccountDaoImpl(DatabaseHandler databaseHandler) {
+    public LabelDaoImpl(DatabaseHandler databaseHandler) {
         this.databaseHandler = databaseHandler;
     }
 
@@ -24,29 +24,28 @@ public class AccountDaoImpl implements AccountDao {
     }
 
     @Override
-    public Single<Account> get(long id) {
+    public Single<Label> get(long id) {
         return getStore()
-                .findByKey(Account.class, id)
+                .findByKey(Label.class, id)
                 .toSingle();
     }
 
     @Override
-    public Observable<List<Account>> getAllAndListen() {
+    public Observable<Label> getAll() {
         return getStore()
-                .select(Account.class)
-                .orderBy(Account.POSITION.asc())
+                .select(Label.class)
+                .orderBy(Label.POSITION.asc())
                 .get()
-                .observableResult()
-                .map(accounts -> accounts.observable().toList().blockingGet());
+                .observable();
     }
 
     @Override
-    public Single<Account> save(Account account) {
-        return getStore().upsert(account);
+    public Single<Label> save(Label label) {
+        return getStore().upsert(label);
     }
 
     @Override
-    public Completable saveAll(final List<Account> accountList) {
+    public Completable saveAll(List<Label> labelList) {
         return getStore()
                 .runInTransaction(db -> {
                     Transaction transaction = db.transaction();
@@ -54,7 +53,7 @@ public class AccountDaoImpl implements AccountDao {
                         transaction.begin();
                     }
                     try {
-                        db.update(accountList);
+                        db.update(labelList);
                         transaction.commit();
                     } catch (Throwable t) {
                         transaction.rollback();
@@ -66,7 +65,7 @@ public class AccountDaoImpl implements AccountDao {
     }
 
     @Override
-    public Completable delete(Account account) {
-        return getStore().delete(account);
+    public Completable delete(Label label) {
+        return getStore().delete(label);
     }
 }

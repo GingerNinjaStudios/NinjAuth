@@ -32,7 +32,7 @@ public class AccountListViewModel extends ViewModel {
         this.application = application;
         this.accountRepo = accountRepo;
 
-        disposable = accountRepo.getAll()
+        disposable = accountRepo.getAllAccountAndListen()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(accounts -> {
                     accountList.postValue(accounts);

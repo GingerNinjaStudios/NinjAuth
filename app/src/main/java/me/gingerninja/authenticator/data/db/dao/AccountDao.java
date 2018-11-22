@@ -13,7 +13,7 @@ public interface AccountDao {
     Single<Account> get(long id);
 
     @CheckResult
-    Observable<List<Account>> getAll();
+    Observable<List<Account>> getAllAndListen();
 
     @CheckResult
     Single<Account> save(Account account);
