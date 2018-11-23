@@ -7,6 +7,7 @@ import me.gingerninja.authenticator.ui.account.camera.AddAccountFromCameraFragme
 import me.gingerninja.authenticator.ui.account.form.AddAccountFragment;
 import me.gingerninja.authenticator.ui.account.form.EditAccountFragment;
 import me.gingerninja.authenticator.ui.home.AccountListFragment;
+import me.gingerninja.authenticator.ui.settings.SettingsFragment;
 
 @Module
 public abstract class FragmentBuilder {
@@ -24,4 +25,7 @@ public abstract class FragmentBuilder {
 
     @ContributesAndroidInjector
     abstract EditAccountFragment bindEditAccountFragment();
+
+    @ContributesAndroidInjector
+    abstract SettingsFragment settingsFragment();
 }

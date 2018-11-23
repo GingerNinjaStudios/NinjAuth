@@ -1,6 +1,7 @@
 package me.gingerninja.authenticator.di.module;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,6 +15,7 @@ import me.gingerninja.authenticator.data.db.dao.LabelDao;
 import me.gingerninja.authenticator.data.db.dao.impl.AccountDaoImpl;
 import me.gingerninja.authenticator.data.db.dao.impl.LabelDaoImpl;
 import me.gingerninja.authenticator.data.db.provider.DatabaseHandler;
+import me.gingerninja.authenticator.util.AppSettings;
 
 @Module
 public class DataModule {
@@ -41,5 +43,11 @@ public class DataModule {
         return new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
                 .create();
+    }
+
+    @Provides
+    @Singleton
+    public SharedPreferences sharedPreferences(Context context) {
+        return context.getSharedPreferences(AppSettings.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
     }
 }

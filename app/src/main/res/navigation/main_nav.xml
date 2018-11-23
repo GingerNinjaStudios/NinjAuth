@@ -29,6 +29,9 @@
         <action
             android:id="@+id/editAccountAction"
             app:destination="@id/editAccountFragment" />
+        <action
+            android:id="@+id/openSettingsFromHomeAction"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/addAccountFromCameraFragment"
@@ -68,4 +71,8 @@
             app:argType="long"
             app:nullable="false" />
     </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="me.gingerninja.authenticator.ui.settings.SettingsFragment"
+        android:label="SettingsFragment" />
 </navigation>

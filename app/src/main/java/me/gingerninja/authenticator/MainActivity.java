@@ -17,9 +17,12 @@ import androidx.navigation.ui.NavigationUI;
 import dagger.android.AndroidInjection;
 import me.gingerninja.authenticator.data.db.provider.DatabaseHandler;
 import me.gingerninja.authenticator.databinding.ActivityMainBinding;
+import me.gingerninja.authenticator.util.AppSettings;
 import me.gingerninja.authenticator.util.backup.BackupUtils;
 
 public class MainActivity extends AppCompatActivity {
+    @Inject
+    AppSettings appSettings;
 
     @Inject
     DatabaseHandler temporaryDbHandler;
@@ -35,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
+
+        setTheme(appSettings.getTheme());
 
         temporaryDbHandler.openDatabase("fakepass");
 

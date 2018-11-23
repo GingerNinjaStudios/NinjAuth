@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/settings_appearance_category_title">
+        <ListPreference
+            android:defaultValue="@string/settings_appearance_theme_default_value"
+            android:entries="@array/settings_appearance_theme_entries"
+            android:entryValues="@array/settings_appearance_theme_values"
+            android:key="@string/settings_appearance_theme_key"
+            android:summary="%s"
+            android:title="@string/settings_appearance_theme_title" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_backup_category_title">
+        <CheckBoxPreference android:title="@string/settings_backup_auto_title" />
+    </PreferenceCategory>
+</PreferenceScreen>

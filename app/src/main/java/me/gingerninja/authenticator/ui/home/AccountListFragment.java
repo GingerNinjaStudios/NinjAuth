@@ -147,6 +147,9 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
             case ADD_ACCOUNT_TAG:
                 handleAddAccountMenu(id);
                 break;
+            case BOTTOM_NAV_TAG:
+                handleMainMenu(id);
+                break;
         }
     }
 
@@ -157,6 +160,14 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
                 break;
             case R.id.menu_add_account_manual:
                 getNavController().navigate(R.id.addAccountFragment);
+                break;
+        }
+    }
+
+    private void handleMainMenu(int id) {
+        switch (id) {
+            case R.id.nav_settings:
+                getNavController().navigate(R.id.openSettingsFromHomeAction);
                 break;
         }
     }

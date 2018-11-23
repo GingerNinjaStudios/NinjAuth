@@ -8,7 +8,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
+        versionName "0.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         // multiDexEnabled true
@@ -54,6 +54,9 @@ dependencies {
     annotationProcessor 'androidx.lifecycle:lifecycle-compiler:2.0.0'
     implementation 'android.arch.navigation:navigation-fragment:1.0.0-alpha07'
     implementation 'android.arch.navigation:navigation-ui:1.0.0-alpha07'
+
+    // Apache v2 - https://github.com/takisoft/preferencex-android
+    implementation 'com.takisoft.preferencex:preferencex:1.0.0'
 
     // Mobile Vision API
     implementation 'com.google.android.gms:play-services-vision:17.0.2'
