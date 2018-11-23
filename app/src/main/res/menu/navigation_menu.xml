@@ -2,8 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_accounts"
+        android:icon="@drawable/ic_account_24dp"
         android:title="Accounts" />
     <item
+        android:id="@+id/nav_labels"
+        android:icon="@drawable/ic_label_24dp"
+        android:title="Labels" />
+    <item
         android:id="@+id/nav_settings"
+        android:icon="@drawable/ic_settings_24dp"
         android:title="Settings" />
 </menu>
