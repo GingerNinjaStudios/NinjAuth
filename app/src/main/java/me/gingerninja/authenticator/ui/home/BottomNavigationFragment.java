@@ -11,15 +11,15 @@ import android.widget.FrameLayout;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import me.gingerninja.authenticator.R;
+import me.gingerninja.authenticator.ui.base.RoundedBottomSheetDialogFragment;
 
-public class BottomNavigationFragment extends BottomSheetDialogFragment implements NavigationView.OnNavigationItemSelectedListener {
+public class BottomNavigationFragment extends RoundedBottomSheetDialogFragment implements NavigationView.OnNavigationItemSelectedListener {
     private static final String ARG_MENU_RES_ID = "arg.menu_res_id";
 
     private BottomNavigationListener listener;
@@ -57,6 +57,9 @@ public class BottomNavigationFragment extends BottomSheetDialogFragment implemen
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.bottom_nav_fragment, container, false);
+
+        createRoundedView(root);
+
         NavigationView navigationView = root.findViewById(R.id.navigation_view);
 
         if (navigationView != null) {

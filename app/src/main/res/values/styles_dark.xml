@@ -9,6 +9,11 @@
         <item name="android:windowTranslucentStatus" tools:targetApi="kitkat">true</item>
         <item name="themeOverlay">@style/ThemeOverlay.MaterialComponents.Dark</item>
         <item name="popupMenuStyle">@style/Widget.MaterialComponents.PopupMenu.Overflow</item>
+        <item name="bottomSheetDialogTheme">@style/BaseBottomSheetDialog.Dark</item>
+    </style>
+
+    <style name="BaseBottomSheetDialog.Dark" parent="@style/Theme.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheet</item>
     </style>
 
 </resources>

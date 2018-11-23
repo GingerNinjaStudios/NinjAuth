@@ -11,4 +11,8 @@
     <style name="Widget.Account.Code" parent="TextAppearance.MaterialComponents.Body1">
         <item name="android:textSize">32sp</item>
     </style>
+
+    <style name="BottomSheet" parent="@style/Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
 </resources>

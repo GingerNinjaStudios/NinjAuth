@@ -2,4 +2,6 @@
 <resources>
     <dimen name="account_list_card_elevation_normal">2dp</dimen>
     <dimen name="account_list_card_elevation_dragging">8dp</dimen>
+    <dimen name="bottom_sheet_corner_radius">4dp</dimen>
+    <dimen name="bottom_sheet_top_padding">8dp</dimen>
 </resources>
