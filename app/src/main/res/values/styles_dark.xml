@@ -6,7 +6,12 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowTranslucentStatus" tools:targetApi="kitkat">true</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorOnSecondary">@color/colorOnSecondary</item>
+        <!--<item name="android:windowTranslucentStatus" tools:targetApi="kitkat">true</item>-->
+        <item name="android:statusBarColor" tools:targetApi="lollipop">
+            ?android:attr/colorBackground
+        </item>
         <item name="themeOverlay">@style/ThemeOverlay.MaterialComponents.Dark</item>
         <item name="popupMenuStyle">@style/Widget.MaterialComponents.PopupMenu.Overflow</item>
         <item name="bottomSheetDialogTheme">@style/BaseBottomSheetDialog.Dark</item>

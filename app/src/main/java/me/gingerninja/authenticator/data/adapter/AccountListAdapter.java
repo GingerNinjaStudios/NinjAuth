@@ -24,8 +24,9 @@ import me.gingerninja.authenticator.util.CodeGenerator;
 public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> implements AccountListItemViewModel.AccountMenuItemClickListener {
     public static final int TYPE_ACCOUNT_TOTP = 1;
 
+    private final CodeGenerator codeGenerator;
+
     private List<Account> accountList;
-    private CodeGenerator codeGenerator;
     private AccountListItemViewModel.AccountMenuItemClickListener menuItemClickListener;
 
     private Disposable disposable;

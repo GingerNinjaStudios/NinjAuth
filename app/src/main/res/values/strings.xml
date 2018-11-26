@@ -1,6 +1,17 @@
 <resources>
     <string name="app_name">NinjAuth</string>
 
+    <string name="nav_accounts_title">Accounts</string>
+    <string name="nav_labels_title">Labels</string>
+    <string name="nav_settings_title">Settings</string>
+
+    <string name="account_list_item_edit">Edit</string>
+    <string name="account_list_item_delete">Delete</string>
+
+    <string name="account_add_scan_barcode">Scan barcode</string>
+    <string name="account_add_manual">Enter details</string>
+
+    <string name="account_edit_form_title">Edit account</string>
     <string name="account_title_text">Title</string>
     <string name="account_title_desc">Title that will be shown on the card</string>
     <string name="account_name_text">Account name</string>

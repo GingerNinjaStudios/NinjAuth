@@ -10,6 +10,6 @@
             android:title="@string/settings_appearance_theme_title" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_backup_category_title">
-        <CheckBoxPreference android:title="@string/settings_backup_auto_title" />
+        <SwitchPreferenceCompat android:title="@string/settings_backup_auto_title" />
     </PreferenceCategory>
 </PreferenceScreen>

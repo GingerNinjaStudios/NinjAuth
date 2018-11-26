@@ -18,9 +18,9 @@ public class RoundedBottomSheetDialogFragment extends BottomSheetDialogFragment 
     private static Drawable createBackground(Context context) {
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = context.getTheme();
-        theme.resolveAttribute(android.R.attr.colorBackground, typedValue, true);
+        theme.resolveAttribute(R.attr.colorSurface, typedValue, true);
         TypedArray arr = context.obtainStyledAttributes(typedValue.data, new int[]{
-                android.R.attr.colorBackground});
+                R.attr.colorSurface});
 
         int color;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

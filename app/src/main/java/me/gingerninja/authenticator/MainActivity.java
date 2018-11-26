@@ -3,7 +3,9 @@ package me.gingerninja.authenticator;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 
 import javax.inject.Inject;
 
@@ -58,6 +60,25 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainAcitvity", "code: " + codeGenerator.formatCode(codeGenerator.getCode(account), account.getDigits()));*/
 
         //backupUtils.createFile(this, 1, "ninjauth-backup.zip");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            View decorView = getWindow().getDecorView();
+            if (appSettings.getTheme() == R.style.AppTheme_Light) {
+                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            } else {
+                int flags = decorView.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                decorView.setSystemUiVisibility(flags);
+            }
+        }
+
+        /*getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);*/
     }
 
     @Override

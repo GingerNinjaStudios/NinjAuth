@@ -2,9 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/menu_account_edit"
-        android:title="Edit" />
+        android:title="@string/account_list_item_edit" />
 
     <item
         android:id="@+id/menu_account_delete"
-        android:title="Delete" />
+        android:title="@string/account_list_item_delete" />
 </menu>

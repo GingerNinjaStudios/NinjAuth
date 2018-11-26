@@ -84,6 +84,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
                 switch (args.getAccountOperation()) {
                     case ACCOUNT_OP_ADD:
                         Snackbar.make(binding.accountList, "New account added: " + args.getAccountName(), Snackbar.LENGTH_LONG).show();
+                        getArguments().clear();
                         break;
                 }
             }
@@ -93,6 +94,8 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
             BottomNavigationFragment bottomNavFragment = BottomNavigationFragment.create(R.menu.navigation_menu);
             bottomNavFragment.show(getChildFragmentManager(), BOTTOM_NAV_TAG);
         });
+
+        //binding.toolbar.inflateMenu(R.menu.navigation_menu);
     }
 
     private void enableListDrag(AccountListFragmentBinding binding) {

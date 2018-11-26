@@ -6,7 +6,18 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowTranslucentStatus" tools:targetApi="kitkat">true</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorOnSecondary">@color/colorOnSecondary</item>
+        <!--
+        remove windowTranslucentStatus and enable this on 21+ to achieve full screen white bg
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@android:color/transparent</item>
+        -->
+        <item name="android:statusBarColor" tools:targetApi="lollipop">
+            ?android:attr/colorBackground
+        </item>
+        <!--<item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>-->
         <item name="themeOverlay">@style/ThemeOverlay.MaterialComponents.Light</item>
         <item name="popupMenuStyle">@style/Widget.MaterialComponents.PopupMenu.Overflow</item>
         <item name="bottomSheetDialogTheme">@style/BaseBottomSheetDialog.Light</item>

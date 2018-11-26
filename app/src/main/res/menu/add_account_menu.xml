@@ -2,9 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/menu_add_account_from_camera"
-        android:title="Scan barcode" />
+        android:title="@string/account_add_scan_barcode" />
 
     <item
         android:id="@+id/menu_add_account_manual"
-        android:title="Enter details" />
+        android:title="@string/account_add_manual" />
 </menu>
