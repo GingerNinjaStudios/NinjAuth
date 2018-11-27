@@ -2,6 +2,12 @@
 <resources>
     <string name="settings_appearance_theme_key">settings_appearance_theme</string>
 
+    <string name="settings_backup_auto_category_key" translatable="false">settings_backup_category_key</string>
+    <string name="settings_backup_auto_enabled_key" translatable="false">settings_backup_auto_enabled</string>
+    <string name="settings_backup_auto_password_key" translatable="false">settings_backup_auto_password</string>
+    <string name="settings_backup_create_as_key" translatable="false">settings_backup_create</string>
+    <string name="settings_backup_restore_key" translatable="false">settings_backup_restore</string>
+
     <string name="settings_appearance_theme_dark_value" translatable="false">dark</string>
     <string name="settings_appearance_theme_light_value" translatable="false">light</string>
     <string name="settings_appearance_theme_default_value" translatable="false">dark</string>
@@ -16,4 +22,30 @@
     </string-array>
 
     <string name="settings_backup_uri_key">settings_backup_uri</string>
+
+    <!-- Protection -->
+    <string name="settings_protection_key">settings_protection_type</string>
+
+    <string name="settings_prot_none_value" translatable="false">none</string>
+    <string name="settings_prot_pin_value" translatable="false">pin</string>
+    <string name="settings_prot_password_value" translatable="false">password</string>
+    <string name="settings_prot_bio_pin_value" translatable="false">bio_pin</string>
+    <string name="settings_prot_bio_password_value" translatable="false">bio_password</string>
+
+    <string-array name="settings_protection_entries">
+        <item>@string/settings_prot_none</item>
+        <item>@string/settings_prot_pin</item>
+        <item>@string/settings_prot_password</item>
+        <item>@string/settings_prot_bio_pin</item>
+        <item>@string/settings_prot_bio_password</item>
+    </string-array>
+
+    <string-array name="settings_protection_values">
+        <item>@string/settings_prot_none_value</item>
+        <item>@string/settings_prot_pin_value</item>
+        <item>@string/settings_prot_password_value</item>
+        <item>@string/settings_prot_bio_pin_value</item>
+        <item>@string/settings_prot_bio_password_value</item>
+    </string-array>
+
 </resources>

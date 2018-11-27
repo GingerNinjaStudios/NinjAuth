@@ -1,47 +1,65 @@
 package me.gingerninja.authenticator.ui.settings;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.takisoft.preferencex.PreferenceFragmentCompat;
 
-import javax.inject.Inject;
-
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.ListPreference;
-import androidx.preference.Preference;
-import dagger.android.support.AndroidSupportInjection;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.PreferenceScreen;
 import me.gingerninja.authenticator.R;
-import me.gingerninja.authenticator.util.AppSettings;
+import me.gingerninja.authenticator.databinding.SettingsFragmentBinding;
+import me.gingerninja.authenticator.ui.base.BaseFragment;
 
-public class SettingsFragment extends PreferenceFragmentCompat {
-    @Inject
-    AppSettings appSettings;
-
+public class SettingsFragment extends BaseFragment<SettingsFragmentBinding> implements PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        AndroidSupportInjection.inject(this);
         super.onCreate(savedInstanceState);
-    }
 
-    @Override
-    public void onCreatePreferencesFix(@Nullable Bundle savedInstanceState, String rootKey) {
-        getPreferenceManager().setSharedPreferencesName(AppSettings.SHARED_PREFS_NAME);
-        setPreferencesFromResource(R.xml.settings, rootKey);
+        if (savedInstanceState == null) {
+            SettingsScreenFragment fragment = new SettingsScreenFragment();
 
-        if (rootKey == null) {
-            setupMainPreferences();
+            FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+            ft.replace(R.id.settings_fragment, fragment);
+            ft.commitAllowingStateLoss();
         }
     }
 
-    private void setupMainPreferences() {
-        Preference themePref = findPreference(getString(R.string.settings_appearance_theme_key));
-        themePref.setOnPreferenceChangeListener((preference, newValueObj) -> {
-            String oldValue = ((ListPreference) preference).getValue();
-            String newValue = (String) newValueObj;
-            if (!newValue.equals(oldValue)) {
-                getActivity().recreate();
+    @Override
+    protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, SettingsFragmentBinding binding) {
+        binding.toolbar.setNavigationOnClickListener(v -> {
+            FragmentManager fm = getChildFragmentManager();
+            if (fm.getBackStackEntryCount() == 0) {
+                getNavController().navigateUp();
+            } else {
+                fm.popBackStack();
             }
-            return true;
         });
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.settings_fragment;
+    }
+
+    @Override
+    public boolean onPreferenceStartScreen(androidx.preference.PreferenceFragmentCompat caller, PreferenceScreen preferenceScreen) {
+        SettingsScreenFragment fragment = new SettingsScreenFragment();
+        Bundle args = new Bundle();
+        args.putString(PreferenceFragmentCompat.ARG_PREFERENCE_ROOT, preferenceScreen.getKey());
+        fragment.setArguments(args);
+
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ft.replace(R.id.settings_fragment, fragment, preferenceScreen.getKey());
+        ft.addToBackStack(preferenceScreen.getKey());
+        ft.commitAllowingStateLoss();
+
+        return true;
     }
 }

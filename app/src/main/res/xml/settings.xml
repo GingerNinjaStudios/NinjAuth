@@ -10,6 +10,36 @@
             android:title="@string/settings_appearance_theme_title" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_backup_category_title">
-        <SwitchPreferenceCompat android:title="@string/settings_backup_auto_title" />
+        <PreferenceScreen
+            android:key="@string/settings_backup_auto_category_key"
+            android:summary="@string/settings_backup_auto_not_enabled"
+            android:title="@string/settings_backup_auto_title">
+            <SwitchPreference
+                android:key="@string/settings_backup_auto_enabled_key"
+                android:summaryOff="@string/settings_backup_auto_off"
+                android:title="@string/settings_backup_auto_title" />
+            <EditTextPreference
+                android:key="@string/settings_backup_auto_password_key"
+                android:inputType="textPassword"
+                android:title="Password" />
+        </PreferenceScreen>
+        <Preference
+            android:key="@string/settings_backup_create_as_key"
+            android:persistent="false"
+            android:summary="@string/settings_backup_create_desc"
+            android:title="@string/settings_backup_create_title" />
+        <Preference
+            android:key="@string/settings_backup_restore_key"
+            android:persistent="false"
+            android:summary="@string/settings_backup_restore_desc"
+            android:title="@string/settings_backup_restore_title" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_protection_title">
+        <ListPreference
+            android:entries="@array/settings_protection_entries"
+            android:entryValues="@array/settings_protection_values"
+            android:key="@string/settings_protection_key"
+            android:summary="%s"
+            android:title="@string/settings_protection_title" />
     </PreferenceCategory>
 </PreferenceScreen>

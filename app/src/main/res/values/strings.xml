@@ -72,9 +72,15 @@
     <string name="settings_appearance_theme_dark">Dark</string>
 
     <string name="settings_backup_category_title">Backup</string>
+    <string name="settings_backup_auto_not_enabled">Automatic backup is not enabled</string>
     <string name="settings_backup_auto_title">Auto Backup</string>
-    <string name="settings_backup_auto_on">Saves changes immediately</string>
-    <string name="settings_backup_auto_off">Does not create backup</string>
+    <string name="settings_backup_auto_on">Changes saved to: %s</string>
+    <string name="settings_backup_auto_off">Do not create backup automatically</string>
+    <string name="settings_backup_create_title">Backup as…</string>
+    <string name="settings_backup_create_desc">Create a new backup file</string>
+    <string name="settings_backup_restore_title">Restore</string>
+    <string name="settings_backup_restore_desc">Restore data from a file</string>
+
     <string name="settings_protection_title">Protection</string>
     <string name="settings_prot_none">None</string>
     <string name="settings_prot_pin">PIN</string>
