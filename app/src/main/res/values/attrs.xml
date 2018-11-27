@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="themeOverlay" format="reference" />
+
+    <declare-styleable name="MaterialSpinner">
+        <attr name="entries" format="reference" />
+        <attr name="values" format="reference" />
+        <attr name="value" format="reference" />
+    </declare-styleable>
 </resources>

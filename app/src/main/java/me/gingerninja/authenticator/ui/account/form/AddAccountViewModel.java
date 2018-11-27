@@ -14,7 +14,7 @@ import me.gingerninja.authenticator.util.Parser;
 public class AddAccountViewModel extends BaseEditableAccountViewModel {
     @Inject
     AddAccountViewModel(@NonNull AccountRepository accountRepository) {
-        super(accountRepository);
+        super(accountRepository, MODE_CREATE);
     }
 
     @NonNull

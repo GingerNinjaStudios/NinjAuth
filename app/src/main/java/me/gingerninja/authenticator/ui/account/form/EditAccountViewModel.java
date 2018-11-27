@@ -13,7 +13,7 @@ import me.gingerninja.authenticator.ui.account.BaseEditableAccountViewModel;
 public class EditAccountViewModel extends BaseEditableAccountViewModel {
     @Inject
     EditAccountViewModel(@NonNull AccountRepository accountRepository) {
-        super(accountRepository);
+        super(accountRepository, MODE_EDIT);
     }
 
     @NonNull

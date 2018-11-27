@@ -25,12 +25,7 @@ public class AddAccountFragment extends BaseFragment<AccountFormFragmentBinding>
         viewModel.init(args);
         binding.setViewModel(viewModel);
 
-        /*binding.accountType.getEditText().setOnClickListener(v -> {
-            PopupMenu popup = new PopupMenu(getContext(), v);
-            MenuInflater inflater = popup.getMenuInflater();
-            inflater.inflate(R.menu.navigation_menu, popup.getMenu());
-            popup.show();
-        });*/
+        binding.toolbar.setNavigationOnClickListener(v -> getNavController().navigateUp());
 
         viewModel.getNavigationAction().observe(this, event -> {
             if (event.handle()) {
@@ -41,7 +36,6 @@ public class AddAccountFragment extends BaseFragment<AccountFormFragmentBinding>
                                 .setAccountName(event.getContent())
                                 .setAccountOperation(AccountListFragment.ACCOUNT_OP_ADD);
                         getNavController().navigate(action);
-                        //getNavController().navigate(R.id.accountListFragment, args, new NavOptions.Builder().setPopUpTo(R.id.accountListFragment, true).build());
                         break;
                 }
             }

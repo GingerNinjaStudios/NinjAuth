@@ -5,6 +5,7 @@ import android.view.View;
 
 import java.math.BigDecimal;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.ObservableInt;
@@ -20,9 +21,19 @@ import me.gingerninja.authenticator.util.SingleEvent;
 import timber.log.Timber;
 
 public abstract class BaseEditableAccountViewModel extends BaseAccountViewModel {
+    public static final int MODE_CREATE = 0;
+    public static final int MODE_EDIT = 1;
+
+    @IntDef({MODE_CREATE, MODE_EDIT})
+    @interface Mode {
+    }
+
     public static final String NAV_ACTION_SAVE = "account.save";
 
     public Error error = new Error();
+
+    @Mode
+    public final int mode;
 
     @NonNull
     protected AccountRepository accountRepository;
@@ -31,8 +42,9 @@ public abstract class BaseEditableAccountViewModel extends BaseAccountViewModel 
 
     protected Disposable saveDisposable;
 
-    public BaseEditableAccountViewModel(@NonNull AccountRepository accountRepository) {
+    public BaseEditableAccountViewModel(@NonNull AccountRepository accountRepository, @Mode int mode) {
         this.accountRepository = accountRepository;
+        this.mode = mode;
     }
 
     protected boolean checkValues() {
@@ -55,6 +67,10 @@ public abstract class BaseEditableAccountViewModel extends BaseAccountViewModel 
                     .subscribe(account -> navAction.postValue(new SingleEvent<>(NAV_ACTION_SAVE, account.getTitle())));
 
         }
+    }
+
+    public int getMode() {
+        return mode;
     }
 
     public LiveData<SingleEvent<String>> getNavigationAction() {

@@ -4,8 +4,11 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.BaseObservable;
+import androidx.databinding.Bindable;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.ViewModel;
+import me.gingerninja.authenticator.BR;
 import me.gingerninja.authenticator.data.db.entity.Account;
 
 public abstract class BaseAccountViewModel extends ViewModel {
@@ -37,7 +40,7 @@ public abstract class BaseAccountViewModel extends ViewModel {
         data.init(account);
     }
 
-    public static class Data {
+    public static class Data extends BaseObservable {
         public ObservableField<String> title = new ObservableField<>();
         public ObservableField<String> accountName = new ObservableField<>();
         public ObservableField<String> issuer = new ObservableField<>();
@@ -47,6 +50,8 @@ public abstract class BaseAccountViewModel extends ViewModel {
 
         public ObservableField<String> type = new ObservableField<>();
         public ObservableField<String> algorithm = new ObservableField<>();
+
+        private String source;
 
         private void init(@NonNull Account account) {
             title.set(account.getTitle());
@@ -59,6 +64,14 @@ public abstract class BaseAccountViewModel extends ViewModel {
 
             type.set(account.getType());
             algorithm.set(account.getAlgorithm());
+
+            source = account.getSource();
+            notifyPropertyChanged(BR.source);
+        }
+
+        @Bindable
+        public String getSource() {
+            return source;
         }
     }
 }

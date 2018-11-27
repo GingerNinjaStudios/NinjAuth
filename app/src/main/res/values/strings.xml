@@ -11,6 +11,7 @@
     <string name="account_add_scan_barcode">Scan barcode</string>
     <string name="account_add_manual">Enter details</string>
 
+    <string name="account_new_form_title">Add account</string>
     <string name="account_edit_form_title">Edit account</string>
     <string name="account_title_text">Title</string>
     <string name="account_title_desc">Title that will be shown on the card</string>
@@ -18,6 +19,8 @@
     <string name="account_name_desc">The name of the account (e.g. joe@example.com)</string>
     <string name="account_issuer_text">Issuer</string>
     <string name="account_issuer_desc">The name of the issuer (e.g. ACME Co)</string>
+    <string name="account_secret_text">Secret</string>
+    <string name="account_secret_desc">The secret info used to generate the code</string>
     <string name="account_type_text">Type</string>
     <string name="account_type_desc">The type of the account</string>
     <string name="account_algo_text">Algorithm</string>
@@ -38,6 +41,29 @@
     <string name="error_field_number_1to8">Must be between 1 and 8</string>
 
     <string name="save">Save</string>
+
+    <!-- Account -->
+    <string-array name="account_type_entries">
+        <item>@string/account_type_totp</item>
+        <item>@string/account_type_hotp</item>
+    </string-array>
+
+    <string-array name="account_type_values">
+        <item>totp</item>
+        <item>hotp</item>
+    </string-array>
+
+    <string-array name="account_algo_entries">
+        <item>SHA-1</item>
+        <item>SHA-256</item>
+        <item>SHA-512</item>
+    </string-array>
+
+    <string-array name="account_algo_values">
+        <item>sha1</item>
+        <item>sha256</item>
+        <item>sha512</item>
+    </string-array>
 
     <!-- Settings -->
     <string name="settings_appearance_category_title">Appearance</string>

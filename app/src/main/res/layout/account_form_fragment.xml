@@ -8,6 +8,10 @@
         <variable
             name="viewModel"
             type="me.gingerninja.authenticator.ui.account.BaseEditableAccountViewModel" />
+
+        <import type="me.gingerninja.authenticator.ui.account.BaseEditableAccountViewModel" />
+
+        <import type="android.view.View" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -31,7 +35,8 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:navigationIcon="@drawable/ic_arrow_back_24dp">
 
                     <!--<TextView
                         android:id="@+id/toolbar_text"
@@ -50,7 +55,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@string/account_edit_form_title"
+                    android:text="@{viewModel.mode == BaseEditableAccountViewModel.MODE_CREATE ? @string/account_new_form_title:@string/account_edit_form_title}"
                     android:textColor="?colorOnSurface"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -143,6 +148,28 @@
                     app:layout_constraintTop_toBottomOf="@id/account_issuer" />
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/account_secret"
+                    style="@style/Widget.Form.TextInputLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/account_secret_text"
+                    android:visibility="@{viewModel.mode == BaseEditableAccountViewModel.MODE_CREATE ? View.VISIBLE : View.GONE}"
+                    app:helperText="@string/account_secret_desc"
+                    app:helperTextEnabled="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/account_advanced_divider"
+                    app:passwordToggleEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:text="@={viewModel.data.secret}"
+                        android:textAllCaps="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/account_type"
                     style="@style/Widget.Form.TextInputLayout"
                     android:layout_width="0dp"
@@ -152,15 +179,22 @@
                     app:helperTextEnabled="true"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/account_advanced_divider">
+                    app:layout_constraintTop_toBottomOf="@id/account_secret">
 
-                    <com.google.android.material.textfield.TextInputEditText
+                    <me.gingerninja.authenticator.widget.MaterialSpinner
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:editable="false"
+                        app:entries="@array/account_type_entries"
+                        app:value="@={viewModel.data.type}"
+                        app:values="@array/account_type_values" />
+                    <!--<com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:drawableEnd="@drawable/ic_arrow_drop_down_24dp"
                         android:editable="false"
                         android:inputType="none"
-                        android:text="@={viewModel.data.type}" />
+                        android:text="@={viewModel.data.type}" />-->
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -197,7 +231,16 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/account_type">
 
-                    <com.google.android.material.textfield.TextInputEditText
+                    <me.gingerninja.authenticator.widget.MaterialSpinner
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:editable="false"
+                        app:entries="@array/account_algo_entries"
+                        app:value="@={viewModel.data.algorithm}"
+                        app:values="@array/account_algo_values"
+                        tools:text="SHA512" />
+
+                    <!--<com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:drawableEnd="@drawable/ic_arrow_drop_down_24dp"
@@ -205,7 +248,7 @@
                         android:inputType="none"
                         android:singleLine="true"
                         android:text="@={viewModel.data.algorithm}"
-                        tools:text="SHA512" />
+                        tools:text="SHA512" />-->
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <androidx.appcompat.widget.LinearLayoutCompat
