@@ -83,7 +83,9 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
             if (args.getAccountOperation() != null) {
                 switch (args.getAccountOperation()) {
                     case ACCOUNT_OP_ADD:
-                        Snackbar.make(binding.accountList, "New account added: " + args.getAccountName(), Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(binding.accountList, "New account added: " + args.getAccountName(), Snackbar.LENGTH_LONG)
+                                .setAnchorView(binding.fab)
+                                .show();
                         getArguments().clear();
                         break;
                 }
@@ -93,6 +95,10 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
         binding.appBar.setNavigationOnClickListener(v -> {
             BottomNavigationFragment bottomNavFragment = BottomNavigationFragment.create(R.menu.navigation_menu);
             bottomNavFragment.show(getChildFragmentManager(), BOTTOM_NAV_TAG);
+        });
+        binding.appBar.inflateMenu(R.menu.account_list_menu);
+        binding.appBar.setOnMenuItemClickListener(item -> {
+            return true;
         });
 
         //binding.toolbar.inflateMenu(R.menu.navigation_menu);
@@ -183,7 +189,9 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
                 getNavController().navigate(action);
                 break;
             case R.id.menu_account_delete:
-                Snackbar.make(getView(), "Delete: " + account, Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(getDataBinding().coordinatorLayout, "Delete: " + account, Snackbar.LENGTH_SHORT)
+                        .setAnchorView(getDataBinding().fab)
+                        .show();
                 break;
         }
     }
