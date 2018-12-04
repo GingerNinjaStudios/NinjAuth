@@ -16,29 +16,15 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-import net.lingala.zip4j.model.FileHeader;
-import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.util.Zip4jConstants;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -47,17 +33,13 @@ import javax.inject.Singleton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import io.reactivex.Observable;
-import me.gingerninja.authenticator.data.db.entity.Account;
-import me.gingerninja.authenticator.data.pojo.BackupAccount;
-import me.gingerninja.authenticator.data.pojo.BackupFile;
-import me.gingerninja.authenticator.data.pojo.BackupLabel;
+import io.reactivex.Completable;
+import io.reactivex.annotations.CheckReturnValue;
 import me.gingerninja.authenticator.data.repo.AccountRepository;
-import me.gingerninja.authenticator.util.Parser;
 
 @Singleton
 public class BackupUtils {
-    private static final String DATA_FILE_NAME = "_data.json";
+    static final String DATA_FILE_NAME = "_data.json";
 
     private final Context context;
     private final AccountRepository accountRepo;
@@ -70,10 +52,29 @@ public class BackupUtils {
         this.gson = gson;
     }
 
-    public void backup(@NonNull Uri uri) throws ZipException, IOException {
+    @CheckReturnValue
+    public Completable backup(@NonNull Uri uri) {
+        char[] password = null; // TODO
+
+        return new Backup(context, accountRepo, gson, uri).export(password);
+    }
+
+    @CheckReturnValue
+    public Completable restore(@NonNull Uri uri) {
+        char[] password = null; // TODO
+
+        return new Restore(context, accountRepo, gson, uri).restore(password);
+    }
+
+    /*public void backup(@NonNull Uri uri) throws ZipException, IOException {
         File tmpFile = new File(context.getCacheDir(), "tmp_backup.zip");
         if (tmpFile.exists()) {
             tmpFile.delete();
+        }
+
+        DocumentFile documentFile = DocumentFile.fromSingleUri(context, uri);
+        if (documentFile != null) {
+            documentFile.delete(); // TODO check if it's true
         }
 
         ZipFile zipFile = new ZipFile(tmpFile);
@@ -138,13 +139,6 @@ public class BackupUtils {
         FileOutputStream fos = new FileOutputStream(outputFd.getFileDescriptor());//openFileForWrite(uri);
         FileInputStream fis = new FileInputStream(zipFile.getFile());
 
-        /*int ch;
-
-        while ((ch = fis.read()) != -1) {
-
-            fos.write(ch);
-        }*/
-
         byte[] buffer = new byte[1024];
         int read;
 
@@ -160,9 +154,9 @@ public class BackupUtils {
         if (tmpFile.exists()) {
             tmpFile.delete();
         }
-    }
+    }*/
 
-    public void restore() throws ZipException, IOException {
+    /*public void restore() throws ZipException, IOException {
         File tmpFile = new File(context.getCacheDir(), "tmp_backup.zip");
         ZipFile zipFile = new ZipFile(tmpFile);
         // If it is encrypted then provide password
@@ -180,25 +174,25 @@ public class BackupUtils {
 
             // TODO process backup file
         }
-    }
+    }*/
 
-    public void createFile(@NonNull Activity activity, int requestCode, @NonNull String fileName) {
-        Intent intent = getCreateFileIntent(fileName);
+    public void createFile(@NonNull Activity activity, int requestCode, @NonNull String fileName, boolean persistable) {
+        Intent intent = getCreateFileIntent(fileName, persistable);
         activity.startActivityForResult(intent, requestCode);
     }
 
-    public void createFile(@NonNull Fragment fragment, int requestCode, @NonNull String fileName) {
-        Intent intent = getCreateFileIntent(fileName);
+    public void createFile(@NonNull Fragment fragment, int requestCode, @NonNull String fileName, boolean persistable) {
+        Intent intent = getCreateFileIntent(fileName, persistable);
         fragment.startActivityForResult(intent, requestCode);
     }
 
-    public void openFile(@NonNull Activity activity, int requestCode) {
-        Intent intent = getOpenFileIntent();
+    public void openFile(@NonNull Activity activity, int requestCode, boolean persistable) {
+        Intent intent = getOpenFileIntent(persistable);
         activity.startActivityForResult(intent, requestCode);
     }
 
-    public void openFile(@NonNull Fragment fragment, int requestCode) {
-        Intent intent = getOpenFileIntent();
+    public void openFile(@NonNull Fragment fragment, int requestCode, boolean persistable) {
+        Intent intent = getOpenFileIntent(persistable);
         fragment.startActivityForResult(intent, requestCode);
     }
 
@@ -251,27 +245,34 @@ public class BackupUtils {
         }
     }
 
-    private static Intent getCreateFileIntent(@NonNull String fileName) {
+    private static Intent getCreateFileIntent(@NonNull String fileName, boolean persistable) {
         String mimeType = "application/zip"; // TODO or application/octet-stream
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
 
         intent.addCategory(Intent.CATEGORY_OPENABLE);
 
         intent.setType(mimeType);
-        intent.setFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+
+        if (persistable) {
+            intent.setFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        }
+
         intent.putExtra(Intent.EXTRA_TITLE, fileName);
 
         return intent;
     }
 
-    private static Intent getOpenFileIntent() {
+    private static Intent getOpenFileIntent(boolean persistable) {
         String mimeType = "application/zip"; // TODO or application/octet-stream
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
 
         intent.addCategory(Intent.CATEGORY_OPENABLE);
 
         intent.setType(mimeType);
-        intent.setFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+
+        if (persistable) {
+            intent.setFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        }
 
         return intent;
     }
@@ -284,7 +285,7 @@ public class BackupUtils {
                     & (Intent.FLAG_GRANT_READ_URI_PERMISSION
                     | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             uri = data.getData();
-            if (uri != null) {
+            if (uri != null && takeFlags != 0) {
                 context.getContentResolver().takePersistableUriPermission(uri, takeFlags);
             }
         }
