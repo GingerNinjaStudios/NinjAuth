@@ -18,6 +18,28 @@ public class BindingHelpers {
         }
     }
 
+    @BindingAdapter("hint")
+    public static void setHintText(TextInputLayout view, int hintTextRes) {
+        if (hintTextRes == 0) {
+            view.setHintEnabled(false);
+            view.setHint(null);
+        } else {
+            view.setHintEnabled(true);
+            view.setHint(view.getContext().getString(hintTextRes));
+        }
+    }
+
+    @BindingAdapter("helperText")
+    public static void setHelperText(TextInputLayout view, int helperTextRes) {
+        if (helperTextRes == 0) {
+            view.setHelperTextEnabled(false);
+            view.setHelperText(null);
+        } else {
+            view.setHelperTextEnabled(true);
+            view.setHelperText(view.getContext().getString(helperTextRes));
+        }
+    }
+
     @BindingAdapter("currentProgress")
     public static void setCurrentProgress(@NonNull CircularProgressIndicator progressIndicator, double value) {
         progressIndicator.setCurrentProgress(value);

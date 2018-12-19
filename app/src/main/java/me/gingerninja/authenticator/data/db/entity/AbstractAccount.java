@@ -36,11 +36,11 @@ abstract class AbstractAccount {
     @Nullable
     String title;
 
-    @Column(nullable = false)
-    String type;
+    @Column(nullable = false, value = TYPE_TOTP)
+    String type = TYPE_TOTP;
 
-    @Column(nullable = false)
-    String source;
+    @Column(nullable = false, value = SOURCE_MANUAL)
+    String source = SOURCE_MANUAL;
 
     @Column(nullable = false)
     String accountName;
