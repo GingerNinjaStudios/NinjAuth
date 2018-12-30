@@ -158,7 +158,26 @@ public class CodeGenerator {
             stringBuilder.insert(0, "0");
         }
 
-        // TODO spacing or something
+        if (digits > 3) {
+            switch (digits) {
+                case 4:
+                    stringBuilder.insert(2, ' ');
+                    break;
+                case 5:
+                case 6:
+                    stringBuilder.insert(3, ' ');
+                    break;
+                case 7:
+                    stringBuilder.insert(2, ' ');
+                    stringBuilder.insert(6, ' ');
+                    break;
+                case 8:
+                    stringBuilder.insert(3, ' ');
+                    stringBuilder.insert(6, ' ');
+                    break;
+
+            }
+        }
 
         return stringBuilder.toString();
     }
