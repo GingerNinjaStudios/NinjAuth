@@ -20,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import me.gingerninja.authenticator.data.db.entity.Account;
+import me.gingerninja.authenticator.module.timecorrector.TimeCorrector;
 
 @Singleton
 public class CodeGenerator {

@@ -5,6 +5,8 @@ import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 
+import com.google.android.play.core.splitcompat.SplitCompat;
+
 import javax.inject.Inject;
 
 import androidx.fragment.app.Fragment;
@@ -27,6 +29,12 @@ public class MyApplication extends Application implements HasActivityInjector, H
 
     @Inject
     DispatchingAndroidInjector<Fragment> fragmentAndroidInjector;
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        SplitCompat.install(this);
+    }
 
     @Override
     public void onCreate() {

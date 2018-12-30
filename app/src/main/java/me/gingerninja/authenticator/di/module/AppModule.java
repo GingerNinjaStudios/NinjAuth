@@ -7,8 +7,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import me.gingerninja.authenticator.util.CodeGenerator;
-import me.gingerninja.authenticator.util.TimeCorrector;
+import me.gingerninja.authenticator.module.ModuleHandler;
 
 @Module
 public class AppModule {
@@ -16,5 +15,11 @@ public class AppModule {
     @Singleton
     Context provideContext(Application application) {
         return application;
+    }
+
+    @Provides
+    @Singleton
+    ModuleHandler provideModuleHandler(Context context) {
+        return new ModuleHandler(context);
     }
 }

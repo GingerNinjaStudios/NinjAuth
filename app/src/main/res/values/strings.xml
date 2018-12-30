@@ -87,4 +87,5 @@
     <string name="settings_prot_password">Password</string>
     <string name="settings_prot_bio_pin">Biometric + PIN</string>
     <string name="settings_prot_bio_password">Biometric + Password</string>
+    <string name="title_timecorrector">Time Corrector</string>
 </resources>

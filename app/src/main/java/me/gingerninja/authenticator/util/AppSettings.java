@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import me.gingerninja.authenticator.R;
+import me.gingerninja.authenticator.module.ModuleHandler;
 
 @Singleton
 public class AppSettings {
@@ -21,10 +22,13 @@ public class AppSettings {
     private final Context context;
     private final SharedPreferences sharedPrefs;
 
+    private final ModuleHandler moduleHandler;
+
     @Inject
-    public AppSettings(Context context, SharedPreferences sharedPrefs) {
+    public AppSettings(Context context, SharedPreferences sharedPrefs, ModuleHandler moduleHandler) {
         this.context = context;
         this.sharedPrefs = sharedPrefs;
+        this.moduleHandler = moduleHandler;
     }
 
     @StyleRes
@@ -54,6 +58,10 @@ public class AppSettings {
         sharedPrefs.edit()
                 .putString(getString(R.string.settings_backup_uri_key), uri)
                 .apply();
+    }
+
+    public ModuleHandler getModuleHandler() {
+        return moduleHandler;
     }
 
     @NonNull
