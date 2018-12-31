@@ -25,6 +25,8 @@
     <string name="account_type_desc">The type of the account</string>
     <string name="account_algo_text">Algorithm</string>
     <string name="account_algo_desc">The algorithm used for code generation</string>
+    <string name="account_digits_text">Digits</string>
+    <string name="account_digits_desc">Generated digits</string>
 
     <string name="account_type_spec_hotp_text">Counter</string>
     <string name="account_type_spec_hotp_desc">Data where to start code generation</string>

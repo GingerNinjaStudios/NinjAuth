@@ -90,7 +90,7 @@ public abstract class BaseAccountViewModel extends ViewModel {
         public ObservableField<String> title = new ObservableField<>();
         public ObservableField<String> accountName = new ObservableField<>();
         public ObservableField<String> issuer = new ObservableField<>();
-        public ObservableField<String> digits = new ObservableField<>();
+        public ObservableField<String> digits = new ObservableField<>(); // TODO it's not used in the XML
         public ObservableField<String> typeSpecificData = new ObservableField<>(); // period for TOTP and counter for HOTP
         public ObservableField<String> secret = new ObservableField<>();
 

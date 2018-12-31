@@ -120,10 +120,17 @@ public abstract class BaseEditableAccountViewModel extends BaseAccountViewModel 
             Timber.d("Has error so far: %s", hasError);
 
             if (!TextUtils.isEmpty(rawDigits) && TextUtils.isDigitsOnly(rawDigits)) {
-                account.setDigits(Integer.parseInt(rawDigits));
+                int realDigits = Integer.parseInt(rawDigits);
+                account.setDigits(realDigits);
+                if (realDigits >= 1 && realDigits <= 8) {
+                    error.digits.set(0);
+                } else {
+                    error.digits.set(R.string.error_field_number_1to8);
+                }
             } else {
                 Timber.d("Digits are empty");
                 hasError = true;
+                error.digits.set(R.string.error_field_empty);
             }
 
             if (!TextUtils.isEmpty(rawType) && !TextUtils.isEmpty(rawTypeSpecificData) && TextUtils.isDigitsOnly(rawTypeSpecificData)) {

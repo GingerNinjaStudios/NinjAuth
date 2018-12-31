@@ -174,10 +174,11 @@
                     style="@style/Widget.Form.TextInputLayout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
                     android:hint="@string/account_type_text"
                     app:helperText="@string/account_type_desc"
                     app:helperTextEnabled="true"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/account_digits"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/account_secret">
 
@@ -198,16 +199,48 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/account_digits"
+                    style="@style/Widget.Form.TextInputLayout"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/account_digits_text"
+                    android:maxLength="1"
+                    app:errorText="@{viewModel.error.digits}"
+                    app:helperText="@string/account_digits_desc"
+                    app:helperTextEnabled="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/account_secret">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:maxLength="1"
+                        android:text="@={viewModel.data.digits}"
+                        tools:text="6" />
+
+                    <!--<com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableEnd="@drawable/ic_arrow_drop_down_24dp"
+                        android:editable="false"
+                        android:inputType="none"
+                        android:singleLine="true"
+                        android:text="@={viewModel.data.algorithm}"
+                        tools:text="SHA512" />-->
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/account_type_specific_data"
                     style="@style/Widget.Form.TextInputLayout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    app:hint="@{viewModel.typeSpecificTitle}"
                     android:maxLength="20"
                     app:errorText="@{viewModel.error.typeSpecificData}"
                     app:helperText="@{viewModel.typeSpecificDesc}"
                     app:helperTextEnabled="true"
+                    app:hint="@{viewModel.typeSpecificTitle}"
                     app:layout_constraintEnd_toStartOf="@+id/account_algo"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/account_type">
