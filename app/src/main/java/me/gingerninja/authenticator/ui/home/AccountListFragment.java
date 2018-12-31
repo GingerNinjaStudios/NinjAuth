@@ -24,7 +24,6 @@ import me.gingerninja.authenticator.ui.home.list.AccountListItemViewModel;
 import timber.log.Timber;
 
 public class AccountListFragment extends BaseFragment<AccountListFragmentBinding> implements BottomNavigationFragment.BottomNavigationListener, AccountListItemViewModel.AccountMenuItemClickListener {
-    private static final String TAG = "AccountListFragment";
     private static final String BOTTOM_NAV_TAG = "bottomNavFrag";
     private static final String ADD_ACCOUNT_TAG = "newAccount";
 
@@ -44,14 +43,17 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
     @Override
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, AccountListFragmentBinding viewDataBinding) {
         subscribeToUi(viewDataBinding);
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
         accountListAdapter.startClock();
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
+    public void onPause() {
+        super.onPause();
         accountListAdapter.stopClock();
     }
 
