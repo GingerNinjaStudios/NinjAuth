@@ -34,8 +34,11 @@
     <string name="account_type_spec_totp_text">Period</string>
     <string name="account_type_spec_totp_desc">Seconds between new code generations</string>
 
-    <string name="account_type_totp">Time-Based One-Time Password (TOTP)</string>
-    <string name="account_type_hotp">HMAC-Based One-Time Password (HOTP)</string>
+    <string name="account_type_totp_long">Time-Based One-Time Password (TOTP)</string>
+    <string name="account_type_hotp_long">HMAC-Based One-Time Password (HOTP)</string>
+
+    <string name="account_type_totp_short">TOTP</string>
+    <string name="account_type_hotp_short">HOTP</string>
 
     <string name="error_field_empty">The field cannot be empty</string>
     <string name="error_field_number_zero">Must be more than 0</string>
@@ -45,9 +48,14 @@
     <string name="save">Save</string>
 
     <!-- Account -->
-    <string-array name="account_type_entries">
-        <item>@string/account_type_totp</item>
-        <item>@string/account_type_hotp</item>
+    <string-array name="account_type_menu_entries">
+        <item>@string/account_type_totp_long</item>
+        <item>@string/account_type_hotp_long</item>
+    </string-array>
+
+    <string-array name="account_type_display_entries">
+        <item>@string/account_type_totp_short</item>
+        <item>@string/account_type_hotp_short</item>
     </string-array>
 
     <string-array name="account_type_values">

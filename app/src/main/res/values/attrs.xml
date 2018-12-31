@@ -3,7 +3,8 @@
     <attr name="themeOverlay" format="reference" />
 
     <declare-styleable name="MaterialSpinner">
-        <attr name="entries" format="reference" />
+        <attr name="displayEntries" format="reference" />
+        <attr name="menuEntries" format="reference" />
         <attr name="values" format="reference" />
         <attr name="value" format="reference" />
     </declare-styleable>

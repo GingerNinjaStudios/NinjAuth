@@ -186,7 +186,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:editable="false"
-                        app:entries="@array/account_type_entries"
+                        app:displayEntries="@array/account_type_display_entries"
+                        app:menuEntries="@array/account_type_menu_entries"
                         app:value="@={viewModel.data.type}"
                         app:values="@array/account_type_values" />
                     <!--<com.google.android.material.textfield.TextInputEditText
@@ -268,7 +269,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:editable="false"
-                        app:entries="@array/account_algo_entries"
+                        app:menuEntries="@array/account_algo_entries"
                         app:value="@={viewModel.data.algorithm}"
                         app:values="@array/account_algo_values"
                         tools:text="SHA512" />

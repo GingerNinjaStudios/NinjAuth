@@ -37,7 +37,8 @@ import me.gingerninja.authenticator.R;
         )
 })
 public class MaterialSpinner extends TextInputEditText implements PopupMenu.OnMenuItemClickListener {
-    private CharSequence[] entries;
+    private CharSequence[] displayEntries;
+    private CharSequence[] menuEntries;
     private CharSequence[] values;
     private CharSequence value;
 
@@ -74,8 +75,11 @@ public class MaterialSpinner extends TextInputEditText implements PopupMenu.OnMe
                 int attr = a.getIndex(i);
 
                 switch (attr) {
-                    case R.styleable.MaterialSpinner_entries:
-                        setEntries(a.getTextArray(attr));
+                    case R.styleable.MaterialSpinner_menuEntries:
+                        setMenuEntries(a.getTextArray(attr));
+                        break;
+                    case R.styleable.MaterialSpinner_displayEntries:
+                        setDisplayEntries(a.getTextArray(attr));
                         break;
                     case R.styleable.MaterialSpinner_values:
                         setValues(a.getTextArray(attr));
@@ -93,8 +97,8 @@ public class MaterialSpinner extends TextInputEditText implements PopupMenu.OnMe
             PopupMenu popup = new PopupMenu(getContext(), v);
             Menu menu = popup.getMenu();
 
-            for (int i = 0; i < entries.length; i++) {
-                menu.add(0, i, 0, entries[i]);
+            for (int i = 0; i < menuEntries.length; i++) {
+                menu.add(0, i, 0, menuEntries[i]);
             }
             popup.setOnMenuItemClickListener(MaterialSpinner.this);
             popup.show();
@@ -104,12 +108,21 @@ public class MaterialSpinner extends TextInputEditText implements PopupMenu.OnMe
         setFocusableInTouchMode(false);
     }
 
-    public CharSequence[] getEntries() {
-        return entries;
+    public CharSequence[] getMenuEntries() {
+        return menuEntries;
     }
 
-    public void setEntries(CharSequence[] entries) {
-        this.entries = entries;
+    public void setMenuEntries(CharSequence[] menuEntries) {
+        this.menuEntries = menuEntries;
+        refreshText();
+    }
+
+    public CharSequence[] getDisplayEntries() {
+        return displayEntries;
+    }
+
+    public void setDisplayEntries(CharSequence[] displayEntries) {
+        this.displayEntries = displayEntries;
         refreshText();
     }
 
@@ -143,10 +156,16 @@ public class MaterialSpinner extends TextInputEditText implements PopupMenu.OnMe
     }
 
     private void refreshText() {
-        if (values != null && entries != null) {
+        if (values != null && (displayEntries != null || menuEntries != null)) {
             for (int i = 0; i < values.length; i++) {
                 if (TextUtils.equals(values[i], value)) {
-                    setText(entries[i]);
+                    if (displayEntries != null) {
+                        setText(displayEntries[i]);
+                    } else if (menuEntries != null) {
+                        setText(menuEntries[i]);
+                    } else {
+                        setText(values[i]);
+                    }
                     break;
                 }
             }
