@@ -1,7 +1,5 @@
 package me.gingerninja.authenticator.util;
 
-import android.util.Log;
-
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
@@ -21,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.module.timecorrector.TimeCorrector;
+import timber.log.Timber;
 
 @Singleton
 public class CodeGenerator {
@@ -133,7 +132,7 @@ public class CodeGenerator {
 
             return Long.toString(code);
         } catch (Exception e) {
-            Log.e("CodeGenerator", "Error while generating OTP", e);
+            Timber.e(e,"Error while generating OTP");
         }
         return null;
     }
