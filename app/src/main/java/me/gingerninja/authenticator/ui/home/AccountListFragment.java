@@ -21,10 +21,12 @@ import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.databinding.AccountListFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
 import me.gingerninja.authenticator.ui.home.list.AccountListItemViewModel;
+import me.gingerninja.authenticator.ui.label.LabelsBottomFragment;
 import timber.log.Timber;
 
 public class AccountListFragment extends BaseFragment<AccountListFragmentBinding> implements BottomNavigationFragment.BottomNavigationListener, AccountListItemViewModel.AccountMenuItemClickListener {
     private static final String BOTTOM_NAV_TAG = "bottomNavFrag";
+    private static final String BOTTOM_LABELS_TAG = "bottomLabelsFrag";
     private static final String ADD_ACCOUNT_TAG = "newAccount";
 
     public static final String ACCOUNT_OP_ADD = "accountAdded";
@@ -177,6 +179,10 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
 
     private void handleMainMenu(int id) {
         switch (id) {
+            case R.id.nav_labels:
+                LabelsBottomFragment lbf = new LabelsBottomFragment();
+                lbf.show(getChildFragmentManager(), BOTTOM_LABELS_TAG);
+                break;
             case R.id.nav_settings:
                 getNavController().navigate(R.id.openSettingsFromHomeAction);
                 break;
@@ -191,9 +197,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
                 getNavController().navigate(action);
                 break;
             case R.id.menu_account_delete:
-                Snackbar.make(getDataBinding().coordinatorLayout, "Delete: " + account, Snackbar.LENGTH_SHORT)
-                        .setAnchorView(getDataBinding().fab)
-                        .show();
+                DeleteAccountBottomFragment.show(account, getChildFragmentManager());
                 break;
         }
     }

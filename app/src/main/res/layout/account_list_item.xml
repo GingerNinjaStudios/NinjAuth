@@ -74,7 +74,7 @@
                 app:progressStrokeWidth="4dp"
                 app:startAngle="270"
                 app:textAdapter="@{viewModel.TEXT_ADAPTER}"
-                app:textColor="?android:attr/textColorPrimary" />
+                app:textColor="?colorSurface" />
 
             <ImageButton
                 android:id="@+id/menu_button"

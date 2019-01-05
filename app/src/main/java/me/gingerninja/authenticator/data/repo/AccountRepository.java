@@ -40,6 +40,10 @@ public class AccountRepository {
         return accountDao.saveAll(accountList);
     }
 
+    public Completable deleteAccount(long accountId) {
+        return getAccount(accountId).flatMapCompletable(accountDao::delete);
+    }
+
     public Completable deleteAccount(Account account) {
         return accountDao.delete(account);
     }
