@@ -16,6 +16,9 @@ public interface LabelDao {
     Observable<Label> getAll();
 
     @CheckResult
+    Observable<List<Label>> getAllAndListen();
+
+    @CheckResult
     Single<Label> save(Label label);
 
     @CheckResult

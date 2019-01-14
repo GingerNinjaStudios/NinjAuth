@@ -60,6 +60,10 @@ public class AccountRepository {
         return labelDao.getAll();
     }
 
+    public Observable<List<Label>> getAllLabelAndListen() {
+        return labelDao.getAllAndListen();
+    }
+
     public Completable deleteLabel(Label label) {
         return labelDao.delete(label);
     }

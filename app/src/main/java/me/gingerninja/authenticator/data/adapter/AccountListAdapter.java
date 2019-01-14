@@ -40,10 +40,9 @@ public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> 
         return accountList;
     }
 
-    public AccountListAdapter setAccountList(List<Account> accountList) {
+    public void setAccountList(List<Account> accountList) {
         this.accountList = accountList;
         notifyDataSetChanged();
-        return this;
     }
 
     public void setMenuItemClickListener(AccountListItemViewModel.AccountMenuItemClickListener menuItemClickListener) {

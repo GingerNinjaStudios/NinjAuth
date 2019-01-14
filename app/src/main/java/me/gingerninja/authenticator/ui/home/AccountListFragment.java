@@ -25,7 +25,6 @@ import me.gingerninja.authenticator.ui.label.LabelsBottomFragment;
 import timber.log.Timber;
 
 public class AccountListFragment extends BaseFragment<AccountListFragmentBinding> implements BottomNavigationFragment.BottomNavigationListener, AccountListItemViewModel.AccountMenuItemClickListener {
-    private static final String BOTTOM_NAV_TAG = "bottomNavFrag";
     private static final String BOTTOM_LABELS_TAG = "bottomLabelsFrag";
     private static final String ADD_ACCOUNT_TAG = "newAccount";
 
@@ -97,8 +96,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
         }
 
         binding.appBar.setNavigationOnClickListener(v -> {
-            BottomNavigationFragment bottomNavFragment = BottomNavigationFragment.create(R.menu.navigation_menu);
-            bottomNavFragment.show(getChildFragmentManager(), BOTTOM_NAV_TAG);
+            BottomNavigationFragment.show(R.menu.navigation_menu, getChildFragmentManager());
         });
         binding.appBar.inflateMenu(R.menu.account_list_menu);
         binding.appBar.setOnMenuItemClickListener(item -> {
@@ -160,7 +158,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
             case ADD_ACCOUNT_TAG:
                 handleAddAccountMenu(id);
                 break;
-            case BOTTOM_NAV_TAG:
+            case BottomNavigationFragment.BOTTOM_NAV_TAG:
                 handleMainMenu(id);
                 break;
         }
@@ -180,8 +178,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
     private void handleMainMenu(int id) {
         switch (id) {
             case R.id.nav_labels:
-                LabelsBottomFragment lbf = new LabelsBottomFragment();
-                lbf.show(getChildFragmentManager(), BOTTOM_LABELS_TAG);
+                getNavController().navigate(R.id.openLabelListFromAccountsAction);
                 break;
             case R.id.nav_settings:
                 getNavController().navigate(R.id.openSettingsFromHomeAction);

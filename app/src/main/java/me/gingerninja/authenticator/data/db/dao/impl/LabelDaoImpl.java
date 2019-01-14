@@ -40,6 +40,16 @@ public class LabelDaoImpl implements LabelDao {
     }
 
     @Override
+    public Observable<List<Label>> getAllAndListen() {
+        return getStore()
+                .select(Label.class)
+                .orderBy(Label.POSITION.asc())
+                .get()
+                .observableResult()
+                .map(accounts -> accounts.observable().toList().blockingGet());
+    }
+
+    @Override
     public Single<Label> save(Label label) {
         return getStore().upsert(label);
     }

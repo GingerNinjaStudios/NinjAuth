@@ -16,10 +16,13 @@ import com.google.android.material.navigation.NavigationView;
 import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.ui.base.RoundedBottomSheetDialogFragment;
 
 public class BottomNavigationFragment extends RoundedBottomSheetDialogFragment implements NavigationView.OnNavigationItemSelectedListener {
+    public static final String BOTTOM_NAV_TAG = "bottomNavFrag";
+
     private static final String ARG_MENU_RES_ID = "arg.menu_res_id";
 
     private BottomNavigationListener listener;
@@ -31,6 +34,10 @@ public class BottomNavigationFragment extends RoundedBottomSheetDialogFragment i
         BottomNavigationFragment fragment = new BottomNavigationFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public static void show(@MenuRes int menuRes, FragmentManager fragmentManager) {
+        create(menuRes).show(fragmentManager, BOTTOM_NAV_TAG);
     }
 
     @Override
