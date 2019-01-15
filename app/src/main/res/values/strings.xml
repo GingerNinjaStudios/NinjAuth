@@ -40,6 +40,15 @@
     <string name="account_type_totp_short">TOTP</string>
     <string name="account_type_hotp_short">HOTP</string>
 
+    <string name="label_new_form_title">Add label</string>
+    <string name="label_edit_form_title">Edit label</string>
+
+    <string name="label_name_text">Name</string>
+    <string name="label_name_desc">Name of the label</string>
+
+    <string name="label_color_text">Color</string>
+    <string name="label_color_desc">Background color of the label</string>
+
     <string name="error_field_empty">The field cannot be empty</string>
     <string name="error_field_number_zero">Must be more than 0</string>
     <string name="error_field_number_too_large">Too large number</string>

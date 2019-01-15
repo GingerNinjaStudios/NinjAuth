@@ -10,6 +10,7 @@ import me.gingerninja.authenticator.ui.account.form.EditAccountFragment;
 import me.gingerninja.authenticator.ui.home.AccountListFragment;
 import me.gingerninja.authenticator.ui.home.DeleteAccountBottomFragment;
 import me.gingerninja.authenticator.ui.label.LabelsBottomFragment;
+import me.gingerninja.authenticator.ui.label.form.LabelEditorFragment;
 import me.gingerninja.authenticator.ui.settings.SettingsFragment;
 import me.gingerninja.authenticator.ui.settings.SettingsScreenFragment;
 
@@ -41,4 +42,7 @@ public abstract class FragmentBuilder {
 
     @ContributesAndroidInjector(modules = LabelListModule.class)
     abstract LabelsBottomFragment bindLabelsBottomFragment();
+
+    @ContributesAndroidInjector()
+    abstract LabelEditorFragment bindLabelEditorFragment();
 }

@@ -89,5 +89,17 @@
             app:destination="@id/accountListFragment"
             app:popUpTo="@+id/accountListFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/editLabelAction"
+            app:destination="@id/labelEditorFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/labelEditorFragment"
+        android:name="me.gingerninja.authenticator.ui.label.form.LabelEditorFragment"
+        android:label="LabelEditorFragment" >
+        <argument
+            android:name="id"
+            app:argType="long"
+            android:defaultValue="0L" />
     </fragment>
 </navigation>

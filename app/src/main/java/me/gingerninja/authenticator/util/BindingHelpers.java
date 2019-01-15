@@ -1,10 +1,15 @@
 package me.gingerninja.authenticator.util;
 
+import android.content.res.ColorStateList;
+
+import com.google.android.material.chip.Chip;
 import com.google.android.material.textfield.TextInputLayout;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.ColorUtils;
 import androidx.databinding.BindingAdapter;
 import antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator;
+import me.gingerninja.authenticator.R;
 
 public class BindingHelpers {
     @BindingAdapter("errorText")
@@ -55,4 +60,15 @@ public class BindingHelpers {
         progressIndicator.setProgressTextAdapter(adapter);
     }
 
+    @BindingAdapter("readableHintTextColorFromBackground")
+    public static void setHintTextColor(@NonNull TextInputLayout view, int bgColor) {
+        int fgColor = ColorUtils.calculateLuminance(bgColor) < 0.5 ? view.getResources().getColor(R.color.colorLabelTextLight) : view.getResources().getColor(R.color.colorLabelTextDark);
+        view.setDefaultHintTextColor(ColorStateList.valueOf(fgColor));
+    }
+
+    @BindingAdapter("readableChipTextColorFromBackground")
+    public static void setChipTextColor(@NonNull Chip view, int bgColor) {
+        int fgColor = ColorUtils.calculateLuminance(bgColor) < 0.5 ? view.getResources().getColor(R.color.colorLabelTextLight) : view.getResources().getColor(R.color.colorLabelTextDark);
+        view.setTextColor(ColorStateList.valueOf(fgColor));
+    }
 }

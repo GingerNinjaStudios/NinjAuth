@@ -36,7 +36,7 @@ public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> im
                         String eventId = rawEvent.getId();
                         switch (eventId) {
                             case LabelsViewModel.NAV_ADD_LABEL:
-                                // TODO showAddNewLabel();
+                                getNavController().navigate(R.id.labelEditorFragment);
                                 break;
                         }
                     }
