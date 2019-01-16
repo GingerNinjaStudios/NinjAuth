@@ -56,6 +56,7 @@ public class LabelEditorViewModel extends BaseLabelViewModel {
         }
     }
 
+    @Mode
     public int getMode() {
         return mode;
     }

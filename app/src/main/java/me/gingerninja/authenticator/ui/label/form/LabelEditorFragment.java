@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProviders;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.databinding.LabelFormFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
+import me.gingerninja.authenticator.ui.label.LabelsBottomFragment;
 
 public class LabelEditorFragment extends BaseFragment<LabelFormFragmentBinding> implements OnColorSelectedListener {
     private LabelEditorViewModel viewModel;
@@ -29,6 +30,7 @@ public class LabelEditorFragment extends BaseFragment<LabelFormFragmentBinding> 
     private void setupUi(LabelFormFragmentBinding binding, Bundle args) {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(LabelEditorViewModel.class);
         viewModel.init(args);
+        viewModel.setMode(LabelEditorFragmentArgs.fromBundle(args).getId() == 0 ? LabelEditorViewModel.MODE_CREATE : LabelEditorViewModel.MODE_EDIT);
         binding.setViewModel(viewModel);
 
         binding.toolbar.setNavigationOnClickListener(v -> {
@@ -45,6 +47,11 @@ public class LabelEditorFragment extends BaseFragment<LabelFormFragmentBinding> 
                 String eventId = event.getId();
                 switch (eventId) {
                     case LabelEditorViewModel.NAV_ACTION_SAVE:
+                        LabelEditorFragmentDirections.SaveLabelAction action = LabelEditorFragmentDirections.saveLabelAction()
+                                .setLabelName(event.getContent())
+                                .setOperation(viewModel.getMode() == LabelEditorViewModel.MODE_CREATE ? LabelsBottomFragment.LABEL_OP_ADD : LabelsBottomFragment.LABEL_OP_UPDATE);
+                        getNavController().navigate(action);
+                        //LabelEditorFragmentDirections.saveLabelAction()
                         /*AddAccountFragmentDirections.SaveNewAccountAction action = AddAccountFragmentDirections.saveNewAccountAction()
                                 .setAccountName(event.getContent())
                                 .setAccountOperation(AccountListFragment.ACCOUNT_OP_ADD);

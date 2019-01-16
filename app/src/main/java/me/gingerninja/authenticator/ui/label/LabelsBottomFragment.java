@@ -17,6 +17,10 @@ import me.gingerninja.authenticator.ui.base.BaseFragment;
 import me.gingerninja.authenticator.ui.home.BottomNavigationFragment;
 
 public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> implements BottomNavigationFragment.BottomNavigationListener {
+    public static final String LABEL_OP_ADD = "labelAdded";
+    public static final String LABEL_OP_UPDATE = "labelUpdated";
+    public static final String LABEL_OP_DELETE = "labelDeleted";
+
     @Inject
     LabelListAdapter labelListAdapter;
 

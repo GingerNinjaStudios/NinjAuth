@@ -83,7 +83,7 @@
     <fragment
         android:id="@+id/labelListFragment"
         android:name="me.gingerninja.authenticator.ui.label.LabelsBottomFragment"
-        android:label="LabelsBottomFragment" >
+        android:label="LabelsBottomFragment">
         <action
             android:id="@+id/openAccountListFromLabelsAction"
             app:destination="@id/accountListFragment"
@@ -92,14 +92,29 @@
         <action
             android:id="@+id/editLabelAction"
             app:destination="@id/labelEditorFragment" />
+        <argument
+            android:name="labelName"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="operation"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/labelEditorFragment"
         android:name="me.gingerninja.authenticator.ui.label.form.LabelEditorFragment"
-        android:label="LabelEditorFragment" >
+        android:label="LabelEditorFragment">
         <argument
             android:name="id"
-            app:argType="long"
-            android:defaultValue="0L" />
+            android:defaultValue="0L"
+            app:argType="long" />
+        <action
+            android:id="@+id/saveLabelAction"
+            app:destination="@id/labelListFragment"
+            app:popUpTo="@+id/labelListFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>
