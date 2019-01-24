@@ -1,5 +1,6 @@
 package me.gingerninja.authenticator.data.db.entity;
 
+import io.requery.Column;
 import io.requery.Entity;
 import io.requery.ForeignKey;
 import io.requery.Key;
@@ -17,4 +18,7 @@ abstract class AbstractAccountHasLabel {
     @ForeignKey(references = AbstractLabel.class, referencedColumn = "id")
     @ManyToOne
     protected Label label;
+
+    @Column(value = "0")
+    protected int position;
 }

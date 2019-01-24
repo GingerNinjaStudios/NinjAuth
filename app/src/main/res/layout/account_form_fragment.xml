@@ -137,6 +137,22 @@
                         android:text="@={viewModel.data.issuer}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_show_advanced"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:onClick="@{viewModel::toggleAdvancedClick}"
+                    android:text="@string/show_advanced"
+                    android:textSize="10sp"
+                    android:visibility="@{viewModel.showAdvanced ? View.GONE : View.VISIBLE}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/account_issuer" />
+
                 <View
                     android:id="@+id/account_advanced_divider"
                     android:layout_width="0dp"
@@ -244,7 +260,7 @@
                     app:hint="@{viewModel.typeSpecificTitle}"
                     app:layout_constraintEnd_toStartOf="@+id/account_algo"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/account_type">
+                    app:layout_constraintTop_toBottomOf="@id/fields_barrier_1">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
@@ -263,7 +279,7 @@
                     app:helperText="@string/account_algo_desc"
                     app:helperTextEnabled="true"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/account_type">
+                    app:layout_constraintTop_toBottomOf="@id/fields_barrier_1">
 
                     <me.gingerninja.authenticator.widget.MaterialSpinner
                         android:layout_width="match_parent"
@@ -285,6 +301,66 @@
                         tools:text="SHA512" />-->
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <TextView
+                    android:id="@+id/labels_title"
+                    style="@style/TextAppearance.FakeHint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Labels"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/advanced_barrier" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/label_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/labels_title"
+                    tools:listitem="@layout/account_form_label_list_entry" />
+
+                <!--<com.google.android.material.chip.ChipGroup
+                    android:id="@+id/label_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/labels_title"
+                    app:singleSelection="false">
+
+                    <com.google.android.material.chip.Chip
+                        style="@style/Widget.MaterialComponents.Chip.Entry"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="false"
+                        android:text="Personal" />
+
+                    <com.google.android.material.chip.Chip
+                        style="@style/Widget.MaterialComponents.Chip.Entry"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="false"
+                        android:text="Google"
+                        app:chipIcon="@drawable/googleg_standard_color_18" />
+
+                    <com.google.android.material.chip.Chip
+                        style="?actionChipStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Add"
+                        app:chipIcon="@drawable/ic_add_24dp"
+                        app:chipIconTint="?colorControlNormal" />
+                </com.google.android.material.chip.ChipGroup>-->
+
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -293,7 +369,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/account_algo"
+                    app:layout_constraintTop_toBottomOf="@+id/label_list"
                     app:layout_constraintVertical_bias="1.0">
 
                     <com.google.android.material.button.MaterialButton
@@ -303,6 +379,42 @@
                         android:onClick="@{viewModel::onSaveClick}"
                         android:text="@string/save" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/fields_barrier_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="account_algo,account_type_specific_data"
+                    tools:layout_editor_absoluteX="12dp"
+                    tools:layout_editor_absoluteY="710dp" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/fields_barrier_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="account_type,account_digits"
+                    tools:layout_editor_absoluteX="12dp"
+                    tools:layout_editor_absoluteY="743dp" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/advanced_settings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="@{viewModel.showAdvanced ? View.VISIBLE : View.GONE}"
+                    app:constraint_referenced_ids="account_secret,account_type,account_algo,account_type_specific_data,account_digits,account_advanced_divider"
+                    tools:layout_editor_absoluteX="12dp"
+                    tools:layout_editor_absoluteY="12dp" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/advanced_barrier"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="btn_show_advanced,advanced_settings,fields_barrier_2"
+                    tools:layout_editor_absoluteX="12dp"
+                    tools:layout_editor_absoluteY="735dp" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

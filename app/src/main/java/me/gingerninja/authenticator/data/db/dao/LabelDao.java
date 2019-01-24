@@ -3,9 +3,12 @@ package me.gingerninja.authenticator.data.db.dao;
 import java.util.List;
 
 import androidx.annotation.CheckResult;
+import androidx.annotation.NonNull;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import me.gingerninja.authenticator.data.db.entity.Account;
+import me.gingerninja.authenticator.data.db.entity.AccountHasLabel;
 import me.gingerninja.authenticator.data.db.entity.Label;
 
 public interface LabelDao {
@@ -13,7 +16,13 @@ public interface LabelDao {
     Single<Label> get(long id);
 
     @CheckResult
-    Observable<Label> getAll();
+    Observable<Label> getAll(long... exceptions);
+
+    @CheckResult
+    Observable<AccountHasLabel> getLabelsByAccount(@NonNull Account account);
+
+    @CheckResult
+    Completable saveLabelsForAccount(@NonNull Account account, @NonNull List<Label> labels);
 
     @CheckResult
     Observable<List<Label>> getAllAndListen();

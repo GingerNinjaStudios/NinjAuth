@@ -69,6 +69,44 @@ public class BindingHelpers {
     @BindingAdapter("readableChipTextColorFromBackground")
     public static void setChipTextColor(@NonNull Chip view, int bgColor) {
         int fgColor = ColorUtils.calculateLuminance(bgColor) < 0.5 ? view.getResources().getColor(R.color.colorLabelTextLight) : view.getResources().getColor(R.color.colorLabelTextDark);
-        view.setTextColor(ColorStateList.valueOf(fgColor));
+        ColorStateList fgColorStateList = ColorStateList.valueOf(fgColor);
+
+        int[][] closeIconStates = {
+                {android.R.attr.state_pressed},
+                {android.R.attr.state_focused, android.R.attr.state_hovered},
+                {android.R.attr.state_focused},
+                {android.R.attr.state_hovered},
+                {android.R.attr.state_enabled},
+                {}
+        };
+        int[] closeIconColors = {
+                ColorUtils.setAlphaComponent(fgColor, 0xff),
+                ColorUtils.setAlphaComponent(fgColor, 0xff),
+                ColorUtils.setAlphaComponent(fgColor, 0xde),
+                ColorUtils.setAlphaComponent(fgColor, 0xb8),
+                ColorUtils.setAlphaComponent(fgColor, 0x8a),
+                ColorUtils.setAlphaComponent(fgColor, 0x36)
+        };
+        ColorStateList closeIconTint = new ColorStateList(closeIconStates, closeIconColors);
+
+        int[][] rippleStates = {
+                {android.R.attr.state_pressed},
+                {android.R.attr.state_focused, android.R.attr.state_hovered},
+                {android.R.attr.state_focused},
+                {android.R.attr.state_hovered},
+                {}
+        };
+        int[] rippleColors = {
+                ColorUtils.setAlphaComponent(fgColor, 0x29),
+                ColorUtils.setAlphaComponent(fgColor, 0x29),
+                ColorUtils.setAlphaComponent(fgColor, 0x1f),
+                ColorUtils.setAlphaComponent(fgColor, 0x0a),
+                0
+        };
+        ColorStateList rippleColorStateList = new ColorStateList(rippleStates, rippleColors);
+
+        view.setTextColor(fgColorStateList);
+        view.setCloseIconTint(closeIconTint);
+        view.setRippleColor(rippleColorStateList);
     }
 }

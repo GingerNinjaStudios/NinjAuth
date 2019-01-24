@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.ObservableInt;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
@@ -35,15 +36,12 @@ public abstract class BaseEditableAccountViewModel extends BaseAccountViewModel 
     @Mode
     public final int mode;
 
-    @NonNull
-    protected AccountRepository accountRepository;
-
     protected MutableLiveData<SingleEvent<String>> navAction = new MutableLiveData<>();
 
     protected Disposable saveDisposable;
 
     public BaseEditableAccountViewModel(@NonNull AccountRepository accountRepository, @Mode int mode) {
-        this.accountRepository = accountRepository;
+        super(accountRepository);
         this.mode = mode;
     }
 
@@ -64,7 +62,9 @@ public abstract class BaseEditableAccountViewModel extends BaseAccountViewModel 
         if (checkValues()) {
             saveDisposable = accountRepository
                     .addAccount(account)
-                    .subscribe(account -> navAction.postValue(new SingleEvent<>(NAV_ACTION_SAVE, account.getTitle())));
+                    .ignoreElement()
+                    .andThen(accountRepository.saveLabelsForAccount(account, Observable.fromIterable(labels).map(LabelData::getLabel).toList().blockingGet()))
+                    .subscribe(() -> navAction.postValue(new SingleEvent<>(NAV_ACTION_SAVE, account.getTitle())));
 
         }
     }

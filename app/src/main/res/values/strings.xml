@@ -54,6 +54,12 @@
     <string name="error_field_number_too_large">Too large number</string>
     <string name="error_field_number_1to8">Must be between 1 and 8</string>
 
+    <string name="show_advanced">Show advanced</string>
+    <string name="account_form_add_label">Add</string>
+
+    <string name="account_list_dialog_title">Add label to account</string>
+    <string name="account_list_dialog_create_new">Create new</string>
+
     <string name="save">Save</string>
 
     <!-- Account -->

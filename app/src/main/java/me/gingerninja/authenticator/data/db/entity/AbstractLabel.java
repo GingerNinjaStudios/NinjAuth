@@ -7,6 +7,7 @@ import io.requery.Entity;
 import io.requery.Generated;
 import io.requery.Key;
 import io.requery.ManyToMany;
+import io.requery.Nullable;
 import io.requery.PropertyNameStyle;
 
 @Entity(propertyNameStyle = PropertyNameStyle.FLUENT_BEAN)
@@ -16,6 +17,9 @@ abstract class AbstractLabel {
     long id;
 
     String name;
+
+    @Nullable
+    String icon;
 
     int color;
 

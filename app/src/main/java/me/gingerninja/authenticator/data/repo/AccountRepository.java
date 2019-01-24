@@ -5,12 +5,14 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import me.gingerninja.authenticator.data.db.dao.AccountDao;
 import me.gingerninja.authenticator.data.db.dao.LabelDao;
 import me.gingerninja.authenticator.data.db.entity.Account;
+import me.gingerninja.authenticator.data.db.entity.AccountHasLabel;
 import me.gingerninja.authenticator.data.db.entity.Label;
 
 @Singleton
@@ -26,6 +28,10 @@ public class AccountRepository {
 
     public Single<Account> addAccount(Account account) {
         return accountDao.save(account);
+    }
+
+    public Completable saveLabelsForAccount(Account account, List<Label> labels) {
+        return labelDao.saveLabelsForAccount(account, labels);
     }
 
     public Single<Account> getAccount(long id) {
@@ -56,8 +62,12 @@ public class AccountRepository {
         return labelDao.get(id);
     }
 
-    public Observable<Label> getAllLabel() {
-        return labelDao.getAll();
+    public Observable<Label> getAllLabel(long... exceptions) {
+        return labelDao.getAll(exceptions);
+    }
+
+    public Observable<AccountHasLabel> getLabelsByAccount(@NonNull Account account) {
+        return labelDao.getLabelsByAccount(account);
     }
 
     public Observable<List<Label>> getAllLabelAndListen() {

@@ -15,4 +15,8 @@
     <style name="BottomSheet" parent="@style/Widget.Design.BottomSheet.Modal">
         <item name="android:background">@android:color/transparent</item>
     </style>
+
+    <style name="TextAppearance.FakeHint" parent="@style/TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">@color/mtrl_indicator_text_color</item>
+    </style>
 </resources>

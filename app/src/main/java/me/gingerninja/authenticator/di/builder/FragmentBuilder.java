@@ -7,6 +7,7 @@ import me.gingerninja.authenticator.di.module.fragment.LabelListModule;
 import me.gingerninja.authenticator.ui.account.camera.AddAccountFromCameraFragment;
 import me.gingerninja.authenticator.ui.account.form.AddAccountFragment;
 import me.gingerninja.authenticator.ui.account.form.EditAccountFragment;
+import me.gingerninja.authenticator.ui.account.form.LabelSelectorDialogFragment;
 import me.gingerninja.authenticator.ui.home.AccountListFragment;
 import me.gingerninja.authenticator.ui.home.DeleteAccountBottomFragment;
 import me.gingerninja.authenticator.ui.label.LabelsBottomFragment;
@@ -43,6 +44,9 @@ public abstract class FragmentBuilder {
     @ContributesAndroidInjector(modules = LabelListModule.class)
     abstract LabelsBottomFragment bindLabelsBottomFragment();
 
-    @ContributesAndroidInjector()
+    @ContributesAndroidInjector
     abstract LabelEditorFragment bindLabelEditorFragment();
+
+    @ContributesAndroidInjector
+    abstract LabelSelectorDialogFragment bindLabelSelectorDialogFragment();
 }

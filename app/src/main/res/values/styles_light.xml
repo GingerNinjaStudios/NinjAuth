@@ -21,12 +21,17 @@
         <item name="themeOverlay">@style/ThemeOverlay.MaterialComponents.Light</item>
         <item name="popupMenuStyle">@style/Widget.MaterialComponents.PopupMenu.Overflow</item>
         <item name="bottomSheetDialogTheme">@style/BaseBottomSheetDialog.Light</item>
+        <item name="actionChipStyle">@style/Widget.MaterialComponents.Chip.Action.Light</item>
     </style>
 
     <style name="BaseBottomSheetDialog.Light" parent="@style/Theme.MaterialComponents.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/BottomSheet</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="Widget.MaterialComponents.Chip.Action.Light">
+        <item name="chipStrokeWidth">1dp</item>
     </style>
 
 </resources>

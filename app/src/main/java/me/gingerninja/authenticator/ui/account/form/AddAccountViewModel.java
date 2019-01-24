@@ -28,9 +28,11 @@ public class AddAccountViewModel extends BaseEditableAccountViewModel {
                 account = Parser.parseUrl(args.getUrl());
             } else {
                 account = new Account();
+                showAdvanced.set(true);
             }
         } else {
             account = new Account();
+            showAdvanced.set(true);
         }
 
         // Parser.parseUrl(...) _could_ return null, but not in this case
