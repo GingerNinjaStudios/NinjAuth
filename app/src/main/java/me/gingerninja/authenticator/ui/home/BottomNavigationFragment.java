@@ -13,6 +13,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,20 +25,22 @@ public class BottomNavigationFragment extends RoundedBottomSheetDialogFragment i
     public static final String BOTTOM_NAV_TAG = "bottomNavFrag";
 
     private static final String ARG_MENU_RES_ID = "arg.menu_res_id";
+    private static final String ARG_MENU_SELECTED_ID = "arg.menu_selected_id";
 
     private BottomNavigationListener listener;
 
-    public static BottomNavigationFragment create(@MenuRes int menuRes) {
-        Bundle args = new Bundle(1);
+    public static BottomNavigationFragment create(@MenuRes int menuRes, @IdRes int selectedId) {
+        Bundle args = new Bundle(2);
         args.putInt(ARG_MENU_RES_ID, menuRes);
+        args.putInt(ARG_MENU_SELECTED_ID, selectedId);
 
         BottomNavigationFragment fragment = new BottomNavigationFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
-    public static void show(@MenuRes int menuRes, FragmentManager fragmentManager) {
-        create(menuRes).show(fragmentManager, BOTTOM_NAV_TAG);
+    public static void show(@MenuRes int menuRes, @IdRes int selectedId, FragmentManager fragmentManager) {
+        create(menuRes, selectedId).show(fragmentManager, BOTTOM_NAV_TAG);
     }
 
     @Override
@@ -63,7 +66,7 @@ public class BottomNavigationFragment extends RoundedBottomSheetDialogFragment i
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.bottom_nav_fragment, container, false);
+        View root = LayoutInflater.from(getContext()).inflate(R.layout.bottom_nav_fragment, container, false);
 
         createRoundedView(root);
 
@@ -74,6 +77,7 @@ public class BottomNavigationFragment extends RoundedBottomSheetDialogFragment i
             navigationView.getMenu().clear();
             navigationView.inflateMenu(getArguments().getInt(ARG_MENU_RES_ID));
             navigationView.setNavigationItemSelectedListener(this);
+            navigationView.setCheckedItem(getArguments().getInt(ARG_MENU_SELECTED_ID));
         }
 
         return root;

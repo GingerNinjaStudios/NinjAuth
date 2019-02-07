@@ -88,6 +88,7 @@
                 app:srcCompat="@drawable/ic_more_vert_24dp" />
 
             <com.google.android.material.chip.ChipGroup
+                android:id="@+id/labels"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"

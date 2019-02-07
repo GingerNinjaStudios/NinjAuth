@@ -21,7 +21,6 @@ import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.databinding.AccountListFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
 import me.gingerninja.authenticator.ui.home.list.AccountListItemViewModel;
-import me.gingerninja.authenticator.ui.label.LabelsBottomFragment;
 import timber.log.Timber;
 
 public class AccountListFragment extends BaseFragment<AccountListFragmentBinding> implements BottomNavigationFragment.BottomNavigationListener, AccountListItemViewModel.AccountMenuItemClickListener {
@@ -96,7 +95,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
         }
 
         binding.appBar.setNavigationOnClickListener(v -> {
-            BottomNavigationFragment.show(R.menu.navigation_menu, getChildFragmentManager());
+            BottomNavigationFragment.show(R.menu.navigation_menu, R.id.nav_accounts, getChildFragmentManager());
         });
         binding.appBar.inflateMenu(R.menu.account_list_menu);
         binding.appBar.setOnMenuItemClickListener(item -> {
@@ -144,7 +143,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
     }
 
     private void showAddNewAccountMenu() {
-        BottomNavigationFragment bottomNavFragment = BottomNavigationFragment.create(R.menu.add_account_menu);
+        BottomNavigationFragment bottomNavFragment = BottomNavigationFragment.create(R.menu.add_account_menu, 0);
         bottomNavFragment.show(getChildFragmentManager(), ADD_ACCOUNT_TAG);
     }
 

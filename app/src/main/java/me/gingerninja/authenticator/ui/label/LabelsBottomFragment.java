@@ -51,7 +51,7 @@ public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> im
         binding.labelList.setAdapter(labelListAdapter);
 
         binding.appBar.setNavigationOnClickListener(v -> {
-            BottomNavigationFragment.show(R.menu.navigation_menu, getChildFragmentManager());
+            BottomNavigationFragment.show(R.menu.navigation_menu, R.id.nav_labels, getChildFragmentManager());
         });
         binding.appBar.inflateMenu(R.menu.account_list_menu);
         binding.appBar.setOnMenuItemClickListener(item -> {
@@ -84,7 +84,7 @@ public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> im
                 //getNavController().navigate(R.id.openAccountListFromLabelsAction);
                 break;
             case R.id.nav_settings:
-                getNavController().navigate(R.id.openSettingsFromHomeAction);
+                getNavController().navigate(R.id.openSettingsFromLabelsAction);
                 break;
         }
     }

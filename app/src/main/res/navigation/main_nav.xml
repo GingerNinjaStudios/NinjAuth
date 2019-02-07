@@ -102,6 +102,9 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/openSettingsFromLabelsAction"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/labelEditorFragment"
