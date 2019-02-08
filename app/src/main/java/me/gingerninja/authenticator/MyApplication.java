@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.Service;
 import android.content.Context;
+import android.os.StrictMode;
 
 import com.google.android.play.core.splitcompat.SplitCompat;
 
@@ -40,7 +41,16 @@ public class MyApplication extends Application implements HasActivityInjector, H
     public void onCreate() {
         super.onCreate();
 
-        Timber.plant(new Timber.DebugTree());
+        if (BuildConfig.DEBUG) {
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                    .detectLeakedSqlLiteObjects()
+                    .detectLeakedClosableObjects()
+                    .penaltyLog()
+                    .penaltyDeath()
+                    .build());
+
+            Timber.plant(new Timber.DebugTree());
+        }
 
         PreferenceManagerFix.setDefaultValues(this, AppSettings.SHARED_PREFS_NAME, Context.MODE_PRIVATE, R.xml.settings, true);
 

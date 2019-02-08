@@ -23,8 +23,8 @@ abstract class AbstractLabel {
 
     int color;
 
-    @Column(value = "0")
-    int position;
+    @Column(value = "-1")
+    int position = -1;
 
     @ManyToMany
     Set<Account> accounts;

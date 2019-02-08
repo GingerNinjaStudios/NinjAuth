@@ -15,6 +15,7 @@ import me.gingerninja.authenticator.data.db.dao.LabelDao;
 import me.gingerninja.authenticator.data.db.dao.impl.AccountDaoImpl;
 import me.gingerninja.authenticator.data.db.dao.impl.LabelDaoImpl;
 import me.gingerninja.authenticator.data.db.provider.DatabaseHandler;
+import me.gingerninja.authenticator.data.db.wrapper.AccountWrapper;
 import me.gingerninja.authenticator.util.AppSettings;
 
 @Module
@@ -43,6 +44,12 @@ public class DataModule {
         return new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
                 .create();
+    }
+
+    @Provides
+    @Singleton
+    public AccountWrapper.Factory provideAccountWrapperFactory(Gson gson) {
+        return new AccountWrapper.Factory(gson);
     }
 
     @Provides

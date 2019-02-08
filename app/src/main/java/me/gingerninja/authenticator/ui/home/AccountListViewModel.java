@@ -3,8 +3,6 @@ package me.gingerninja.authenticator.ui.home;
 import android.app.Application;
 import android.view.View;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import androidx.lifecycle.LiveData;
@@ -12,8 +10,10 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import me.gingerninja.authenticator.data.db.entity.Account;
+import io.requery.query.Tuple;
+import io.requery.sql.ResultSetIterator;
 import me.gingerninja.authenticator.data.repo.AccountRepository;
+import me.gingerninja.authenticator.util.AutoClosingMutableLiveData;
 import me.gingerninja.authenticator.util.SingleEvent;
 
 public class AccountListViewModel extends ViewModel {
@@ -23,7 +23,8 @@ public class AccountListViewModel extends ViewModel {
     private final AccountRepository accountRepo;
 
     private MutableLiveData<SingleEvent<String>> navAction = new MutableLiveData<>();
-    private MutableLiveData<List<Account>> accountList = new MutableLiveData<>();
+    //private MutableLiveData<List<Account>> accountList = new MutableLiveData<>();
+    private AutoClosingMutableLiveData<Tuple> accountList2 = new AutoClosingMutableLiveData<>();
 
     private Disposable disposable;
 
@@ -32,11 +33,24 @@ public class AccountListViewModel extends ViewModel {
         this.application = application;
         this.accountRepo = accountRepo;
 
-        disposable = accountRepo.getAllAccountAndListen()
+        disposable = accountRepo.getAllAccountAndListen2()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(tuples -> {
+                    /*ResultSetIterator<Tuple> oldResults = accountList2.getValue();
+
+                    // if there are active observers, we will let them close the result set
+                    if (oldResults != null && !accountList2.hasActiveObservers()) {
+                        oldResults.close();
+                    }*/
+
+                    accountList2.setValue((ResultSetIterator<Tuple>) tuples.iterator());
+                });
+
+        /*disposable = accountRepo.getAllAccountAndListen()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(accounts -> {
                     accountList.postValue(accounts);
-                });
+                });*/
     }
 
     @Override
@@ -46,18 +60,34 @@ public class AccountListViewModel extends ViewModel {
         if (disposable != null && !disposable.isDisposed()) {
             disposable.dispose();
         }
+
+        if (accountList2.getValue() != null) {
+            accountList2.getValue().close();
+        }
     }
 
-    LiveData<List<Account>> getAccountList() {
+    /*LiveData<List<Account>> getAccountList() {
         return accountList;
+    }*/
+
+    LiveData<ResultSetIterator<Tuple>> getAccountList2() {
+        return accountList2;
     }
 
     LiveData<SingleEvent<String>> getNavigationAction() {
         return navAction;
     }
 
-    void saveList(List<Account> accounts) {
+    /*void saveList(List<Account> accounts) {
         accountRepo.saveAccounts(accounts).subscribe();
+    }*/
+
+    void saveListOrder(int count, int[] movement) {
+        if (movement[0] == movement[1]) {
+            return;
+        }
+
+        accountRepo.saveAccountOrder(count, movement[0], movement[1], accountList2.getValue()).subscribe();
     }
 
     public void onAddAccountFromCameraClick(View view) {

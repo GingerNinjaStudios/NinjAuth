@@ -54,16 +54,17 @@ abstract class AbstractAccount {
     @Column(value = ALGO_SHA1, nullable = false)
     String algorithm = ALGO_SHA1;
 
-    @Column(value = "6")
+    @Column(value = "6", nullable = false)
     int digits = 6;
 
+    @Column(value = "0", nullable = false)
     long typeSpecificData;
 
     @ManyToMany
     @JunctionTable(type = AbstractAccountHasLabel.class)
     Set<Label> labels;
 
-    @Column(value = "0")
-    int position = 0;
+    @Column(value = "-1", nullable = false)
+    int position = -1;
 
 }

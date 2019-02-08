@@ -1,6 +1,7 @@
 package me.gingerninja.authenticator.data.adapter;
 
 import android.content.res.ColorStateList;
+import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
@@ -8,47 +9,82 @@ import android.view.ViewGroup;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
-import java.util.Collections;
-import java.util.List;
+import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Size;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.BehaviorSubject;
+import io.requery.query.Tuple;
+import io.requery.sql.ResultSetIterator;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.data.db.entity.Label;
+import me.gingerninja.authenticator.data.db.wrapper.AccountWrapper;
 import me.gingerninja.authenticator.databinding.AccountListItemBinding;
 import me.gingerninja.authenticator.ui.home.list.AccountListItemViewModel;
 import me.gingerninja.authenticator.util.BindingHelpers;
 import me.gingerninja.authenticator.util.CodeGenerator;
 
-public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> implements AccountListItemViewModel.AccountMenuItemClickListener {
+public class AccountListIteratorAdapter extends RecyclerView.Adapter<BindingViewHolder> implements AccountListItemViewModel.AccountMenuItemClickListener {
     public static final int TYPE_ACCOUNT_TOTP = 1;
 
+    private final AccountWrapper.Factory accountWrapperFactory;
     private final CodeGenerator codeGenerator;
 
-    private List<Account> accountList;
+    private ResultSetIterator<Tuple> iterator;
+
     private AccountListItemViewModel.AccountMenuItemClickListener menuItemClickListener;
 
     private Disposable disposable;
     private BehaviorSubject<Long> clock = BehaviorSubject.create();
 
-    public AccountListAdapter(@NonNull CodeGenerator codeGenerator) {
+    private int moveFrom = -1, moveTo = -1;
+
+    public AccountListIteratorAdapter(@NonNull AccountWrapper.Factory accountWrapperFactory, @NonNull CodeGenerator codeGenerator) {
+        this.accountWrapperFactory = accountWrapperFactory;
         this.codeGenerator = codeGenerator;
     }
 
-    public List<Account> getAccountList() {
-        return accountList;
+    public void setResults(ResultSetIterator<Tuple> iterator) {
+        if (this.iterator == iterator) {
+            return;
+        }
+
+        if (this.iterator != null) {
+            this.iterator.close();
+        }
+        this.iterator = iterator;
+
+        notifyDataSetChanged();
     }
 
-    public void setAccountList(List<Account> accountList) {
-        this.accountList = accountList;
-        notifyDataSetChanged();
+    public void close() {
+        if (iterator != null) {
+            iterator.close();
+            iterator = null;
+        }
+    }
+
+    /**
+     * Returns a two-long array containing the from and to positions, respectively. It also resets
+     * the values to their initial state.
+     *
+     * @return a two-long array containing the from and to positions, respectively
+     */
+    @Size(2)
+    public int[] getMovementAndReset() {
+        int[] ret = new int[]{moveFrom, moveTo};
+
+        moveFrom = -1;
+        moveTo = -1;
+
+        return ret;
     }
 
     public void setMenuItemClickListener(AccountListItemViewModel.AccountMenuItemClickListener menuItemClickListener) {
@@ -87,7 +123,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> 
             oldViewModel.stopClock();
         }
 
-        Account account = accountList.get(position);
+        Account account = accountWrapperFactory.create(iterator.get(position));
 
         ChipGroup chipGroup = holder.itemView.findViewById(R.id.labels);
         chipGroup.removeAllViews();
@@ -100,12 +136,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> 
             chipGroup.addView(chip, new ChipGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
 
-        listItemBinding.setViewModel(new AccountListItemViewModel(accountList.get(position), codeGenerator).setMenuItemClickListener(this));
-
-        /*Account account = accountList.get(position);
-
-        listItemBinding.textAccount.setText(account.getAccountName());
-        listItemBinding.textCode.setText(codeGenerator.getFormattedCode(account));*/
+        listItemBinding.setViewModel(new AccountListItemViewModel(account, codeGenerator).setMenuItemClickListener(this));
     }
 
 
@@ -145,31 +176,35 @@ public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> 
 
     @Override
     public long getItemId(int position) {
-        return accountList == null ? RecyclerView.NO_ID : accountList.get(position).getId();
+        return iterator == null ? RecyclerView.NO_ID : iterator.get(position).get(Account.ID);
     }
 
     @Override
     public int getItemCount() {
-        return accountList != null ? accountList.size() : 0;
+        if (iterator == null) {
+            return 0;
+        }
+
+        try {
+            Cursor cursor = iterator.unwrap(Cursor.class);
+            return cursor.getCount();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        close();
     }
 
     public boolean onItemMove(int fromPosition, int toPosition) {
-        if (fromPosition < toPosition) {
-            for (int i = fromPosition; i < toPosition; i++) {
-                Collections.swap(accountList, i, i + 1);
-            }
-        } else {
-            for (int i = fromPosition; i > toPosition; i--) {
-                Collections.swap(accountList, i, i - 1);
-            }
+        if (moveFrom < 0) {
+            moveFrom = fromPosition;
         }
 
-        for (int i = 0; i < accountList.size(); i++) {
-            Account account = accountList.get(i);
-            if (account.getPosition() != i) {
-                account.setPosition(i);
-            }
-        }
+        moveTo = toPosition;
 
         notifyItemMoved(fromPosition, toPosition);
         return true;
@@ -185,7 +220,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<BindingViewHolder> 
         ViewDataBinding binding = holder.getBinding();
 
         switch (viewType) {
-            case AccountListAdapter.TYPE_ACCOUNT_TOTP:
+            case AccountListIteratorAdapter.TYPE_ACCOUNT_TOTP:
                 AccountListItemViewModel viewModel = ((AccountListItemBinding) binding).getViewModel();
                 if (viewModel != null) {
                     viewModel.setMode(isDragging ? AccountListItemViewModel.MODE_DRAG : AccountListItemViewModel.MODE_IDLE);

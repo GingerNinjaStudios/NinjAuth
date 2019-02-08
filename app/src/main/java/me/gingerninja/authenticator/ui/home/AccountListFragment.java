@@ -16,7 +16,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import me.gingerninja.authenticator.R;
-import me.gingerninja.authenticator.data.adapter.AccountListAdapter;
+import me.gingerninja.authenticator.data.adapter.AccountListIteratorAdapter;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.databinding.AccountListFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
@@ -32,7 +32,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
     public static final String ACCOUNT_OP_DELETE = "accountDeleted";
 
     @Inject
-    AccountListAdapter accountListAdapter;
+    AccountListIteratorAdapter accountListAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,7 +74,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
                     }
                 });
 
-        viewModel.getAccountList().observe(this, accountListAdapter::setAccountList);
+        viewModel.getAccountList2().observe(this, accountListAdapter::setResults);
 
         binding.accountList.setAdapter(accountListAdapter);
         enableListDrag(binding);
@@ -113,7 +113,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
             public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
                 super.clearView(recyclerView, viewHolder);
                 accountListAdapter.onItemDrag(viewHolder, false);
-                viewModel.saveList(accountListAdapter.getAccountList());
+                viewModel.saveListOrder(accountListAdapter.getItemCount(), accountListAdapter.getMovementAndReset());
                 Timber.v("clearView() - Drag finished");
             }
 

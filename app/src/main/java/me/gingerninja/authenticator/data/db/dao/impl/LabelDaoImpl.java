@@ -95,6 +95,13 @@ public class LabelDaoImpl implements LabelDao {
 
                         db.upsert(accountHasLabelList);
 
+                        // FIXME temporary fix of requery bug: https://github.com/requery/requery/issues/854
+                        for (AccountHasLabel hasLabel : accountHasLabelList) {
+                            hasLabel.setPosition(hasLabel.getPosition());
+                        }
+                        db.update(accountHasLabelList);
+                        // end of fix
+
                         transaction.commit();
                     } catch (Throwable t) {
                         transaction.rollback();
@@ -120,7 +127,18 @@ public class LabelDaoImpl implements LabelDao {
 
     @Override
     public Single<Label> save(Label label) {
-        return getStore().upsert(label);
+        if (label.getPosition() < 0) {
+            return getStore()
+                    .count(Label.class)
+                    .get()
+                    .single()
+                    .flatMap(cnt -> {
+                        label.setPosition(cnt);
+                        return getStore().upsert(label);
+                    });
+        } else {
+            return getStore().upsert(label);
+        }
     }
 
     @Override

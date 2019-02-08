@@ -19,6 +19,6 @@ abstract class AbstractAccountHasLabel {
     @ManyToOne
     protected Label label;
 
-    @Column(value = "0")
+    @Column(value = "0", nullable = false)
     protected int position;
 }
