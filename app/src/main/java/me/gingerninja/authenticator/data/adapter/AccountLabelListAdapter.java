@@ -14,10 +14,12 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+import io.reactivex.Single;
+import io.reactivex.disposables.Disposable;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.Label;
 import me.gingerninja.authenticator.ui.account.BaseAccountViewModel;
-import me.gingerninja.authenticator.ui.account.form.LabelClickListener;
+import me.gingerninja.authenticator.ui.home.form.LabelClickListener;
 import me.gingerninja.authenticator.util.BindingHelpers;
 import timber.log.Timber;
 
@@ -25,7 +27,7 @@ public class AccountLabelListAdapter extends RecyclerView.Adapter<AccountLabelLi
     private static final int TYPE_LABEL = R.layout.account_form_label_list_entry;
     private static final int TYPE_ADD_BUTTON = R.layout.account_form_label_list_add_item;
 
-    @NonNull
+    @Nullable
     private List<BaseAccountViewModel.LabelData> labels;
 
     private View.OnClickListener labelRemoveClickListener = v -> onLabelRemoved((Label) v.getTag());
@@ -34,9 +36,15 @@ public class AccountLabelListAdapter extends RecyclerView.Adapter<AccountLabelLi
     @Nullable
     private LabelClickListener labelClickListener;
 
-    public AccountLabelListAdapter(@NonNull List<BaseAccountViewModel.LabelData> labels) {
+    private Disposable labelsDisposable;
+
+    public AccountLabelListAdapter(@NonNull Single<List<BaseAccountViewModel.LabelData>> labels) {
         setHasStableIds(true);
-        this.labels = labels;
+
+        labelsDisposable = labels.subscribe((labelData, throwable) -> {
+            this.labels = labelData;
+            notifyDataSetChanged();
+        });
     }
 
     public AccountLabelListAdapter setLabelClickListener(@Nullable LabelClickListener labelClickListener) {
@@ -49,7 +57,7 @@ public class AccountLabelListAdapter extends RecyclerView.Adapter<AccountLabelLi
         notifyDataSetChanged();
     }
 
-    @NonNull
+    @Nullable
     public List<BaseAccountViewModel.LabelData> getLabels() {
         return labels;
     }
@@ -92,7 +100,7 @@ public class AccountLabelListAdapter extends RecyclerView.Adapter<AccountLabelLi
 
     @Override
     public int getItemCount() {
-        return labels.size() + 1;
+        return labels == null ? 1 : labels.size() + 1;
     }
 
     @Override
@@ -150,6 +158,15 @@ public class AccountLabelListAdapter extends RecyclerView.Adapter<AccountLabelLi
 
         ChipViewHolder holder = (ChipViewHolder) viewHolder;
         holder.chip.setAlpha(isDragging ? .75f : 1f);
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+
+        if (labelsDisposable != null) {
+            labelsDisposable.dispose();
+        }
     }
 
     static class ChipViewHolder extends RecyclerView.ViewHolder {

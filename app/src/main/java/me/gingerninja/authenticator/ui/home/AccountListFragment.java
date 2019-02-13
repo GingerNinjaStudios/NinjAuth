@@ -169,7 +169,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
                 getNavController().navigate(R.id.addAccountFromCameraFragment);
                 break;
             case R.id.menu_add_account_manual:
-                getNavController().navigate(R.id.addAccountFragment);
+                getNavController().navigate(R.id.accountEditorFragment);
                 break;
         }
     }
@@ -189,7 +189,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
     public void onAccountMenuItemClicked(MenuItem item, Account account) {
         switch (item.getItemId()) {
             case R.id.menu_account_edit:
-                AccountListFragmentDirections.EditAccountAction action = AccountListFragmentDirections.editAccountAction(account.getId());
+                AccountListFragmentDirections.EditAccountAction action = AccountListFragmentDirections.editAccountAction().setId(account.getId());
                 getNavController().navigate(action);
                 break;
             case R.id.menu_account_delete:

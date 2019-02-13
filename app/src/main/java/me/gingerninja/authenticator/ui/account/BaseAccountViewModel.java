@@ -3,7 +3,6 @@ package me.gingerninja.authenticator.ui.account;
 import android.os.Bundle;
 import android.view.View;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -15,16 +14,25 @@ import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableInt;
 import androidx.lifecycle.ViewModel;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.subjects.SingleSubject;
 import me.gingerninja.authenticator.BR;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.data.db.entity.AccountHasLabel;
 import me.gingerninja.authenticator.data.db.entity.Label;
 import me.gingerninja.authenticator.data.repo.AccountRepository;
+import timber.log.Timber;
 
 public abstract class BaseAccountViewModel extends ViewModel {
+    public final ObservableBoolean hasLoaded = new ObservableBoolean(false);
+
     protected Account account;
     public Data data;
+
+    private CompositeDisposable disposable = new CompositeDisposable();
 
     public ObservableInt typeSpecificTitle = new ObservableInt();
     public ObservableInt typeSpecificDesc = new ObservableInt();
@@ -34,7 +42,7 @@ public abstract class BaseAccountViewModel extends ViewModel {
     @NonNull
     protected AccountRepository accountRepository;
 
-    protected List<LabelData> labels = new LinkedList<>();
+    protected SingleSubject<List<LabelData>> labels = SingleSubject.create();
 
     private final Observable.OnPropertyChangedCallback typeChangeCallback = new Observable.OnPropertyChangedCallback() {
         @Override
@@ -51,6 +59,10 @@ public abstract class BaseAccountViewModel extends ViewModel {
     protected void onCleared() {
         super.onCleared();
 
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+        }
+
         if (data != null && data.type != null) {
             data.type.removeOnPropertyChangedCallback(typeChangeCallback);
         }
@@ -61,15 +73,45 @@ public abstract class BaseAccountViewModel extends ViewModel {
             return;
         }
 
-        account = initAccount(bundle);
-        initFieldsFromAccount();
+        //if (disposable != null) {
+        disposable.clear();
+        //}
 
-        changeTypeSpecificDetails(data.type.get());
-        data.type.addOnPropertyChangedCallback(typeChangeCallback);
+        if (data == null) {
+            data = createData();
+        }
+
+        disposable.add(getAccount(bundle)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(accountEntity -> {
+                    account = accountEntity;
+                    initFieldsFromAccount();
+                    changeTypeSpecificDetails(data.type.get());
+                    data.type.addOnPropertyChangedCallback(typeChangeCallback);
+                    hasLoaded.set(true);
+                }, throwable -> {
+                    // TODO
+                    Timber.e(throwable, "Error loading account: %s", throwable.getMessage());
+                })
+        );
+    }
+
+    protected abstract long getIdFromBundle(@Nullable Bundle bundle);
+
+    private Single<Account> getAccount(@Nullable Bundle bundle) {
+        long id = getIdFromBundle(bundle);
+
+        Timber.v("Getting account with ID #%d", id);
+
+        if (id == 0) {
+            return Single.just(createAccount(bundle));
+        } else {
+            return accountRepository.getAccount(id);
+        }
     }
 
     @NonNull
-    public List<LabelData> getLabels() {
+    public SingleSubject<List<LabelData>> getLabels() {
         return labels;
     }
 
@@ -95,19 +137,18 @@ public abstract class BaseAccountViewModel extends ViewModel {
     }
 
     @NonNull
-    protected abstract Account initAccount(@Nullable Bundle bundle);
+    protected abstract Account createAccount(@Nullable Bundle bundle);
 
     protected void initLabels() {
         if (account.getId() == 0) {
             return;
         }
 
-        labels.addAll(accountRepository
+        accountRepository
                 .getLabelsByAccount(account)
                 .map(LabelData::new)
                 .toList()
-                .blockingGet()
-        );
+                .subscribe(labels);
     }
 
     protected Data createData() {
@@ -119,7 +160,6 @@ public abstract class BaseAccountViewModel extends ViewModel {
             return;
         }
 
-        data = createData();
         data.init(account);
 
         initLabels();

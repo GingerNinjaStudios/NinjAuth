@@ -1,4 +1,4 @@
-package me.gingerninja.authenticator.ui.account.form;
+package me.gingerninja.authenticator.ui.home.form;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 import dagger.android.support.AndroidSupportInjection;
 import io.reactivex.Observable;

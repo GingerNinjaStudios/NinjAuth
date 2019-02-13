@@ -7,9 +7,9 @@
 
         <variable
             name="viewModel"
-            type="me.gingerninja.authenticator.ui.account.BaseEditableAccountViewModel" />
+            type="me.gingerninja.authenticator.ui.home.form.AccountEditorViewModel" />
 
-        <import type="me.gingerninja.authenticator.ui.account.BaseEditableAccountViewModel" />
+        <import type="me.gingerninja.authenticator.ui.home.form.AccountEditorViewModel" />
 
         <import type="android.view.View" />
     </data>
@@ -55,7 +55,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@{viewModel.mode == BaseEditableAccountViewModel.MODE_CREATE ? @string/account_new_form_title:@string/account_edit_form_title}"
+                    android:text="@{viewModel.mode == AccountEditorViewModel.MODE_CREATE ? @string/account_new_form_title:@string/account_edit_form_title}"
                     android:textColor="?colorOnSurface"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -169,7 +169,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:hint="@string/account_secret_text"
-                    android:visibility="@{viewModel.mode == BaseEditableAccountViewModel.MODE_CREATE ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{viewModel.mode == AccountEditorViewModel.MODE_CREATE ? View.VISIBLE : View.GONE}"
                     app:helperText="@string/account_secret_desc"
                     app:helperTextEnabled="true"
                     app:layout_constraintEnd_toEndOf="parent"

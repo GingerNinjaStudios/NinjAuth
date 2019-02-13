@@ -24,12 +24,6 @@
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
         <action
-            android:id="@+id/createNewAccountAction"
-            app:destination="@id/addAccountFragment" />
-        <action
-            android:id="@+id/editAccountAction"
-            app:destination="@id/editAccountFragment" />
-        <action
             android:id="@+id/openSettingsFromHomeAction"
             app:destination="@id/settingsFragment" />
         <action
@@ -37,6 +31,9 @@
             app:destination="@id/labelListFragment"
             app:popUpTo="@+id/labelListFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/editAccountAction"
+            app:destination="@id/accountEditorFragment" />
     </fragment>
     <fragment
         android:id="@+id/addAccountFromCameraFragment"
@@ -44,37 +41,8 @@
         android:label="AddAccountFromCameraFragment">
         <action
             android:id="@+id/createNewAccountFromCameraAction"
-            app:destination="@id/addAccountFragment"
+            app:destination="@id/accountEditorFragment"
             app:popUpTo="@+id/accountListFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/addAccountFragment"
-        android:name="me.gingerninja.authenticator.ui.account.form.AddAccountFragment"
-        android:label="AddAccountFragment">
-        <argument
-            android:name="url"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <action
-            android:id="@+id/saveNewAccountAction"
-            app:destination="@id/accountListFragment"
-            app:popUpTo="@+id/accountListFragment"
-            app:popUpToInclusive="true" />
-    </fragment>
-    <fragment
-        android:id="@+id/editAccountFragment"
-        android:name="me.gingerninja.authenticator.ui.account.form.EditAccountFragment"
-        android:label="EditAccountFragment">
-        <action
-            android:id="@+id/saveExistingAccountAction"
-            app:destination="@id/accountListFragment"
-            app:popUpTo="@+id/accountListFragment"
-            app:popUpToInclusive="true" />
-        <argument
-            android:name="id"
-            app:argType="long"
-            app:nullable="false" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -118,6 +86,25 @@
             android:id="@+id/saveLabelAction"
             app:destination="@id/labelListFragment"
             app:popUpTo="@+id/labelListFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountEditorFragment"
+        android:name="me.gingerninja.authenticator.ui.home.form.AccountEditorFragment"
+        android:label="AccountEditorFragment">
+        <argument
+            android:name="url"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="id"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <action
+            android:id="@+id/saveAccountAction"
+            app:destination="@id/accountListFragment"
+            app:popUpTo="@+id/accountListFragment"
             app:popUpToInclusive="true" />
     </fragment>
 </navigation>

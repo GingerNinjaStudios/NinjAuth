@@ -1,4 +1,4 @@
-package me.gingerninja.authenticator.ui.account.form;
+package me.gingerninja.authenticator.ui.home.form;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -20,12 +20,11 @@ import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.adapter.AccountLabelListAdapter;
 import me.gingerninja.authenticator.data.db.entity.Label;
 import me.gingerninja.authenticator.databinding.AccountFormFragmentBinding;
-import me.gingerninja.authenticator.ui.account.BaseEditableAccountViewModel;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
 import me.gingerninja.authenticator.ui.home.AccountListFragment;
 import timber.log.Timber;
 
-public class AddAccountFragment extends BaseFragment<AccountFormFragmentBinding> implements LabelClickListener, LabelListClickListener {
+public class AccountEditorFragment extends BaseFragment<AccountFormFragmentBinding> implements LabelClickListener, LabelListClickListener {
     private AccountLabelListAdapter labelListAdapter;
 
     @Override
@@ -34,8 +33,9 @@ public class AddAccountFragment extends BaseFragment<AccountFormFragmentBinding>
     }
 
     private void setupUi(AccountFormFragmentBinding binding, Bundle args) {
-        AddAccountViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(AddAccountViewModel.class);
+        AccountEditorViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountEditorViewModel.class);
         viewModel.init(args);
+        viewModel.setMode(AccountEditorFragmentArgs.fromBundle(args).getId() == 0 ? AccountEditorViewModel.MODE_CREATE : AccountEditorViewModel.MODE_EDIT);
         binding.setViewModel(viewModel);
 
         binding.toolbar.setNavigationOnClickListener(v -> {
@@ -51,16 +51,15 @@ public class AddAccountFragment extends BaseFragment<AccountFormFragmentBinding>
             if (event.handle()) {
                 String eventId = event.getId();
                 switch (eventId) {
-                    case AddAccountViewModel.NAV_ACTION_SAVE:
-                        AddAccountFragmentDirections.SaveNewAccountAction action = AddAccountFragmentDirections.saveNewAccountAction()
+                    case AccountEditorViewModel.NAV_ACTION_SAVE:
+                        AccountEditorFragmentDirections.SaveAccountAction action = AccountEditorFragmentDirections.saveAccountAction()
                                 .setAccountName(event.getContent())
-                                .setAccountOperation(AccountListFragment.ACCOUNT_OP_ADD);
+                                .setAccountOperation(AccountListFragment.ACCOUNT_OP_UPDATE);
                         getNavController().navigate(action);
                         break;
                 }
             }
         });
-
         // labels
         labelListAdapter = new AccountLabelListAdapter(viewModel.getLabels()).setLabelClickListener(this);
         /*FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(getContext());
@@ -76,7 +75,7 @@ public class AddAccountFragment extends BaseFragment<AccountFormFragmentBinding>
     }
 
     private void enableListDrag(@NonNull AccountFormFragmentBinding binding) {
-        BaseEditableAccountViewModel viewModel = binding.getViewModel();
+        AccountEditorViewModel viewModel = binding.getViewModel();
         ItemTouchHelper dragHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.START | ItemTouchHelper.END | ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
 
             @Override

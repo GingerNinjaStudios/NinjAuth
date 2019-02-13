@@ -5,11 +5,10 @@ import dagger.android.ContributesAndroidInjector;
 import me.gingerninja.authenticator.di.module.fragment.AccountListModule;
 import me.gingerninja.authenticator.di.module.fragment.LabelListModule;
 import me.gingerninja.authenticator.ui.account.camera.AddAccountFromCameraFragment;
-import me.gingerninja.authenticator.ui.account.form.AddAccountFragment;
-import me.gingerninja.authenticator.ui.account.form.EditAccountFragment;
-import me.gingerninja.authenticator.ui.account.form.LabelSelectorDialogFragment;
 import me.gingerninja.authenticator.ui.home.AccountListFragment;
 import me.gingerninja.authenticator.ui.home.DeleteAccountBottomFragment;
+import me.gingerninja.authenticator.ui.home.form.AccountEditorFragment;
+import me.gingerninja.authenticator.ui.home.form.LabelSelectorDialogFragment;
 import me.gingerninja.authenticator.ui.label.LabelsBottomFragment;
 import me.gingerninja.authenticator.ui.label.form.LabelEditorFragment;
 import me.gingerninja.authenticator.ui.settings.SettingsFragment;
@@ -27,10 +26,7 @@ public abstract class FragmentBuilder {
     abstract AddAccountFromCameraFragment bindAddAccountFromCameraFragment();
 
     @ContributesAndroidInjector
-    abstract AddAccountFragment bindAddAccountFragment();
-
-    @ContributesAndroidInjector
-    abstract EditAccountFragment bindEditAccountFragment();
+    abstract AccountEditorFragment bindAccountEditorFragment();
 
     @ContributesAndroidInjector
     abstract DeleteAccountBottomFragment bindDeleteAccountBottomFragment();

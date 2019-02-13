@@ -1,4 +1,4 @@
-package me.gingerninja.authenticator.ui.account.form;
+package me.gingerninja.authenticator.ui.home.form;
 
 import android.view.View;
 

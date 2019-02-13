@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.Label;
-import me.gingerninja.authenticator.ui.account.form.LabelListClickListener;
+import me.gingerninja.authenticator.ui.home.form.LabelListClickListener;
 import me.gingerninja.authenticator.util.BindingHelpers;
 
 public class AccountAvailableLabelListAdapter extends RecyclerView.Adapter<AccountAvailableLabelListAdapter.ChipViewHolder> implements LabelListClickListener {

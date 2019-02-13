@@ -1,12 +1,16 @@
-package me.gingerninja.authenticator.ui.account;
+package me.gingerninja.authenticator.ui.home.form;
 
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 
 import java.math.BigDecimal;
 
+import javax.inject.Inject;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.databinding.ObservableInt;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -15,11 +19,15 @@ import io.reactivex.disposables.Disposable;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.data.repo.AccountRepository;
+import me.gingerninja.authenticator.ui.account.BaseAccountViewModel;
+import me.gingerninja.authenticator.util.Parser;
 import me.gingerninja.authenticator.util.SingleEvent;
 import me.gingerninja.authenticator.util.validator.Validator;
 import timber.log.Timber;
 
-public abstract class BaseEditableAccountViewModel extends BaseAccountViewModel {
+public class AccountEditorViewModel extends BaseAccountViewModel {
+    public static final String NAV_ACTION_SAVE = "account.save";
+
     public static final int MODE_CREATE = 0;
     public static final int MODE_EDIT = 1;
 
@@ -27,24 +35,17 @@ public abstract class BaseEditableAccountViewModel extends BaseAccountViewModel 
     @interface Mode {
     }
 
-    public static final String NAV_ACTION_SAVE = "account.save";
-
     public Error error = new Error();
+    private Disposable saveDisposable;
+
+    private MutableLiveData<SingleEvent<String>> navAction = new MutableLiveData<>();
 
     @Mode
-    public final int mode;
+    public int mode;
 
-    protected MutableLiveData<SingleEvent<String>> navAction = new MutableLiveData<>();
-
-    protected Disposable saveDisposable;
-
-    public BaseEditableAccountViewModel(@NonNull AccountRepository accountRepository, @Mode int mode) {
+    @Inject
+    public AccountEditorViewModel(@NonNull AccountRepository accountRepository) {
         super(accountRepository);
-        this.mode = mode;
-    }
-
-    protected boolean checkValues() {
-        return ((EditableData) data).prepareAndCheckData(account, error);
     }
 
     @Override
@@ -56,23 +57,64 @@ public abstract class BaseEditableAccountViewModel extends BaseAccountViewModel 
         }
     }
 
+    public int getMode() {
+        return mode;
+    }
+
+    public AccountEditorViewModel setMode(int mode) {
+        this.mode = mode;
+        return this;
+    }
+
+    private boolean checkValues() {
+        return ((EditableData) data).prepareAndCheckData(account, error);
+    }
+
     public void onSaveClick(View view) {
         if (checkValues()) {
             saveDisposable = accountRepository
                     .addAccount(account)
                     .ignoreElement()
-                    .andThen(accountRepository.saveLabelsForAccount(account, Observable.fromIterable(labels).map(LabelData::getLabel).toList().blockingGet()))
+                    .andThen(accountRepository.saveLabelsForAccount(account, labels.flatMapObservable(Observable::fromIterable).map(LabelData::getLabel).toList().blockingGet()))
                     .subscribe(() -> navAction.postValue(new SingleEvent<>(NAV_ACTION_SAVE, account.getTitle())));
 
         }
     }
 
-    public int getMode() {
-        return mode;
-    }
-
     public LiveData<SingleEvent<String>> getNavigationAction() {
         return navAction;
+    }
+
+    @Override
+    protected long getIdFromBundle(@Nullable Bundle bundle) {
+        if (bundle == null) {
+            return 0;
+        } else {
+            return AccountEditorFragmentArgs.fromBundle(bundle).getId();
+        }
+    }
+
+    @NonNull
+    @Override
+    protected Account createAccount(@Nullable Bundle bundle) {
+        Account account;
+
+        if (bundle != null) {
+            AccountEditorFragmentArgs args = AccountEditorFragmentArgs.fromBundle(bundle);
+            if (args.getUrl() != null) {
+                account = Parser.parseUrl(args.getUrl());
+            } else {
+                account = new Account();
+                showAdvanced.set(true);
+            }
+        } else {
+            account = new Account();
+            showAdvanced.set(true);
+        }
+
+        // Parser.parseUrl(...) _could_ return null, but not in this case
+        // noinspection ConstantConditions
+        return account;
     }
 
     @Override
