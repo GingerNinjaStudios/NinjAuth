@@ -2,6 +2,7 @@ package me.gingerninja.authenticator.ui.label;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -12,17 +13,24 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.adapter.LabelListAdapter;
+import me.gingerninja.authenticator.data.db.entity.Label;
 import me.gingerninja.authenticator.databinding.LabelsFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
 import me.gingerninja.authenticator.ui.home.BottomNavigationFragment;
 
-public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> implements BottomNavigationFragment.BottomNavigationListener {
+public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> implements BottomNavigationFragment.BottomNavigationListener, LabelListItemViewModel.LabelMenuItemClickListener {
     public static final String LABEL_OP_ADD = "labelAdded";
     public static final String LABEL_OP_UPDATE = "labelUpdated";
     public static final String LABEL_OP_DELETE = "labelDeleted";
 
     @Inject
     LabelListAdapter labelListAdapter;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        labelListAdapter.setMenuItemClickListener(this);
+    }
 
     @Override
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, LabelsFragmentBinding viewDataBinding) {
@@ -85,6 +93,20 @@ public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> im
                 break;
             case R.id.nav_settings:
                 getNavController().navigate(R.id.openSettingsFromLabelsAction);
+                break;
+        }
+    }
+
+    @Override
+    public void onLabelMenuItemClicked(MenuItem item, Label label) {
+        switch (item.getItemId()) {
+            case R.id.menu_account_edit:
+                LabelsBottomFragmentDirections.EditLabelAction action = LabelsBottomFragmentDirections.editLabelAction().setId(label.getId());
+                //AccountListFragmentDirections.EditAccountAction action = AccountListFragmentDirections.editAccountAction(account.getId());
+                getNavController().navigate(action);
+                break;
+            case R.id.menu_account_delete:
+                //DeleteAccountBottomFragment.show(account, getChildFragmentManager());
                 break;
         }
     }

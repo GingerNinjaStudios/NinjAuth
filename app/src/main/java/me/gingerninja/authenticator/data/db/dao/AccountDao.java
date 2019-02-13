@@ -1,6 +1,5 @@
 package me.gingerninja.authenticator.data.db.dao;
 
-import java.util.HashMap;
 import java.util.List;
 
 import androidx.annotation.CheckResult;
@@ -18,9 +17,6 @@ public interface AccountDao {
 
     @CheckResult
     Observable<List<Account>> getAllAndListen();
-
-    /*@CheckResult
-    Observable<HashMap<Account, List<Label>>> getAllAndListen2();*/
 
     Observable<ReactiveResult<Tuple>> getAccountsAndLabelsWithListen();
 

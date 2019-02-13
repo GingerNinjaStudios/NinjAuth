@@ -48,12 +48,6 @@ public class AccountDaoImpl implements AccountDao {
                 .get()
                 .observableResult()
                 .map(accounts -> accounts.observable().toList().blockingGet());
-        /*return getStore()
-                .select(Account.class)
-                .orderBy(Account.POSITION.asc())
-                .get()
-                .observableResult()
-                .map(accounts -> accounts.observable().toList().blockingGet());*/
     }
 
     @Override
@@ -95,33 +89,10 @@ public class AccountDaoImpl implements AccountDao {
                 .observableResult();
     }
 
-    /*@Override
-    public Observable<HashMap<Account, List<Label>>> getAllAndListen2() {
-        // FIXME not good, it should be ordered by Account.POSITION
-
-        return getStore()
-                .select(AccountHasLabel.class)
-                .orderBy(AccountHasLabel.POSITION)
-                .get()
-                .observableResult()
-                .map(results -> results.observable()
-                        .collectInto(new LinkedHashMap<Account, List<Label>>(), (accountListHashMap, accountHasLabel) -> {
-                            //for (AccountHasLabel accountHasLabel : accountHasLabels) {
-                            List<Label> list = accountListHashMap.get(accountHasLabel.getAccount());
-                            if (list == null) {
-                                list = new LinkedList<>();
-                                accountListHashMap.put(accountHasLabel.getAccount(), list);
-                            }
-
-                            list.add(accountHasLabel.getLabel());
-                            //}
-                        })
-                        .blockingGet());
-    }*/
-
     @Override
     public Single<Account> save(Account account) {
         if (account.getPosition() < 0) {
+            // FIXME what happens if we delete an element?
             return getStore()
                     .count(Account.class)
                     .get()

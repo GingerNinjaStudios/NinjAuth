@@ -7,18 +7,16 @@ import java.math.BigDecimal;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.databinding.ObservableInt;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.data.repo.AccountRepository;
 import me.gingerninja.authenticator.util.SingleEvent;
+import me.gingerninja.authenticator.util.validator.Validator;
 import timber.log.Timber;
 
 public abstract class BaseEditableAccountViewModel extends BaseAccountViewModel {
@@ -98,111 +96,66 @@ public abstract class BaseEditableAccountViewModel extends BaseAccountViewModel 
 
         protected boolean prepareAndCheckData(@NonNull Account account, Error error) {
             Timber.v("Checking account data: %s", account);
-            boolean hasError;
+            Validator<String> typeValidator = createValidator(type.get(), account::setType, null);
 
-            final String rawTitle = trim(title.get());
-            final String rawAccountName = trim(accountName.get());
-            final String rawIssuer = trim(issuer.get());
-            final String rawDigits = trim(digits.get());
-            final String rawTypeSpecificData = trim(typeSpecificData.get());
-            final String rawSecret = trim(secret.get());
+            return Validator.all(
+                    createValidator(title.get(), account::setTitle, error.title::set),
+                    createValidator(accountName.get(), account::setAccountName, error.accountName::set),
+                    createValidator(secret.get(), account::setSecret, error.secret::set),
+                    Validator.from(issuer.get(), account::setIssuer, null)
+                            .process(input -> input == null ? null : input.trim()),
+                    typeValidator,
+                    createValidator(algorithm.get(), account::setAlgorithm, null),
+                    Validator.from(digits.get(), null, error.digits::set)
+                            .notNull(R.string.error_field_empty)
+                            .process(String::trim)
+                            .test(input -> !input.isEmpty(), R.string.error_field_empty)
+                            .test(TextUtils::isDigitsOnly, R.string.error_field_empty)
+                            .transform(Integer::parseInt, account::setDigits),
+                    Validator.from(typeSpecificData.get(), null, error.typeSpecificData::set)
+                            .notNull(R.string.error_field_empty)
+                            .process(String::trim)
+                            .test(input -> !input.isEmpty(), R.string.error_field_empty)
+                            .test(TextUtils::isDigitsOnly, R.string.error_field_empty)
+                            .test(input -> !typeValidator.hasFailed(), R.string.error_field_empty)
+                            .test(input -> {
+                                BigDecimal maxValue = new BigDecimal(Long.MAX_VALUE).add(BigDecimal.ONE).multiply(new BigDecimal(2));
+                                BigDecimal rawValue = new BigDecimal(input);
 
-            final String rawType = type.get();
-            final String rawAlgo = algorithm.get();
+                                int comparison = rawValue.compareTo(maxValue);
+                                long parsedData = rawValue.longValue();
 
-            hasError = !checkAndSetStringData(rawTitle, account::setTitle, error.title::set);
-            hasError |= !checkAndSetStringData(rawAccountName, account::setAccountName, error.accountName::set);
-            //hasError |= !checkAndSetStringData(rawIssuer, account::setIssuer);
-            hasError |= !checkAndSetStringData(rawSecret, account::setSecret, error.secret::set);
+                                String type1 = typeValidator.getData();
+                                if (type1 == null) {
+                                    return R.string.error_field_empty;
+                                }
 
-            account.setIssuer(rawIssuer);
+                                switch (type1) {
+                                    case Account.TYPE_TOTP:
+                                        if (parsedData == 0 || comparison >= 0) {
+                                            if (rawValue.compareTo(BigDecimal.ZERO) == 0) {
+                                                return R.string.error_field_number_zero;
+                                            } else {
+                                                return R.string.error_field_number_too_large;
+                                            }
+                                        }
+                                    case Account.TYPE_HOTP:
+                                        //account.setTypeSpecificData(parsedData);
+                                        break;
+                                }
 
-            Timber.d("Has error so far: %s", hasError);
-
-            if (!TextUtils.isEmpty(rawDigits) && TextUtils.isDigitsOnly(rawDigits)) {
-                int realDigits = Integer.parseInt(rawDigits);
-                account.setDigits(realDigits);
-                if (realDigits >= 1 && realDigits <= 8) {
-                    error.digits.set(0);
-                } else {
-                    error.digits.set(R.string.error_field_number_1to8);
-                }
-            } else {
-                Timber.d("Digits are empty");
-                hasError = true;
-                error.digits.set(R.string.error_field_empty);
-            }
-
-            if (!TextUtils.isEmpty(rawType) && !TextUtils.isEmpty(rawTypeSpecificData) && TextUtils.isDigitsOnly(rawTypeSpecificData)) {
-                BigDecimal maxValue = new BigDecimal(Long.MAX_VALUE).add(BigDecimal.ONE).multiply(new BigDecimal(2));
-                BigDecimal rawValue = new BigDecimal(rawTypeSpecificData);
-                int comparison = rawValue.compareTo(maxValue);
-                long parsedData = rawValue.longValue();
-
-                switch (rawType) {
-                    case Account.TYPE_TOTP:
-                        if (parsedData == 0 || comparison >= 0) {
-                            error.typeSpecificData.set(rawValue.compareTo(BigDecimal.ZERO) == 0 ? R.string.error_field_number_zero : R.string.error_field_number_too_large);
-                            hasError = true;
-                            break;
-                        }
-                    case Account.TYPE_HOTP:
-                        account.setTypeSpecificData(parsedData);
-                        break;
-                }
-            } else {
-                Timber.d("Type is empty");
-                error.typeSpecificData.set(R.string.error_field_empty);
-                hasError = true;
-            }
-
-            if (!TextUtils.isEmpty(rawAlgo)) {
-                switch (rawAlgo) {
-                    case Account.ALGO_SHA1:
-                        account.setAlgorithm(Account.ALGO_SHA1);
-                        break;
-                    case Account.ALGO_SHA256:
-                        account.setAlgorithm(Account.ALGO_SHA256);
-                        break;
-                    case Account.ALGO_SHA512:
-                        account.setAlgorithm(Account.ALGO_SHA512);
-                        break;
-                    default:
-                        // invalid algorithm type
-                        Timber.d("Invalid algorithm selected: %s", rawAlgo);
-                        hasError = true;
-                }
-            } else {
-                Timber.d("Algorithm is empty");
-                hasError = true;
-            }
-
-            return !hasError;
+                                return Validator.RESULT_OK;
+                            })
+                            .transform(input -> new BigDecimal(input).longValue(), account::setTypeSpecificData)
+            );
         }
 
-        @Nullable
-        private String trim(@Nullable String data) {
-            if (data == null) {
-                return null;
-            } else {
-                return data.trim();
-            }
-        }
-
-        private boolean checkAndSetStringData(String value, Function<String, Account> function, Consumer<Integer> errorFunction) {
-            try {
-                if (!TextUtils.isEmpty(value) && !TextUtils.isEmpty(value.trim())) {
-                    function.apply(value.trim());
-                    errorFunction.accept(0);
-                    return true;
-                } else {
-                    errorFunction.accept(R.string.error_field_empty);
-                    return false;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return false;
+        private Validator<String> createValidator(String value, Validator.Consumer<String> onSuccess, Validator.Consumer<Integer> onError) {
+            return Validator
+                    .from(value, onSuccess, onError)
+                    .notNull(R.string.error_field_empty)
+                    .process(String::trim)
+                    .test(input -> !input.isEmpty(), R.string.error_field_empty);
         }
     }
 }

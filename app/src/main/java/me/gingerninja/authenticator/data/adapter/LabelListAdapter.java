@@ -1,6 +1,7 @@
 package me.gingerninja.authenticator.data.adapter;
 
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.ViewGroup;
 
 import java.util.List;
@@ -13,8 +14,10 @@ import me.gingerninja.authenticator.data.db.entity.Label;
 import me.gingerninja.authenticator.databinding.LabelListItemBinding;
 import me.gingerninja.authenticator.ui.label.LabelListItemViewModel;
 
-public class LabelListAdapter extends RecyclerView.Adapter<BindingViewHolder> {
+public class LabelListAdapter extends RecyclerView.Adapter<BindingViewHolder> implements LabelListItemViewModel.LabelMenuItemClickListener {
     private List<Label> labelList;
+
+    private LabelListItemViewModel.LabelMenuItemClickListener menuItemClickListener;
 
     @NonNull
     @Override
@@ -25,7 +28,7 @@ public class LabelListAdapter extends RecyclerView.Adapter<BindingViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull BindingViewHolder holder, int position) {
         LabelListItemBinding binding = (LabelListItemBinding) holder.getBinding();
-        binding.setViewModel(new LabelListItemViewModel(labelList.get(position)));
+        binding.setViewModel(new LabelListItemViewModel(labelList.get(position)).setMenuItemClickListener(this));
     }
 
     @Override
@@ -36,5 +39,16 @@ public class LabelListAdapter extends RecyclerView.Adapter<BindingViewHolder> {
     public void setLabelList(List<Label> labelList) {
         this.labelList = labelList;
         notifyDataSetChanged();
+    }
+
+    public void setMenuItemClickListener(LabelListItemViewModel.LabelMenuItemClickListener menuItemClickListener) {
+        this.menuItemClickListener = menuItemClickListener;
+    }
+
+    @Override
+    public void onLabelMenuItemClicked(MenuItem item, Label label) {
+        if (menuItemClickListener != null) {
+            menuItemClickListener.onLabelMenuItemClicked(item, label);
+        }
     }
 }

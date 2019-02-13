@@ -119,4 +119,10 @@
     <string name="delete_account_dialog_title">Are you sure you want to delete this account?</string>
     <string name="delete_account_dialog_acc_name">Account name:</string>
     <string name="delete_account_dialog_acc_issuer">Issuer:</string>
+
+    <plurals name="label_used_by_accounts">
+        <item quantity="zero">Unused</item>
+        <item quantity="one">Used by %d account</item>
+        <item quantity="other">Used by %d accounts</item>
+    </plurals>
 </resources>
