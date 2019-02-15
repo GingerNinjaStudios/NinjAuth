@@ -6,9 +6,13 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
+import android.text.TextUtils;
 import android.util.Base64;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyStore;
@@ -18,8 +22,10 @@ import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
 import java.util.concurrent.Executors;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
@@ -34,6 +40,7 @@ import javax.inject.Singleton;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import androidx.biometric.BiometricConstants;
 import androidx.biometric.BiometricPrompt;
@@ -44,11 +51,11 @@ import timber.log.Timber;
 
 @Singleton
 public class Crypto {
-    private static final String PROTECTION_MODE_NONE = "none";
-    private static final String PROTECTION_MODE_PIN = "pin";
-    private static final String PROTECTION_MODE_PASSWORD = "password";
-    private static final String PROTECTION_MODE_BIO_PIN = "bio_pin";
-    private static final String PROTECTION_MODE_BIO_PASSWORD = "bio_password";
+    public static final String PROTECTION_MODE_NONE = "none";
+    public static final String PROTECTION_MODE_PIN = "pin";
+    public static final String PROTECTION_MODE_PASSWORD = "password";
+    public static final String PROTECTION_MODE_BIO_PIN = "bio_pin";
+    public static final String PROTECTION_MODE_BIO_PASSWORD = "bio_password";
 
     @StringDef({PROTECTION_MODE_NONE, PROTECTION_MODE_PIN, PROTECTION_MODE_PASSWORD, PROTECTION_MODE_BIO_PIN, PROTECTION_MODE_BIO_PASSWORD})
     @interface ProtectionMode {
@@ -56,6 +63,10 @@ public class Crypto {
 
     private static final String KEYSTORE_PROVIDER = "AndroidKeyStore";
     private static final String KEY_ALIAS_BIOMETRIC = "biometric";
+
+    private static final String KEY_MASTER_PASS = "key_pass";
+    private static final String KEY_MASTER_BIO = "key_bio";
+
     public static final int AUTH_MODE_PASSWORD = 0;
     public static final int AUTH_MODE_BIOMETRIC = 1;
 
@@ -69,39 +80,11 @@ public class Crypto {
     @NonNull
     private final SharedPreferences sharedPrefs;
 
-    private final BiometricPrompt.AuthenticationCallback biometricCallback = new BiometricPrompt.AuthenticationCallback() {
-        @Override
-        public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
-            super.onAuthenticationError(errorCode, errString);
-            Timber.d("[AUTH] error: %d, str: %s", errorCode, errString);
-            switch (errorCode) {
-                case BiometricConstants.ERROR_NEGATIVE_BUTTON:
-                    // TODO use password
-                    break;
-                case BiometricConstants.ERROR_LOCKOUT:
-                    // TODO Too many attempts. Try again later.
-                    break;
-            }
-        }
-
-        @Override
-        public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
-            super.onAuthenticationSucceeded(result);
-            Timber.d("[AUTH] success: %s, crypto: %s", result, result.getCryptoObject());
-        }
-
-        @Override
-        public void onAuthenticationFailed() {
-            super.onAuthenticationFailed();
-            Timber.d("[AUTH] failed");
-        }
-    };
-
     private SecureRandom secureRandom = new SecureRandom();
     private KeyStore keyStore;
 
     @ProtectionMode
-    private String protectionMode = null;
+    private String protectionMode;
 
     @Inject
     Crypto(Context context, @NonNull DatabaseHandler dbHandler, @NonNull SharedPreferences sharedPrefs) {
@@ -122,6 +105,16 @@ public class Crypto {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void openDatabase(SecretKey secretKey) {
+        String encrypted = sharedPrefs.getString("", null);
+    }
+
+    public void update(@NonNull ChangeRequest changeRequest) {
+        if (changeRequest.isChangingProtectionMode(protectionMode)) {
+
         }
     }
 
@@ -189,13 +182,87 @@ public class Crypto {
         secureRandom.nextBytes(salt);
 
         SecretKey passwordKey = generatePasswordKey(password, salt);
-        // TODO
+        String passwordWrappedKey = Base64.encodeToString(salt, Base64.NO_PADDING | Base64.NO_WRAP) + '.' + wrapKeyAndEncode(master, passwordKey);
+        // TODO save passwordWrappedKey
 
         if (useBiometrics && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             SecretKey biometricKey = generateBiometricKeyApi23();
             String biometricWrappedKey = wrapKeyAndEncode(master, biometricKey);
             // TODO save the biometricWrappedKey
         }
+    }
+
+    private String encrypt(SecretKey secretKey, char[] chars) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
+        ByteBuffer byteBuffer = StandardCharsets.UTF_8.encode(CharBuffer.wrap(chars));
+        byte[] bytes = Arrays.copyOf(byteBuffer.array(), byteBuffer.limit());
+
+        return encrypt(secretKey, bytes);
+    }
+
+    private String encrypt(SecretKey secretKey, byte[] bytes) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+        byte[] iv = new byte[12];
+        secureRandom.nextBytes(iv);
+
+        // creating the cipher
+        final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        GCMParameterSpec parameterSpec = new GCMParameterSpec(128, iv); //128 bit auth tag length
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey, parameterSpec);
+        byte[] encryptedRaw = cipher.doFinal(bytes);
+
+        Arrays.fill(bytes, (byte) 0);
+
+        byte[] results = new byte[1 + iv.length + encryptedRaw.length]; // IV-length + IV + wrapped key
+        results[0] = (byte) iv.length;
+        System.arraycopy(iv, 0, results, 1, iv.length);
+        System.arraycopy(encryptedRaw, 0, results, 1 + iv.length, encryptedRaw.length);
+
+        Arrays.fill(iv, (byte) 0);
+
+        return Base64.encodeToString(results, Base64.NO_PADDING | Base64.NO_WRAP);
+    }
+
+    private char[] decryptToChars(SecretKey secretKey, String encoded) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
+        byte[] decrypted = decrypt(secretKey, encoded);
+
+        CharBuffer charBuffer = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(decrypted));
+        char[] data = Arrays.copyOf(charBuffer.array(), charBuffer.limit());
+
+        Arrays.fill(decrypted, (byte) 0);
+
+        return data;
+    }
+
+    private byte[] decrypt(SecretKey secretKey, String encoded) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+        byte[] data = Base64.decode(encoded, Base64.NO_PADDING | Base64.NO_WRAP);
+
+        int ivLength = data[0];
+        byte[] iv = new byte[ivLength];
+        System.arraycopy(data, 0, iv, 0, ivLength);
+
+        byte[] encrypted = new byte[data.length - iv.length - 1];
+        System.arraycopy(data, 1 + ivLength, encrypted, 0, encrypted.length);
+
+        final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        GCMParameterSpec parameterSpec = new GCMParameterSpec(128, iv); //128 bit auth tag length
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, parameterSpec);
+        return cipher.doFinal(encrypted);
+    }
+
+    private Cipher getCipherForDecryption(SecretKey secretKey, String encoded) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
+        byte[] data = Base64.decode(encoded, Base64.NO_PADDING | Base64.NO_WRAP);
+
+        int ivLength = data[0];
+        byte[] iv = new byte[ivLength];
+        System.arraycopy(data, 0, iv, 0, ivLength);
+
+        byte[] encrypted = new byte[data.length - iv.length - 1];
+        System.arraycopy(data, 1 + ivLength, encrypted, 0, encrypted.length);
+
+        final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        GCMParameterSpec parameterSpec = new GCMParameterSpec(128, iv); //128 bit auth tag length
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, parameterSpec);
+
+        return cipher;
     }
 
     private String wrapKeyAndEncode(SecretKey keyToWrap, SecretKey wrapper) throws IllegalBlockSizeException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException {
@@ -242,6 +309,7 @@ public class Crypto {
         System.arraycopy(data, 0, iv, 0, ivLength);
 
         byte[] wrappedKey = new byte[data.length - iv.length - 1];
+        System.arraycopy(data, 1 + ivLength, wrappedKey, 0, wrappedKey.length);
 
         // creating the cipher
         final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
@@ -300,5 +368,58 @@ public class Crypto {
         keyGenerator.init(specBuilder.build());
 
         return keyGenerator.generateKey();
+    }
+
+    public static class ChangeRequest {
+        @Nullable
+        private final char[] oldPassword;
+
+        @Nullable
+        private char[] newPassword;
+
+        @Nullable
+        @ProtectionMode
+        private String protectionMode;
+
+        public ChangeRequest(@Nullable char[] oldPassword) {
+            this.oldPassword = oldPassword;
+        }
+
+        @Nullable
+        public char[] getOldPassword() {
+            return oldPassword;
+        }
+
+        @Nullable
+        public char[] getNewPassword() {
+            return newPassword;
+        }
+
+        public ChangeRequest setNewPassword(@Nullable char[] newPassword) {
+            this.newPassword = newPassword;
+            return this;
+        }
+
+        @Nullable
+        public String getProtectionMode() {
+            return protectionMode;
+        }
+
+        public ChangeRequest setProtectionMode(String protectionMode) {
+            this.protectionMode = protectionMode;
+            return this;
+        }
+
+        boolean isChangingProtectionMode(@ProtectionMode String oldProtectionMode) {
+            return !TextUtils.equals(oldProtectionMode, protectionMode);
+        }
+
+        boolean isChangingPassword() {
+            if (newPassword == null) {
+                return false;
+            }
+
+            return !Arrays.equals(oldPassword, newPassword);
+        }
     }
 }
