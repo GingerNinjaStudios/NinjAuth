@@ -3,6 +3,7 @@ package me.gingerninja.authenticator.ui.account;
 import android.os.Bundle;
 import android.view.View;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -141,6 +142,7 @@ public abstract class BaseAccountViewModel extends ViewModel {
 
     protected void initLabels() {
         if (account.getId() == 0) {
+            labels.onSuccess(new ArrayList<>());
             return;
         }
 
