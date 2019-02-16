@@ -207,6 +207,9 @@ public class Crypto {
         final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         GCMParameterSpec parameterSpec = new GCMParameterSpec(128, iv); //128 bit auth tag length
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, parameterSpec);
+
+        iv = cipher.getIV(); // needed for GCM as Android may change the IV
+
         byte[] encryptedRaw = cipher.doFinal(bytes);
 
         Arrays.fill(bytes, (byte) 0);
@@ -289,6 +292,9 @@ public class Crypto {
         final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         GCMParameterSpec parameterSpec = new GCMParameterSpec(128, iv); //128 bit auth tag length
         cipher.init(Cipher.WRAP_MODE, wrapper, parameterSpec);
+
+        iv = cipher.getIV(); // needed for GCM as Android may change the IV
+
         byte[] wrappedKey = cipher.wrap(keyToWrap);
 
         byte[] results = new byte[1 + iv.length + wrappedKey.length]; // IV-length + IV + wrapped key
