@@ -1,6 +1,7 @@
 package me.gingerninja.authenticator.crypto;
 
 import android.annotation.TargetApi;
+import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -15,6 +16,7 @@ import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -37,6 +39,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.security.auth.DestroyFailedException;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -44,7 +47,14 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import androidx.biometric.BiometricConstants;
 import androidx.biometric.BiometricPrompt;
+import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 import androidx.fragment.app.FragmentActivity;
+import io.reactivex.Completable;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.CompletableSubject;
+import io.reactivex.subjects.SingleSubject;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.provider.DatabaseHandler;
 import timber.log.Timber;
@@ -61,6 +71,14 @@ public class Crypto {
     @interface ProtectionMode {
     }
 
+    @IntDef({Cipher.ENCRYPT_MODE, Cipher.WRAP_MODE})
+    @interface CipherPurposeWrite {
+    }
+
+    @IntDef({Cipher.DECRYPT_MODE, Cipher.UNWRAP_MODE})
+    @interface CipherPurposeRead {
+    }
+
     private static final String KEYSTORE_PROVIDER = "AndroidKeyStore";
     private static final String KEY_ALIAS_BIOMETRIC = "biometric";
 
@@ -75,6 +93,11 @@ public class Crypto {
     }
 
     @NonNull
+    private final Context context;
+
+    private final KeyguardManager keyguardManager;
+
+    @NonNull
     private final DatabaseHandler dbHandler;
 
     @NonNull
@@ -86,13 +109,24 @@ public class Crypto {
     @ProtectionMode
     private String protectionMode;
 
+    private final Features features;
+
     @Inject
-    Crypto(Context context, @NonNull DatabaseHandler dbHandler, @NonNull SharedPreferences sharedPrefs) {
+    Crypto(@NonNull Context context, @NonNull DatabaseHandler dbHandler, @NonNull SharedPreferences sharedPrefs) {
+        this.context = context.getApplicationContext();
         this.dbHandler = dbHandler;
         this.sharedPrefs = sharedPrefs;
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            keyguardManager = context.getSystemService(KeyguardManager.class);
+        } else {
+            keyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+        }
+
         String sharedPrefsProtKey = context.getString(R.string.settings_protection_key);
         protectionMode = sharedPrefs.getString(sharedPrefsProtKey, null);
+
+        features = new Features();
 
         try {
             keyStore = KeyStore.getInstance("AndroidKeyStore");
@@ -108,8 +142,58 @@ public class Crypto {
         }
     }
 
+    public Features getFeatures() {
+        return features;
+    }
+
+    public Completable test(FragmentActivity fragmentActivity) {
+        return Completable.fromAction(() -> {
+            testImpl(fragmentActivity);
+        })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private void testImpl(FragmentActivity fragmentActivity) {
+        try {
+            Timber.v("Creating keys");
+            create(fragmentActivity, "fake".toCharArray(), true).blockingAwait();
+        } catch (Throwable t) {
+            Timber.e(t, "Crypto error: %s", t.getMessage());
+        } finally {
+            try {
+                keyStore.deleteEntry(KEY_ALIAS_BIOMETRIC);
+            } catch (KeyStoreException e) {
+                Timber.e(e, "Cannot delete biometric key: %s", e.getMessage());
+            }
+
+            sharedPrefs.edit().remove(KEY_MASTER_BIO).remove(KEY_MASTER_PASS).commit();
+        }
+    }
+
+    // TODO how to store auto-backup password securely in memory
+    /*
+    Initial setup:
+        1. create RSA key in AndroidKeyStore with setEncryptionRequired()
+
+    Usage:
+        1. read & decrypt the auto-backup password
+        2. get RSA key from AndroidKeyStore
+        3. encrypt the auto-backup password using RSA and store those bytes anywhere
+            a. if exception is thrown at the cipher, the RSA key must be regenerated first
+        4. when the password is needed, use the RSA key to decrypt the data into a char array
+     */
+
     private void openDatabase(SecretKey secretKey) {
         String encrypted = sharedPrefs.getString("", null);
+    }
+
+    private boolean isDeviceSecure() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return keyguardManager.isDeviceSecure();
+        } else {
+            return keyguardManager.isKeyguardSecure();
+        }
     }
 
     public void update(@NonNull ChangeRequest changeRequest) {
@@ -125,7 +209,7 @@ public class Crypto {
     public void authenticate(@NonNull FragmentActivity activity, @AuthMode int mode) {
         switch (mode) {
             case AUTH_MODE_BIOMETRIC:
-                authenticateBiometric(activity);
+                authenticateBiometric(activity, null); // TODO
                 break;
             case AUTH_MODE_PASSWORD:
                 authenticatePassword(activity);
@@ -137,15 +221,17 @@ public class Crypto {
         // TODO
     }
 
-    private void authenticateBiometric(@NonNull FragmentActivity activity) {
+    private Single<BiometricPrompt.CryptoObject> authenticateBiometric(@NonNull FragmentActivity activity, @NonNull Cipher cipher) {
+        SingleSubject<BiometricPrompt.CryptoObject> subject = SingleSubject.create();
+
         BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
                 .setTitle("Auth user")
                 .setNegativeButtonText("Use password")
                 .build();
 
-        BiometricPrompt.CryptoObject cryptoObject = null;// TODO new BiometricPrompt.CryptoObject();
+        BiometricPrompt.CryptoObject cryptoObject = new BiometricPrompt.CryptoObject(cipher);
 
-        new BiometricPrompt(activity, Executors.newSingleThreadExecutor(), new BiometricPrompt.AuthenticationCallback() {
+        BiometricPrompt prompt = new BiometricPrompt(activity, Executors.newSingleThreadExecutor(), new BiometricPrompt.AuthenticationCallback() {
             @Override
             public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                 super.onAuthenticationError(errorCode, errString);
@@ -159,56 +245,91 @@ public class Crypto {
                         // TODO Too many attempts. Try again later.
                         break;
                 }
+
+                subject.onError(new BiometricException(errorCode, errString));
             }
 
             @Override
             public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
                 Timber.d("[AUTH] success: %s, crypto: %s", result, result.getCryptoObject());
+
+                //noinspection ConstantConditions
+                subject.onSuccess(result.getCryptoObject());
             }
 
             @Override
             public void onAuthenticationFailed() {
                 super.onAuthenticationFailed();
                 Timber.d("[AUTH] failed");
+                subject.onError(new AuthenticationFailedException());
             }
-        })
-                .authenticate(promptInfo);
+        });
+
+        Single.just(prompt)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(biometricPrompt -> biometricPrompt.authenticate(promptInfo, cryptoObject));
+
+
+        return subject.hide();
     }
 
-    private void create(char[] password, boolean useBiometrics) throws InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException {
+    private Completable create(FragmentActivity fragmentActivity, char[] password, boolean useBiometrics) throws InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException {
+        CompletableSubject subject = CompletableSubject.create();
+
         SecretKey master = generateMasterKey();
         byte[] salt = new byte[16];
         secureRandom.nextBytes(salt);
 
         SecretKey passwordKey = generatePasswordKey(password, salt);
-        String passwordWrappedKey = Base64.encodeToString(salt, Base64.NO_PADDING | Base64.NO_WRAP) + '.' + wrapKeyAndEncode(master, passwordKey);
-        // TODO save passwordWrappedKey
+        Cipher passwordCipher = getCipher(Cipher.WRAP_MODE, passwordKey, false);
+        String passwordWrappedKey = Base64.encodeToString(salt, Base64.NO_PADDING | Base64.NO_WRAP) + '.' + wrapKeyAndEncode(master, passwordCipher);
+
+        try {
+            passwordKey.destroy();
+        } catch (DestroyFailedException e) {
+            Timber.e(e, "Cannot destroy password key: %s", e.getMessage());
+        }
+
+        // save passwordWrappedKey
+        sharedPrefs.edit().putString(KEY_MASTER_PASS, passwordWrappedKey).apply();
 
         if (useBiometrics && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             SecretKey biometricKey = generateBiometricKeyApi23();
-            String biometricWrappedKey = wrapKeyAndEncode(master, biometricKey);
-            // TODO save the biometricWrappedKey
+            Cipher biometricCipher = getCipher(Cipher.WRAP_MODE, biometricKey, true);
+
+            authenticateBiometric(fragmentActivity, biometricCipher)
+                    .doAfterTerminate(() -> {
+                        try {
+                            biometricKey.destroy();
+                        } catch (Throwable e) {
+                            Timber.e(e, "Cannot destroy biometric key: %s", e.getMessage());
+                        }
+                        subject.onComplete();
+                    })
+                    .subscribe(cryptoObject -> {
+                        String biometricWrappedKey = wrapKeyAndEncode(master, cryptoObject.getCipher());
+                        // save the biometricWrappedKey
+                        sharedPrefs.edit().putString(KEY_MASTER_BIO, biometricWrappedKey).apply();
+                    }, throwable -> {
+                        Timber.e(throwable, "Failed to wrap and encode master key with biometric: %s", throwable.getMessage());
+                    });
+        } else {
+            subject.onComplete();
         }
+
+        return subject;
     }
 
-    private String encrypt(SecretKey secretKey, char[] chars) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
+    private String encrypt(Cipher cipher, char[] chars) throws IllegalBlockSizeException, BadPaddingException {
         ByteBuffer byteBuffer = StandardCharsets.UTF_8.encode(CharBuffer.wrap(chars));
         byte[] bytes = Arrays.copyOf(byteBuffer.array(), byteBuffer.limit());
 
-        return encrypt(secretKey, bytes);
+        return encrypt(cipher, bytes);
     }
 
-    private String encrypt(SecretKey secretKey, byte[] bytes) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        byte[] iv = new byte[12];
-        secureRandom.nextBytes(iv);
-
-        // creating the cipher
-        final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-        GCMParameterSpec parameterSpec = new GCMParameterSpec(128, iv); //128 bit auth tag length
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey, parameterSpec);
-
-        iv = cipher.getIV(); // needed for GCM as Android may change the IV
+    private String encrypt(Cipher cipher, byte[] bytes) throws BadPaddingException, IllegalBlockSizeException {
+        byte[] iv = cipher.getIV(); // needed for GCM as Android may change the IV
 
         byte[] encryptedRaw = cipher.doFinal(bytes);
 
@@ -224,8 +345,8 @@ public class Crypto {
         return Base64.encodeToString(results, Base64.NO_PADDING | Base64.NO_WRAP);
     }
 
-    private char[] decryptToChars(SecretKey secretKey, String encoded) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
-        byte[] decrypted = decrypt(secretKey, encoded);
+    private char[] decryptToChars(Cipher cipher, String encoded) throws IllegalBlockSizeException, BadPaddingException {
+        byte[] decrypted = decrypt(cipher, encoded);
 
         CharBuffer charBuffer = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(decrypted));
         char[] data = Arrays.copyOf(charBuffer.array(), charBuffer.limit());
@@ -235,65 +356,31 @@ public class Crypto {
         return data;
     }
 
-    private byte[] decrypt(SecretKey secretKey, String encoded) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+    private byte[] decrypt(Cipher cipher, String encoded) throws BadPaddingException, IllegalBlockSizeException {
         byte[] data = Base64.decode(encoded, Base64.NO_PADDING | Base64.NO_WRAP);
 
         int ivLength = data[0];
-        byte[] iv = new byte[ivLength];
-        System.arraycopy(data, 0, iv, 0, ivLength);
 
-        byte[] encrypted = new byte[data.length - iv.length - 1];
+        byte[] encrypted = new byte[data.length - ivLength - 1];
         System.arraycopy(data, 1 + ivLength, encrypted, 0, encrypted.length);
 
-        final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-        GCMParameterSpec parameterSpec = new GCMParameterSpec(128, iv); //128 bit auth tag length
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, parameterSpec);
         return cipher.doFinal(encrypted);
     }
 
-    private Cipher getCipherForDecryption(SecretKey secretKey, String encoded) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
-        byte[] data = Base64.decode(encoded, Base64.NO_PADDING | Base64.NO_WRAP);
-
-        int ivLength = data[0];
-        byte[] iv = new byte[ivLength];
-        System.arraycopy(data, 0, iv, 0, ivLength);
-
-        byte[] encrypted = new byte[data.length - iv.length - 1];
-        System.arraycopy(data, 1 + ivLength, encrypted, 0, encrypted.length);
-
-        final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-        GCMParameterSpec parameterSpec = new GCMParameterSpec(128, iv); //128 bit auth tag length
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, parameterSpec);
-
-        return cipher;
-    }
-
-    private String wrapKeyAndEncode(SecretKey keyToWrap, SecretKey wrapper) throws IllegalBlockSizeException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException {
-        return Base64.encodeToString(wrapKey(keyToWrap, wrapper), Base64.NO_PADDING | Base64.NO_WRAP);
+    private String wrapKeyAndEncode(SecretKey keyToWrap, Cipher cipher) throws IllegalBlockSizeException, InvalidKeyException {
+        return Base64.encodeToString(wrapKey(keyToWrap, cipher), Base64.NO_PADDING | Base64.NO_WRAP);
     }
 
     /**
      * @param keyToWrap
-     * @param wrapper
+     * @param cipher
      * @return a byte array containing the length of the IV (the first byte), the IV itself, and the
      * wrapped key
-     * @throws NoSuchAlgorithmException
-     * @throws NoSuchPaddingException
-     * @throws InvalidAlgorithmParameterException
      * @throws InvalidKeyException
      * @throws IllegalBlockSizeException
      */
-    private byte[] wrapKey(SecretKey keyToWrap, SecretKey wrapper) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException {
-        // creating IV for AES
-        byte[] iv = new byte[12];
-        secureRandom.nextBytes(iv);
-
-        // creating the cipher
-        final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-        GCMParameterSpec parameterSpec = new GCMParameterSpec(128, iv); //128 bit auth tag length
-        cipher.init(Cipher.WRAP_MODE, wrapper, parameterSpec);
-
-        iv = cipher.getIV(); // needed for GCM as Android may change the IV
+    private byte[] wrapKey(SecretKey keyToWrap, Cipher cipher) throws InvalidKeyException, IllegalBlockSizeException {
+        byte[] iv = cipher.getIV(); // needed for GCM as Android may change the IV
 
         byte[] wrappedKey = cipher.wrap(keyToWrap);
 
@@ -305,23 +392,75 @@ public class Crypto {
         return results;
     }
 
-    private SecretKey unwrapKey(String data, SecretKey wrapper) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
-        return unwrapKey(Base64.decode(data, Base64.NO_PADDING | Base64.NO_WRAP), wrapper);
+    private SecretKey unwrapKey(String data, Cipher cipher) throws NoSuchAlgorithmException, InvalidKeyException {
+        return unwrapKey(Base64.decode(data, Base64.NO_PADDING | Base64.NO_WRAP), cipher);
     }
 
-    private SecretKey unwrapKey(byte[] data, SecretKey wrapper) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
+    private SecretKey unwrapKey(byte[] data, Cipher cipher) throws NoSuchAlgorithmException, InvalidKeyException {
+        int ivLength = data[0];
+        byte[] wrappedKey = new byte[data.length - ivLength - 1];
+        System.arraycopy(data, 1 + ivLength, wrappedKey, 0, wrappedKey.length);
+
+        return (SecretKey) cipher.unwrap(wrappedKey, "AES", Cipher.SECRET_KEY);
+    }
+
+    /**
+     * Gets the cipher for encrypting / wrapping purposes.
+     *
+     * @param purpose
+     * @param secretKey
+     * @param systemGeneratesIV
+     * @return
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidAlgorithmParameterException
+     * @throws InvalidKeyException
+     */
+    private Cipher getCipher(@CipherPurposeWrite int purpose, Key secretKey, boolean systemGeneratesIV) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
+        GCMParameterSpec parameterSpec = null;
+
+        if (!systemGeneratesIV) {
+            byte[] iv = new byte[12];
+            secureRandom.nextBytes(iv);
+            parameterSpec = new GCMParameterSpec(128, iv); //128 bit auth tag length
+        }
+
+        // creating the cipher
+        final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        cipher.init(purpose, secretKey, parameterSpec);
+        //GCMParameterSpec gcmspec = cipher.getParameters().getParameterSpec(GCMParameterSpec.class);
+        return cipher;
+    }
+
+    /**
+     * Gets the cipher for decrypting / unwrapping purposes.
+     *
+     * @param purpose
+     * @param secretKey
+     * @param encoded
+     * @return
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidAlgorithmParameterException
+     * @throws InvalidKeyException
+     */
+    private Cipher getCipher(@CipherPurposeRead int purpose, Key secretKey, String encoded) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
+        return getCipher(purpose, secretKey, Base64.decode(encoded, Base64.NO_PADDING | Base64.NO_WRAP));
+    }
+
+    private Cipher getCipher(@CipherPurposeRead int purpose, Key secretKey, byte[] data) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
         int ivLength = data[0];
         byte[] iv = new byte[ivLength];
         System.arraycopy(data, 0, iv, 0, ivLength);
 
-        byte[] wrappedKey = new byte[data.length - iv.length - 1];
-        System.arraycopy(data, 1 + ivLength, wrappedKey, 0, wrappedKey.length);
+        byte[] encrypted = new byte[data.length - iv.length - 1];
+        System.arraycopy(data, 1 + ivLength, encrypted, 0, encrypted.length);
 
-        // creating the cipher
         final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         GCMParameterSpec parameterSpec = new GCMParameterSpec(128, iv); //128 bit auth tag length
-        cipher.init(Cipher.UNWRAP_MODE, wrapper, parameterSpec);
-        return (SecretKey) cipher.unwrap(wrappedKey, "AES", Cipher.SECRET_KEY);
+        cipher.init(purpose, secretKey, parameterSpec);
+
+        return cipher;
     }
 
     /*private void createCipher() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException {
@@ -426,6 +565,46 @@ public class Crypto {
             }
 
             return !Arrays.equals(oldPassword, newPassword);
+        }
+    }
+
+    public class Features {
+        public static final int BIO_OK = 0;
+        public static final int BIO_DEVICE_NOT_SECURE = 1;
+        public static final int BIO_NO_FINGERPRINTS = 2;
+        public static final int BIO_NOT_AVAILABLE = 3;
+
+        public boolean hasBiometrics() {
+            return getBiometricsResults() == BIO_OK;
+        }
+
+        @SuppressWarnings("deprecation")
+        public int getBiometricsResults() {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                return BIO_NOT_AVAILABLE;
+            } else if (!isDeviceSecure()) {
+                return BIO_DEVICE_NOT_SECURE;
+            } else if (!FingerprintManagerCompat.from(context).hasEnrolledFingerprints()) {
+                return BIO_NO_FINGERPRINTS;
+            } else {
+                return BIO_OK;
+            }
+        }
+
+        public String[] getFeatureValues() {
+            if (hasBiometrics()) {
+                return context.getResources().getStringArray(R.array.settings_protection_values);
+            } else {
+                return context.getResources().getStringArray(R.array.settings_protection_values_no_bio);
+            }
+        }
+
+        public String[] getFeatureEntries() {
+            if (hasBiometrics()) {
+                return context.getResources().getStringArray(R.array.settings_protection_entries);
+            } else {
+                return context.getResources().getStringArray(R.array.settings_protection_entries_no_bio);
+            }
         }
     }
 }
