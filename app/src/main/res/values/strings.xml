@@ -1,6 +1,14 @@
 <resources>
     <string name="app_name">NinjAuth</string>
 
+    <string name="splash_welcome_msg">Welcome to NinjAuth, the open-source authenticator app!\n\nPlease, continue with the setup where you can enable authentication and auto-backup.</string>
+    <string name="btn_skip">Skip</string>
+    <string name="btn_splash_next">Continue setup</string>
+
+    <string name="skip_setup_dialog_title">Do you want to skip the setup?</string>
+    <string name="skip_setup_dialog_msg">If you skip the setup, your authentication codes will not be protected against unauthorized access and auto-backup will not be enabled.</string>
+    <string name="skip_setup_dialog_tip">You can change these settings later in the Settings menu.</string>
+
     <string name="nav_accounts_title">Accounts</string>
     <string name="nav_labels_title">Labels</string>
     <string name="nav_settings_title">Settings</string>

@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_nav"
-    app:startDestination="@id/accountListFragment">
+    app:startDestination="@id/splashFragment">
 
     <fragment
         android:id="@+id/accountListFragment"
@@ -105,6 +105,16 @@
             android:id="@+id/saveAccountAction"
             app:destination="@id/accountListFragment"
             app:popUpTo="@+id/accountListFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="me.gingerninja.authenticator.ui.setup.SplashFragment"
+        android:label="SplashFragment">
+        <action
+            android:id="@+id/skipSetupToAccountListAction"
+            app:destination="@id/accountListFragment"
+            app:popUpTo="@+id/splashFragment"
             app:popUpToInclusive="true" />
     </fragment>
 </navigation>

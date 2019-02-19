@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="settings_first_run_complete">settings_first_run_complete</string>
+
     <string name="settings_appearance_theme_key">settings_appearance_theme</string>
 
     <string name="settings_backup_auto_category_key" translatable="false">settings_backup_category_key</string>
@@ -46,6 +48,18 @@
         <item>@string/settings_prot_password_value</item>
         <item>@string/settings_prot_bio_pin_value</item>
         <item>@string/settings_prot_bio_password_value</item>
+    </string-array>
+
+    <string-array name="settings_protection_entries_no_bio">
+        <item>@string/settings_prot_none</item>
+        <item>@string/settings_prot_pin</item>
+        <item>@string/settings_prot_password</item>
+    </string-array>
+
+    <string-array name="settings_protection_values_no_bio">
+        <item>@string/settings_prot_none_value</item>
+        <item>@string/settings_prot_pin_value</item>
+        <item>@string/settings_prot_password_value</item>
     </string-array>
 
 </resources>

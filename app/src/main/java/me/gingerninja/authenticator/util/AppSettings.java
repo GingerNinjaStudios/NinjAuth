@@ -44,6 +44,14 @@ public class AppSettings {
         }
     }
 
+    public boolean isFirstRunComplete() {
+        return sharedPrefs.getBoolean(getString(R.string.settings_first_run_complete), false);
+    }
+
+    public void setFirstRunComplete() {
+        sharedPrefs.edit().putBoolean(getString(R.string.settings_first_run_complete), true).apply();
+    }
+
     @Nullable
     public Uri getAutoBackupUri() {
         String uriStr = sharedPrefs.getString(getString(R.string.settings_backup_uri_key), null);

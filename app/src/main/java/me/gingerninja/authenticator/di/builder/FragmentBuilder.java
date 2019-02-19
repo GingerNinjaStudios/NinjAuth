@@ -13,11 +13,15 @@ import me.gingerninja.authenticator.ui.label.LabelsBottomFragment;
 import me.gingerninja.authenticator.ui.label.form.LabelEditorFragment;
 import me.gingerninja.authenticator.ui.settings.SettingsFragment;
 import me.gingerninja.authenticator.ui.settings.SettingsScreenFragment;
+import me.gingerninja.authenticator.ui.setup.SplashFragment;
 
 @Module
 public abstract class FragmentBuilder {
     /*@ContributesAndroidInjector
     abstract BaseFragment bindBaseFragment();*/
+
+    @ContributesAndroidInjector
+    abstract SplashFragment bindSplashFragment();
 
     @ContributesAndroidInjector(modules = AccountListModule.class)
     abstract AccountListFragment bindAccountListFragment();

@@ -36,6 +36,7 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_protection_title">
         <ListPreference
+            android:defaultValue="@string/settings_prot_none_value"
             android:entries="@array/settings_protection_entries"
             android:entryValues="@array/settings_protection_values"
             android:key="@string/settings_protection_key"

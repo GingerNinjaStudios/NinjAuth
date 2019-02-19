@@ -5,13 +5,13 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "me.gingerninja.authenticator"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
         versionName "0.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
-        // multiDexEnabled true
+        multiDexEnabled true
     }
 
     buildTypes {
