@@ -124,5 +124,23 @@
             app:destination="@id/accountListFragment"
             app:popUpTo="@+id/splashFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/startSetupAction"
+            app:destination="@id/setupFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/setupFragment"
+        android:name="me.gingerninja.authenticator.ui.setup.SetupFragment"
+        android:label="SetupFragment"
+        tools:layout="@layout/setup_fragment">
+        <action
+            android:id="@+id/finishSetupAction"
+            app:destination="@id/accountListFragment"
+            app:popUpTo="@+id/splashFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>

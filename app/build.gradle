@@ -97,6 +97,9 @@ dependencies {
     // Apache v2 - https://github.com/JakeWharton/timber
     api 'com.jakewharton.timber:timber:4.7.1'
 
+    // Apache v2 - https://github.com/tommybuonomo/dotsindicator
+    implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:3.0.3'
+
     // Apache v2 - https://github.com/antonKozyriatskyi/CircularProgressIndicator
     implementation 'com.github.antonKozyriatskyi:CircularProgressIndicator:1.2.2'
 

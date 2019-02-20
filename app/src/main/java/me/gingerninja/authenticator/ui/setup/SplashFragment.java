@@ -22,22 +22,20 @@ public class SplashFragment extends BaseFragment<SplashFragmentBinding> implemen
 
     private Runnable animationRunnable;
 
+    private boolean hasAnimated;
+
     @Override
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, SplashFragmentBinding binding) {
         boolean isFirstTime = !appSettings.isFirstRunComplete();
 
         if (isFirstTime) {
-            binding.btnSkipSetup.setOnClickListener(v -> {
-                SkipConfirmationBottomFragment.show(getChildFragmentManager());
-            });
+            binding.btnSkipSetup.setOnClickListener(v -> SkipConfirmationBottomFragment.show(getChildFragmentManager()));
+            binding.btnNext.setOnClickListener(v -> getNavController().navigate(R.id.startSetupAction));
 
-            binding.btnNext.setOnClickListener(v -> {
-                // TODO
-            });
-
-            if (savedInstanceState == null) {
+            if (savedInstanceState == null && !hasAnimated) {
                 animationRunnable = binding.motionLayout::transitionToEnd;
                 binding.motionLayout.postDelayed(animationRunnable, 750);
+                hasAnimated = true;
             } else {
                 binding.motionLayout.setState(R.id.end, -1, -1);
             }

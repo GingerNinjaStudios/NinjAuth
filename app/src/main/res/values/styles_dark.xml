@@ -3,6 +3,7 @@
     <!-- Base application theme. -->
     <style name="AppTheme.Dark" parent="Theme.MaterialComponents.NoActionBar">
         <!-- Customize your theme here. -->
+        <item name="dotsIndicator">@color/dotsIndicatorDark</item>
         <item name="colorPrimary">@color/colorPrimaryLight</item>
         <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
