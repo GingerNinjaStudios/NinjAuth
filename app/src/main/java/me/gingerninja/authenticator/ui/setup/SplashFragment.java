@@ -1,6 +1,8 @@
 package me.gingerninja.authenticator.ui.setup;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,8 @@ public class SplashFragment extends BaseFragment<SplashFragmentBinding> implemen
     @Inject
     AppSettings appSettings;
 
+    private Runnable animationRunnable;
+
     @Override
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, SplashFragmentBinding binding) {
         boolean isFirstTime = !appSettings.isFirstRunComplete();
@@ -32,12 +36,23 @@ public class SplashFragment extends BaseFragment<SplashFragmentBinding> implemen
             });
 
             if (savedInstanceState == null) {
-                binding.motionLayout.transitionToEnd();
+                animationRunnable = binding.motionLayout::transitionToEnd;
+                binding.motionLayout.postDelayed(animationRunnable, 750);
             } else {
                 binding.motionLayout.setState(R.id.end, -1, -1);
             }
         } else {
             getNavController().navigate(R.id.skipSetupToAccountListAction);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        if (animationRunnable != null) {
+            new Handler(Looper.getMainLooper()).removeCallbacks(animationRunnable);
+            animationRunnable = null;
         }
     }
 
