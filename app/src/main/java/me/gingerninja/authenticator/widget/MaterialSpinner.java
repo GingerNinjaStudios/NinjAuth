@@ -12,6 +12,7 @@ import android.view.MenuItem;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.BindingMethod;
@@ -43,6 +44,8 @@ public class MaterialSpinner extends TextInputEditText implements PopupMenu.OnMe
     private CharSequence value;
 
     private InverseBindingListener valueChangeListener;
+
+    private OnSpinnerChangeListener onSpinnerChangeListener;
 
     public MaterialSpinner(Context context) {
         super(context);
@@ -140,19 +143,29 @@ public class MaterialSpinner extends TextInputEditText implements PopupMenu.OnMe
     }
 
     public void setValue(CharSequence value) {
+        setValueInternal(value, false);
+    }
+
+    private void setValueInternal(CharSequence value, boolean notifySpinnerChangeListener) {
         final boolean changed = !TextUtils.equals(value, this.value);
 
-        this.value = value;
-        if (changed) {
+        if (changed && (!notifySpinnerChangeListener || onSpinnerChangeListener == null || onSpinnerChangeListener.onValueChange(value, this.value))) {
+            this.value = value;
+            //if (changed) {
             refreshText();
             if (valueChangeListener != null) {
                 valueChangeListener.onChange();
             }
+            //}
         }
     }
 
     public void setValueChangeListener(InverseBindingListener listener) {
         valueChangeListener = listener;
+    }
+
+    public void setOnSpinnerChangeListener(@Nullable OnSpinnerChangeListener onSpinnerChangeListener) {
+        this.onSpinnerChangeListener = onSpinnerChangeListener;
     }
 
     private void refreshText() {
@@ -174,7 +187,19 @@ public class MaterialSpinner extends TextInputEditText implements PopupMenu.OnMe
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        setValue(values[item.getItemId()]);
-        return false;
+        setValueInternal(values[item.getItemId()], true);
+        return true;
+    }
+
+    public interface OnSpinnerChangeListener {
+        /**
+         * Notifies about value change. Returning {@code true} means that the value actually should
+         * change internally; otherwise the old value will be retained.
+         *
+         * @param newValue the new value
+         * @param oldValue the old value
+         * @return whether the change should happen
+         */
+        boolean onValueChange(@Nullable CharSequence newValue, @Nullable CharSequence oldValue);
     }
 }

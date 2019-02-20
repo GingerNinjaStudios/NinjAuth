@@ -14,7 +14,14 @@ import me.gingerninja.authenticator.ui.base.BaseFragment;
 public class ProtectionSelectorPageFragment extends BaseFragment<SetupPageThemeSelectorBinding> {
     @Override
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, SetupPageThemeSelectorBinding binding) {
-
+        /*
+        TODO maybe set the biometrics disabled if not available due to missing fingerprints?
+        for (int i = 0; i < menuEntries.length; i++) {
+            SpannableString string = new SpannableString(menuEntries[i]);
+            string.setSpan(new ForegroundColorSpan(Color.GRAY), 0, menuEntries[i].length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            menuEntries[i] = string;
+        }
+        */
     }
 
     @Override

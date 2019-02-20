@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="me.gingerninja.authenticator.ui.setup.SetupViewModel" />
+    </data>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -68,11 +73,13 @@
                 app:layout_constraintWidth_max="240dp">
 
                 <me.gingerninja.authenticator.widget.MaterialSpinner
+                    android:id="@+id/theme_spinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:editable="false"
                     app:displayEntries="@array/settings_appearance_theme_entries"
                     app:menuEntries="@array/settings_appearance_theme_entries"
+                    app:value="@={viewModel.theme}"
                     app:values="@array/settings_appearance_theme_values" />
             </com.google.android.material.textfield.TextInputLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>

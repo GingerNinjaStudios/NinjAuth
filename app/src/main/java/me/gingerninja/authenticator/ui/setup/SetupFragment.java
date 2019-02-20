@@ -17,11 +17,15 @@ import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.adapter.SetupPagerAdapter;
 import me.gingerninja.authenticator.databinding.SetupFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
+import me.gingerninja.authenticator.util.AppSettings;
 
 public class SetupFragment extends BaseFragment<SetupFragmentBinding> implements OnBackPressedCallback {
 
     @Inject
     SetupPagerAdapter pagerAdapter;
+
+    @Inject
+    AppSettings appSettings;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,6 +58,9 @@ public class SetupFragment extends BaseFragment<SetupFragmentBinding> implements
         if (viewPager.getCurrentItem() > 0) {
             viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true);
             handled = true;
+        } else {
+            appSettings.setTemporaryTheme(null);
+            getActivity().recreate();
         }
 
         return handled;
@@ -73,6 +80,8 @@ public class SetupFragment extends BaseFragment<SetupFragmentBinding> implements
 
     private void handleBackButton(View v) {
         if (getDataBinding().viewPager.getCurrentItem() <= 0) {
+            appSettings.setTemporaryTheme(null);
+            getActivity().recreate();
             getNavController().popBackStack();
         } else {
             handleOnBackPressed();

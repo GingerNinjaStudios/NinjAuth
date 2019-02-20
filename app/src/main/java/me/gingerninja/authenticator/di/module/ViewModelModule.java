@@ -13,10 +13,16 @@ import me.gingerninja.authenticator.ui.home.DeleteAccountViewModel;
 import me.gingerninja.authenticator.ui.home.form.AccountEditorViewModel;
 import me.gingerninja.authenticator.ui.label.LabelsViewModel;
 import me.gingerninja.authenticator.ui.label.form.LabelEditorViewModel;
+import me.gingerninja.authenticator.ui.setup.SetupViewModel;
 import me.gingerninja.authenticator.viewmodel.NinjaViewModelFactory;
 
 @Module
 public abstract class ViewModelModule {
+    @Binds
+    @IntoMap
+    @ViewModelKey(SetupViewModel.class)
+    abstract ViewModel bindSetupViewModel(SetupViewModel viewModel);
+
     @Binds
     @IntoMap
     @ViewModelKey(AccountListViewModel.class)

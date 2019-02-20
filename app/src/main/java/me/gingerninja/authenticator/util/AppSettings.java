@@ -24,6 +24,12 @@ public class AppSettings {
 
     private final ModuleHandler moduleHandler;
 
+    /**
+     * Used during the setup process.
+     */
+    @Nullable
+    private String temporaryTheme;
+
     @Inject
     public AppSettings(Context context, SharedPreferences sharedPrefs, ModuleHandler moduleHandler) {
         this.context = context;
@@ -33,7 +39,7 @@ public class AppSettings {
 
     @StyleRes
     public int getTheme() {
-        String themeValue = sharedPrefs.getString(getString(R.string.settings_appearance_theme_key), getString(R.string.settings_appearance_theme_dark_value));
+        String themeValue = temporaryTheme != null ? temporaryTheme : sharedPrefs.getString(getString(R.string.settings_appearance_theme_key), getString(R.string.settings_appearance_theme_dark_value));
 
         switch (themeValue) {
             case "light":
@@ -41,6 +47,21 @@ public class AppSettings {
             case "dark":
             default:
                 return R.style.AppTheme_Dark;
+        }
+    }
+
+    public void setTemporaryTheme(@Nullable String theme) {
+        if (theme == null) {
+            temporaryTheme = null;
+        } else {
+            switch (theme) {
+                case "light":
+                case "dark":
+                    temporaryTheme = theme;
+                    break;
+                default:
+                    temporaryTheme = getString(R.string.settings_appearance_theme_dark_value);
+            }
         }
     }
 
