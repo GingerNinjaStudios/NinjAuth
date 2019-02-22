@@ -1,5 +1,6 @@
 package me.gingerninja.authenticator.util.resulthandler;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -13,7 +14,10 @@ import androidx.navigation.NavController;
 import timber.log.Timber;
 
 public interface FragmentResultListener {
-    public static void registerNavController(FragmentActivity activity, NavController navController) {
+    int RESULT_OK = Activity.RESULT_OK;
+    int RESULT_CANCELED = Activity.RESULT_CANCELED;
+
+    static void registerNavController(FragmentActivity activity, NavController navController) {
         activity.getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
             @Override
             public void onFragmentStarted(@NonNull FragmentManager fm, @NonNull Fragment f) {
@@ -51,7 +55,26 @@ public interface FragmentResultListener {
         FragmentResultViewModel rootViewModel = ResultViewModelProvider.of(source.getActivity()).get(FragmentResultViewModel.class);
         FragmentInstanceViewModel instanceViewModel = ResultViewModelProvider.of(source).get(FragmentInstanceViewModel.class);
         rootViewModel.addPendingResultRequest(instanceViewModel.who, requestCode);
-        return ResultNavController.wrap(getNavController(), instanceViewModel, requestCode);
+        return ResultNavController.wrap(getNavController(), instanceViewModel.who, requestCode);
+    }
+
+    /**
+     * Transfers the navigation result request to the next Fragment. The use case is the following:
+     * <p>
+     * {@code A -- navigateForResult --> B -- navigateForResultTransfer --> C -- setResultAndLeave(A) --> A }
+     * </p>
+     *
+     * @return the {@link ResultNavController} used for navigating forward
+     * @throws ResultNavController.ParentNotExpectingResultsException if the calling fragment is not expected to return a result
+     */
+    default ResultNavController navigateForResultTransfer() throws ResultNavController.ParentNotExpectingResultsException {
+        Fragment source = getFragment();
+
+        if (source.getActivity() == null) {
+            throw new IllegalStateException("The fragment initiating navigation for result must be attached to an Activity");
+        }
+
+        return ResultNavController.wrap(getNavController(), source);
     }
 
     default void setResultAndLeave(int resultCode) {
@@ -73,7 +96,9 @@ public interface FragmentResultListener {
             FragmentResultViewModel rootViewModel = ResultViewModelProvider.of(source.getActivity()).get(FragmentResultViewModel.class);
             rootViewModel.setResult(who, resultCode, data);
         }
-        getNavController().popBackStack();
+
+        boolean navigated = getNavController().popBackStack();
+        Timber.w("[NAV] Navigated: %s", navigated);
     }
 
     default void setResultAndLeave(int resultCode, @IdRes int destinationId, boolean inclusive) {
@@ -90,12 +115,21 @@ public interface FragmentResultListener {
         if (args != null) {
             String who = args.getString(ResultNavController.EXTRA_KEY_TARGET);
             //int requestCode = args.getInt(ResultNavController.EXTRA_KEY_REQUEST_CODE);
-            // TODO
+            // TODO should we propagate the results to the destination?
 
             FragmentResultViewModel rootViewModel = ResultViewModelProvider.of(source.getActivity()).get(FragmentResultViewModel.class);
             rootViewModel.setResult(who, resultCode, data);
         }
-        getNavController().popBackStack(destinationId, inclusive);
+
+        /*if (inclusive) {
+            Timber.w("Cannot set result for unknown destination");
+        } else {
+            FragmentResultViewModel rootViewModel = ResultViewModelProvider.of(source.getActivity()).get(FragmentResultViewModel.class);
+            rootViewModel.setResult(destinationId, resultCode, data);
+        }*/
+
+        boolean navigated = getNavController().popBackStack(destinationId, inclusive);
+        Timber.w("[NAV] Navigated: %s", navigated);
     }
 
     default Fragment getFragment() {
@@ -104,6 +138,6 @@ public interface FragmentResultListener {
 
     NavController getNavController();
 
-    default void onFragmentResult(int requestCode, int resultCode, Intent data) {
+    default void onFragmentResult(int requestCode, int resultCode, @Nullable Intent data) {
     }
 }

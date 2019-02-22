@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDeepLinkBuilder;
 import androidx.navigation.NavDestination;
@@ -30,8 +31,19 @@ public class ResultNavController {
         this.requestCode = requestCode;
     }
 
-    static ResultNavController wrap(NavController navController, FragmentInstanceViewModel viewModel, int requestCode) {
-        return new ResultNavController(navController, viewModel.who, requestCode);
+    @NonNull
+    static ResultNavController wrap(@NonNull NavController navController, @NonNull String target, int requestCode) {
+        return new ResultNavController(navController, target, requestCode);
+    }
+
+    @NonNull
+    static ResultNavController wrap(@NonNull NavController navController, @NonNull Fragment transferringFragment) throws ResultNavController.ParentNotExpectingResultsException {
+        Bundle args = transferringFragment.getArguments();
+        if (args == null || !args.containsKey(EXTRA_KEY_TARGET) || !args.containsKey(EXTRA_KEY_REQUEST_CODE)) {
+            throw new ParentNotExpectingResultsException();
+        }
+
+        return new ResultNavController(navController, args.getString(EXTRA_KEY_TARGET), args.getInt(EXTRA_KEY_REQUEST_CODE));
     }
 
     @NonNull
@@ -136,7 +148,7 @@ public class ResultNavController {
         Bundle args = directions.getArguments();
         args.putString(EXTRA_KEY_TARGET, target);
         args.putInt(EXTRA_KEY_REQUEST_CODE, requestCode);
-        
+
         navController.navigate(directions.getActionId(), args);
     }
 
@@ -170,5 +182,9 @@ public class ResultNavController {
     @CallSuper
     public void restoreState(@Nullable Bundle navState) {
         navController.restoreState(navState);
+    }
+
+    public static class ParentNotExpectingResultsException extends RuntimeException {
+
     }
 }
