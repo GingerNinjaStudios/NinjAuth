@@ -1,6 +1,8 @@
 package me.gingerninja.authenticator.ui.home.form;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +27,7 @@ import me.gingerninja.authenticator.ui.home.AccountListFragment;
 import timber.log.Timber;
 
 public class AccountEditorFragment extends BaseFragment<AccountFormFragmentBinding> implements LabelClickListener, LabelListClickListener {
+    public static final String RESULT_ARG_ACCOUNT_NAME = "accountName";
     private AccountLabelListAdapter labelListAdapter;
 
     @Override
@@ -52,10 +55,11 @@ public class AccountEditorFragment extends BaseFragment<AccountFormFragmentBindi
                 String eventId = event.getId();
                 switch (eventId) {
                     case AccountEditorViewModel.NAV_ACTION_SAVE:
-                        AccountEditorFragmentDirections.SaveAccountAction action = AccountEditorFragmentDirections.saveAccountAction()
+                        /*AccountEditorFragmentDirections.SaveAccountAction action = AccountEditorFragmentDirections.saveAccountAction()
                                 .setAccountName(event.getContent())
                                 .setAccountOperation(AccountListFragment.ACCOUNT_OP_UPDATE);
-                        getNavController().navigate(action);
+                        getNavController().navigate(action);*/
+                        setResultAndLeave(Activity.RESULT_OK, new Intent(viewModel.getMode() == AccountEditorViewModel.MODE_CREATE ? AccountListFragment.ACCOUNT_OP_ADD : AccountListFragment.ACCOUNT_OP_UPDATE).putExtra(RESULT_ARG_ACCOUNT_NAME, (String) event.getContent()));
                         break;
                 }
             }

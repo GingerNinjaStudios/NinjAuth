@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import io.requery.query.Tuple;
 import io.requery.sql.ResultSetIterator;
 import me.gingerninja.authenticator.data.repo.AccountRepository;
@@ -34,6 +35,7 @@ public class AccountListViewModel extends ViewModel {
         this.accountRepo = accountRepo;
 
         disposable = accountRepo.getAllAccountAndListen2()
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(tuples -> {
                     /*ResultSetIterator<Tuple> oldResults = accountList2.getValue();

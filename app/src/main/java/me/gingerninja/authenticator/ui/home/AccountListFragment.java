@@ -1,5 +1,7 @@
 package me.gingerninja.authenticator.ui.home;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -20,10 +22,12 @@ import me.gingerninja.authenticator.data.adapter.AccountListIteratorAdapter;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.databinding.AccountListFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
+import me.gingerninja.authenticator.ui.home.form.AccountEditorFragment;
 import me.gingerninja.authenticator.ui.home.list.AccountListItemViewModel;
 import timber.log.Timber;
 
 public class AccountListFragment extends BaseFragment<AccountListFragmentBinding> implements BottomNavigationFragment.BottomNavigationListener, AccountListItemViewModel.AccountMenuItemClickListener {
+    private static final int REQUEST_CODE_EDIT = 0x1001;
     private static final String BOTTOM_LABELS_TAG = "bottomLabelsFrag";
     private static final String ADD_ACCOUNT_TAG = "newAccount";
 
@@ -190,11 +194,35 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
         switch (item.getItemId()) {
             case R.id.menu_account_edit:
                 AccountListFragmentDirections.EditAccountAction action = AccountListFragmentDirections.editAccountAction().setId(account.getId());
-                getNavController().navigate(action);
+                //getNavController().navigate(action);
+                navigateForResult(REQUEST_CODE_EDIT).navigate(action);
                 break;
             case R.id.menu_account_delete:
                 DeleteAccountBottomFragment.show(account, getChildFragmentManager());
                 break;
+        }
+    }
+
+    @Override
+    public void onFragmentResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_EDIT) {
+            AccountListFragmentBinding binding = getDataBinding();
+            String action = data.getAction();
+            if (action != null) {
+                String accName = data.getStringExtra(AccountEditorFragment.RESULT_ARG_ACCOUNT_NAME);
+                switch (action) {
+                    case ACCOUNT_OP_ADD:
+                        Snackbar.make(binding.accountList, "New account added: " + accName, Snackbar.LENGTH_LONG)
+                                .setAnchorView(binding.fab)
+                                .show();
+                        break;
+                    case ACCOUNT_OP_UPDATE:
+                        Snackbar.make(binding.accountList, "Saved account: " + accName, Snackbar.LENGTH_LONG)
+                                .setAnchorView(binding.fab)
+                                .show();
+                        break;
+                }
+            }
         }
     }
 }

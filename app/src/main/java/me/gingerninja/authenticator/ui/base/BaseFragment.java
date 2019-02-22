@@ -18,8 +18,9 @@ import androidx.navigation.Navigation;
 import dagger.android.support.AndroidSupportInjection;
 import dagger.android.support.DaggerFragment;
 import me.gingerninja.authenticator.R;
+import me.gingerninja.authenticator.util.resulthandler.FragmentResultListener;
 
-public abstract class BaseFragment<T extends ViewDataBinding> extends DaggerFragment {
+public abstract class BaseFragment<T extends ViewDataBinding> extends DaggerFragment implements FragmentResultListener {
     @Inject
     protected ViewModelProvider.Factory viewModelFactory;
 
@@ -46,7 +47,7 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends DaggerFrag
         return dataBinding;
     }
 
-    protected NavController getNavController() {
+    public NavController getNavController() {
         return Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
     }
 

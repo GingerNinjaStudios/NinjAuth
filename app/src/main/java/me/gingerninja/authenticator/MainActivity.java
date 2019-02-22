@@ -26,6 +26,7 @@ import me.gingerninja.authenticator.databinding.ActivityMainBinding;
 import me.gingerninja.authenticator.module.timecorrector.TimeCorrector;
 import me.gingerninja.authenticator.util.AppSettings;
 import me.gingerninja.authenticator.util.backup.BackupUtils;
+import me.gingerninja.authenticator.util.resulthandler.FragmentResultListener;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
@@ -62,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
 
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
 
+        FragmentResultListener.registerNavController(this, navController);
+
         if (binding.navigationView != null && binding.drawerLayout != null) {
             //NavigationUI.setupWithNavController(binding.navigationView, navController);
             NavigationView navView = binding.navigationView;
@@ -86,7 +89,11 @@ public class MainActivity extends AppCompatActivity {
 
         timeCorrector.initExternalModule();
 
-        crypto.authenticate(this);
+        //crypto.authenticate(this);
+        /*crypto.test(this)
+                .subscribe(() -> {
+                    Timber.v("Crypto test done");
+                });*/
 
         /*Account account = Parser.parseUrl("otpauth://totp/ACME%20Co:john@example.com?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ&issuer=ACME%20Co&algorithm=SHA1&digits=6&period=30");
         TimeCorrector timeCorrector = new TimeCorrector();
