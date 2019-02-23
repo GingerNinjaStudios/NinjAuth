@@ -27,6 +27,10 @@ public class DatabaseHandler {
     }
 
     public void openDatabase(String password) {
+        if (databaseSource != null) {
+            return;
+        }
+
         ReactiveEntityStore<Persistable> store;
         // override onUpgrade to handle migrating to a new version
         SqlCipherDatabaseSource source = new SqlCipherDatabaseSource(context, Models.DEFAULT, DbConstants.NAME, password, DbConstants.VERSION) {
