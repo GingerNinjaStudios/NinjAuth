@@ -17,8 +17,12 @@ import me.gingerninja.authenticator.data.db.entity.Label;
 import me.gingerninja.authenticator.databinding.LabelsFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
 import me.gingerninja.authenticator.ui.home.BottomNavigationFragment;
+import me.gingerninja.authenticator.ui.label.form.LabelEditorFragment;
 
 public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> implements BottomNavigationFragment.BottomNavigationListener, LabelListItemViewModel.LabelMenuItemClickListener {
+    private static final int REQUEST_CODE_ADD = 0x2000;
+    private static final int REQUEST_CODE_EDIT = 0x2001;
+
     public static final String LABEL_OP_ADD = "labelAdded";
     public static final String LABEL_OP_UPDATE = "labelUpdated";
     public static final String LABEL_OP_DELETE = "labelDeleted";
@@ -48,7 +52,8 @@ public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> im
                         String eventId = rawEvent.getId();
                         switch (eventId) {
                             case LabelsViewModel.NAV_ADD_LABEL:
-                                getNavController().navigate(R.id.labelEditorFragment);
+                                //getNavController().navigate(R.id.labelEditorFragment);
+                                navigateForResult(REQUEST_CODE_ADD).navigate(R.id.labelEditorFragment);
                                 break;
                         }
                     }
@@ -103,10 +108,25 @@ public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> im
             case R.id.menu_account_edit:
                 LabelsBottomFragmentDirections.EditLabelAction action = LabelsBottomFragmentDirections.editLabelAction().setId(label.getId());
                 //AccountListFragmentDirections.EditAccountAction action = AccountListFragmentDirections.editAccountAction(account.getId());
-                getNavController().navigate(action);
+                //getNavController().navigate(action);
+                navigateForResult(REQUEST_CODE_EDIT).navigate(action);
                 break;
             case R.id.menu_account_delete:
                 //DeleteAccountBottomFragment.show(account, getChildFragmentManager());
+                break;
+        }
+    }
+
+    @Override
+    public void onFragmentResult(int requestCode, int resultCode, @Nullable Object data) {
+        switch (requestCode) {
+            case REQUEST_CODE_ADD:
+                break;
+            case REQUEST_CODE_EDIT:
+                if (resultCode == RESULT_OK && data != null) {
+                    LabelEditorFragment.LabelResult result = (LabelEditorFragment.LabelResult) data;
+
+                }
                 break;
         }
     }

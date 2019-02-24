@@ -2,7 +2,6 @@ package me.gingerninja.authenticator.util.resulthandler;
 
 import android.content.Intent;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
@@ -30,11 +29,7 @@ public class FragmentResultViewModel extends ViewModel {
         return resultStore.getResult(who);
     }
 
-    void setResult(@NonNull String who, int resultCode, @Nullable Intent data) {
+    void setResult(@NonNull String who, int resultCode, @Nullable Object data) {
         resultStore.setResult(who, resultCode, data);
-    }
-
-    void setResult(@IdRes int destinationId, int resultCode, @Nullable Intent data) {
-        resultStore.setResult(destinationId, resultCode, data);
     }
 }

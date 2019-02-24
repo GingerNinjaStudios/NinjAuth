@@ -18,14 +18,10 @@ import me.gingerninja.authenticator.ui.home.form.LabelListClickListener;
 import me.gingerninja.authenticator.util.BindingHelpers;
 
 public class AccountAvailableLabelListAdapter extends RecyclerView.Adapter<AccountAvailableLabelListAdapter.ChipViewHolder> implements LabelListClickListener {
-    private static final int TYPE_LABEL = R.layout.account_label_list_entry_item;
-    private static final int TYPE_ADD_BUTTON = R.layout.account_label_list_add_item;
-
     @NonNull
     private List<Label> labels;
 
     private View.OnClickListener labelSelectedClickListener = v -> onLabelSelected((Label) v.getTag());
-    private View.OnClickListener labelNewClickListener = this::onNewLabelClicked;
 
     @Nullable
     private LabelListClickListener labelListClickListener;
@@ -42,47 +38,23 @@ public class AccountAvailableLabelListAdapter extends RecyclerView.Adapter<Accou
     @NonNull
     @Override
     public AccountAvailableLabelListAdapter.ChipViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ChipViewHolder(LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false));
+        return new ChipViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.account_label_list_entry_item, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull AccountAvailableLabelListAdapter.ChipViewHolder holder, int position) {
-        if (getItemViewType(position) == TYPE_LABEL) {
-            holder.itemView.setOnClickListener(labelSelectedClickListener);
-            holder.setFromLabel(labels.get(position));
-        } else {
-            holder.itemView.setOnClickListener(labelNewClickListener);
-        }
+        holder.itemView.setOnClickListener(labelSelectedClickListener);
+        holder.setFromLabel(labels.get(position));
     }
 
     @Override
     public long getItemId(int position) {
-        if (getItemViewType(position) == TYPE_LABEL) {
-            return labels.get(position).getId();
-        }
-
-        return RecyclerView.NO_ID;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        if (position + 1 == getItemCount()) {
-            return TYPE_ADD_BUTTON;
-        }
-
-        return TYPE_LABEL;
+        return labels.get(position).getId();
     }
 
     @Override
     public int getItemCount() {
-        return labels.size() + 1;
-    }
-
-    @Override
-    public void onNewLabelClicked(View view) {
-        if (labelListClickListener != null) {
-            labelListClickListener.onNewLabelClicked(view);
-        }
+        return labels.size();
     }
 
     @Override
@@ -106,8 +78,6 @@ public class AccountAvailableLabelListAdapter extends RecyclerView.Adapter<Accou
             chip.setText(label.getName());
             chip.setChipBackgroundColor(ColorStateList.valueOf(label.getColor()));
             BindingHelpers.setChipTextColor(chip, label.getColor());
-            //chip.setBackgroundColor(label.getColor());
-            // TODO chip.setTextColor();
         }
     }
 }

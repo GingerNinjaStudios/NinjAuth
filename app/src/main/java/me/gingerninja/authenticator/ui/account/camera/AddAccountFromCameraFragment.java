@@ -121,7 +121,7 @@ public class AddAccountFromCameraFragment extends BaseFragment<AccountFromCamera
                     // TODO found QR code
                     stopDetection();
                     AddAccountFromCameraFragmentDirections.CreateNewAccountFromCameraAction action = AddAccountFromCameraFragmentDirections.createNewAccountFromCameraAction().setUrl(url);
-                    getNavController().navigate(action);
+                    navigateForResultTransfer().navigate(action);
                 }
             }
 

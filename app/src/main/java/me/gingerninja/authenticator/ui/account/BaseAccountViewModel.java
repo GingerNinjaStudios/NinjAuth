@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModel;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.SingleSubject;
 import me.gingerninja.authenticator.BR;
 import me.gingerninja.authenticator.R;
@@ -83,6 +84,7 @@ public abstract class BaseAccountViewModel extends ViewModel {
         }
 
         disposable.add(getAccount(bundle)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(accountEntity -> {
                     account = accountEntity;
@@ -148,6 +150,8 @@ public abstract class BaseAccountViewModel extends ViewModel {
 
         accountRepository
                 .getLabelsByAccount(account)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .map(LabelData::new)
                 .toList()
                 .subscribe(labels);

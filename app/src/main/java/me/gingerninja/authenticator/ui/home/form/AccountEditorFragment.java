@@ -59,7 +59,8 @@ public class AccountEditorFragment extends BaseFragment<AccountFormFragmentBindi
                                 .setAccountName(event.getContent())
                                 .setAccountOperation(AccountListFragment.ACCOUNT_OP_UPDATE);
                         getNavController().navigate(action);*/
-                        setResultAndLeave(Activity.RESULT_OK, new Intent(viewModel.getMode() == AccountEditorViewModel.MODE_CREATE ? AccountListFragment.ACCOUNT_OP_ADD : AccountListFragment.ACCOUNT_OP_UPDATE).putExtra(RESULT_ARG_ACCOUNT_NAME, (String) event.getContent()));
+                        Intent i = new Intent(viewModel.getMode() == AccountEditorViewModel.MODE_CREATE ? AccountListFragment.ACCOUNT_OP_ADD : AccountListFragment.ACCOUNT_OP_UPDATE).putExtra(RESULT_ARG_ACCOUNT_NAME, (String) event.getContent());
+                        setResultAndLeave(Activity.RESULT_OK, i, R.id.accountListFragment, false);
                         break;
                 }
             }
@@ -129,17 +130,10 @@ public class AccountEditorFragment extends BaseFragment<AccountFormFragmentBindi
     }
 
     @Override
-    public void onLabelRemoved(Label label) {
-        Snackbar.make(getView(), "Removed label: " + label.getName(), 5000)
-                .setAction("Undo", v -> {
-                    // TODO
-                })
+    public void onLabelRemoved(Label label, int position) {
+        Snackbar.make(getView(), getString(R.string.account_form_removed_label, label.getName()), 5000)
+                .setAction(R.string.undo, v -> labelListAdapter.addLabel(label, position))
                 .show();
-    }
-
-    @Override
-    public void onNewLabelClicked(View view) {
-
     }
 
     @Override

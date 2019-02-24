@@ -15,9 +15,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 import me.gingerninja.authenticator.R;
+import me.gingerninja.authenticator.data.db.entity.Label;
 import me.gingerninja.authenticator.databinding.LabelFormFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
-import me.gingerninja.authenticator.ui.label.LabelsBottomFragment;
 
 public class LabelEditorFragment extends BaseFragment<LabelFormFragmentBinding> implements OnColorSelectedListener {
     private LabelEditorViewModel viewModel;
@@ -47,10 +47,12 @@ public class LabelEditorFragment extends BaseFragment<LabelFormFragmentBinding> 
                 String eventId = event.getId();
                 switch (eventId) {
                     case LabelEditorViewModel.NAV_ACTION_SAVE:
-                        LabelEditorFragmentDirections.SaveLabelAction action = LabelEditorFragmentDirections.saveLabelAction()
+                        /*LabelEditorFragmentDirections.SaveLabelAction action = LabelEditorFragmentDirections.saveLabelAction()
                                 .setLabelName(event.getContent())
                                 .setOperation(viewModel.getMode() == LabelEditorViewModel.MODE_CREATE ? LabelsBottomFragment.LABEL_OP_ADD : LabelsBottomFragment.LABEL_OP_UPDATE);
-                        getNavController().navigate(action);
+                        getNavController().navigate(action);*/
+
+                        setResultAndLeave(RESULT_OK, new LabelResult(event.getContent(), viewModel.getMode()));
                         //LabelEditorFragmentDirections.saveLabelAction()
                         /*AddAccountFragmentDirections.SaveNewAccountAction action = AddAccountFragmentDirections.saveNewAccountAction()
                                 .setAccountName(event.getContent())
@@ -76,5 +78,26 @@ public class LabelEditorFragment extends BaseFragment<LabelFormFragmentBinding> 
     @Override
     public void onColorSelected(int color) {
         viewModel.setColor(color);
+    }
+
+    public static class LabelResult {
+        private final Label label;
+
+        @LabelEditorViewModel.Mode
+        private final int mode;
+
+        private LabelResult(Label label, @LabelEditorViewModel.Mode int mode) {
+            this.label = label;
+            this.mode = mode;
+        }
+
+        public Label getLabel() {
+            return label;
+        }
+
+        @LabelEditorViewModel.Mode
+        public int getMode() {
+            return mode;
+        }
     }
 }

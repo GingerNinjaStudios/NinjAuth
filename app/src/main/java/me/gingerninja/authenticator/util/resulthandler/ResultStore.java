@@ -6,19 +6,15 @@ import android.content.Intent;
 import java.util.HashMap;
 import java.util.Map;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.collection.SparseArrayCompat;
 import timber.log.Timber;
 
 class ResultStore {
     private Map<String, Result> pendingResults = new HashMap<>();
-    private SparseArrayCompat<Result> pendingResultsByDestination = new SparseArrayCompat<>();
 
     void clear() {
         pendingResults.clear();
-        pendingResultsByDestination.clear();
     }
 
     void addPendingResultRequest(@NonNull String who, int requestCode) {
@@ -28,10 +24,6 @@ class ResultStore {
 
     void remove(@NonNull String who) {
         pendingResults.remove(who);
-    }
-
-    void remove(@IdRes int destinationId) {
-        pendingResultsByDestination.remove(destinationId);
     }
 
     @Nullable
@@ -49,23 +41,9 @@ class ResultStore {
         return result;
     }
 
-    @Nullable
-    Result getResult(@IdRes int destinationId) {
-        return pendingResultsByDestination.get(destinationId);
-    }
-
-    void setResult(@NonNull String who, int resultCode, @Nullable Intent data) {
+    void setResult(@NonNull String who, int resultCode, @Nullable Object data) {
         Timber.v("Set result for %s: resultCode: %d", who, resultCode);
         Result result = pendingResults.get(who);
-
-        if (result != null) {
-            result.setResults(resultCode, data);
-        }
-    }
-
-    void setResult(@IdRes int destinationId, int resultCode, @Nullable Intent data) {
-        Timber.v("Set result for %d: resultCode: %d", destinationId, resultCode);
-        Result result = pendingResultsByDestination.get(destinationId);
 
         if (result != null) {
             result.setResults(resultCode, data);
@@ -78,7 +56,7 @@ class ResultStore {
         private boolean pending = true;
 
         @Nullable
-        private Intent data;
+        private Object data;
 
         Result(int requestCode) {
             this.requestCode = requestCode;
@@ -93,11 +71,11 @@ class ResultStore {
         }
 
         @Nullable
-        Intent getData() {
-            return data;
+        <T> T getData() {
+            return (T) data;
         }
 
-        Result setResults(int resultCode, @Nullable Intent data) {
+        Result setResults(int resultCode, @Nullable Object data) {
             this.resultCode = resultCode;
             this.data = data;
             pending = false;

@@ -81,7 +81,7 @@ public interface FragmentResultListener {
         setResultAndLeave(resultCode, null);
     }
 
-    default void setResultAndLeave(int resultCode, @Nullable Intent data) {
+    default void setResultAndLeave(int resultCode, @Nullable Object data) {
         Fragment source = getFragment();
         if (source.getActivity() == null) {
             throw new IllegalStateException("The fragment initiating navigation for result must be attached to an Activity");
@@ -105,7 +105,7 @@ public interface FragmentResultListener {
         setResultAndLeave(resultCode, null, destinationId, inclusive);
     }
 
-    default void setResultAndLeave(int resultCode, @Nullable Intent data, @IdRes int destinationId, boolean inclusive) {
+    default void setResultAndLeave(int resultCode, @Nullable Object data, @IdRes int destinationId, boolean inclusive) {
         Fragment source = getFragment();
         if (source.getActivity() == null) {
             throw new IllegalStateException("The fragment initiating navigation for result must be attached to an Activity");
@@ -138,6 +138,6 @@ public interface FragmentResultListener {
 
     NavController getNavController();
 
-    default void onFragmentResult(int requestCode, int resultCode, @Nullable Intent data) {
+    default void onFragmentResult(int requestCode, int resultCode, @Nullable Object data) {
     }
 }

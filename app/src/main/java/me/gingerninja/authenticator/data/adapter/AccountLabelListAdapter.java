@@ -30,7 +30,7 @@ public class AccountLabelListAdapter extends RecyclerView.Adapter<AccountLabelLi
     @Nullable
     private List<BaseAccountViewModel.LabelData> labels;
 
-    private View.OnClickListener labelRemoveClickListener = v -> onLabelRemoved((Label) v.getTag());
+    private View.OnClickListener labelRemoveClickListener = v -> onLabelRemoved((Label) v.getTag(), -1);
     private View.OnClickListener labelAddClickListener = this::onLabelAddClicked;
 
     @Nullable
@@ -54,6 +54,11 @@ public class AccountLabelListAdapter extends RecyclerView.Adapter<AccountLabelLi
 
     public void addLabel(@NonNull Label label) {
         this.labels.add(new BaseAccountViewModel.LabelData(label, this.labels.size()));
+        notifyDataSetChanged();
+    }
+
+    public void addLabel(@NonNull Label label, int position) {
+        this.labels.add(Math.min(position, labels.size()), new BaseAccountViewModel.LabelData(label, this.labels.size()));
         notifyDataSetChanged();
     }
 
@@ -111,13 +116,14 @@ public class AccountLabelListAdapter extends RecyclerView.Adapter<AccountLabelLi
     }
 
     @Override
-    public void onLabelRemoved(Label label) {
+    public void onLabelRemoved(Label label, int fakePos) {
         if (labelClickListener != null) {
-            labelClickListener.onLabelRemoved(label);
-            for (Iterator<BaseAccountViewModel.LabelData> it = labels.iterator(); it.hasNext(); ) {
+            int i = 0;
+            for (Iterator<BaseAccountViewModel.LabelData> it = labels.iterator(); it.hasNext(); i++) {
                 BaseAccountViewModel.LabelData labelData = it.next();
                 if (labelData.getLabel().getId() == label.getId()) {
                     it.remove();
+                    labelClickListener.onLabelRemoved(label, i);
                     break;
                 }
             }

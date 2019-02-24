@@ -7,5 +7,5 @@ import me.gingerninja.authenticator.data.db.entity.Label;
 public interface LabelClickListener {
     void onLabelAddClicked(View view);
 
-    void onLabelRemoved(Label label);
+    void onLabelRemoved(Label label, int position);
 }

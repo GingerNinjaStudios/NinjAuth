@@ -35,7 +35,7 @@ public class LabelEditorViewModel extends BaseLabelViewModel {
     public Error error = new Error();
     private Disposable saveDisposable;
 
-    protected MutableLiveData<SingleEvent<String>> navAction = new MutableLiveData<>();
+    protected MutableLiveData<SingleEvent<Label>> navAction = new MutableLiveData<>();
 
     @Mode
     private int mode = MODE_CREATE;
@@ -81,7 +81,7 @@ public class LabelEditorViewModel extends BaseLabelViewModel {
         if (checkValues()) {
             saveDisposable = accountRepo
                     .addLabel(label)
-                    .subscribe(label -> navAction.postValue(new SingleEvent<>(NAV_ACTION_SAVE, label.getName())));
+                    .subscribe(label -> navAction.postValue(new SingleEvent<>(NAV_ACTION_SAVE, label)));
 
         }
     }
@@ -90,7 +90,7 @@ public class LabelEditorViewModel extends BaseLabelViewModel {
         navAction.setValue(new SingleEvent<>(NAV_ACTION_PICK_COLOR));
     }
 
-    public LiveData<SingleEvent<String>> getNavigationAction() {
+    public LiveData<SingleEvent<Label>> getNavigationAction() {
         return navAction;
     }
 

@@ -1,6 +1,5 @@
 package me.gingerninja.authenticator.ui.home;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -27,7 +26,9 @@ import me.gingerninja.authenticator.ui.home.list.AccountListItemViewModel;
 import timber.log.Timber;
 
 public class AccountListFragment extends BaseFragment<AccountListFragmentBinding> implements BottomNavigationFragment.BottomNavigationListener, AccountListItemViewModel.AccountMenuItemClickListener {
+    private static final int REQUEST_CODE_ADD = 0x1000;
     private static final int REQUEST_CODE_EDIT = 0x1001;
+
     private static final String BOTTOM_LABELS_TAG = "bottomLabelsFrag";
     private static final String ADD_ACCOUNT_TAG = "newAccount";
 
@@ -170,10 +171,12 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
     private void handleAddAccountMenu(int id) {
         switch (id) {
             case R.id.menu_add_account_from_camera:
-                getNavController().navigate(R.id.addAccountFromCameraFragment);
+                //getNavController().navigate(R.id.addAccountFromCameraFragment);
+                navigateForResult(REQUEST_CODE_ADD).navigate(R.id.addAccountFromCameraFragment);
                 break;
             case R.id.menu_add_account_manual:
-                getNavController().navigate(R.id.accountEditorFragment);
+                //getNavController().navigate(R.id.accountEditorFragment);
+                navigateForResult(REQUEST_CODE_ADD).navigate(R.id.accountEditorFragment);
                 break;
         }
     }
@@ -204,12 +207,17 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
     }
 
     @Override
-    public void onFragmentResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_EDIT) {
-            AccountListFragmentBinding binding = getDataBinding();
-            String action = data.getAction();
+    public void onFragmentResult(int requestCode, int resultCode, @Nullable Object data) {
+        AccountListFragmentBinding binding = getDataBinding();
+
+        if (resultCode == RESULT_OK && (requestCode == REQUEST_CODE_EDIT || requestCode == REQUEST_CODE_ADD)) {
+            assert data != null;
+
+            Intent intent = (Intent) data;
+
+            String action = intent.getAction();
             if (action != null) {
-                String accName = data.getStringExtra(AccountEditorFragment.RESULT_ARG_ACCOUNT_NAME);
+                String accName = intent.getStringExtra(AccountEditorFragment.RESULT_ARG_ACCOUNT_NAME);
                 switch (action) {
                     case ACCOUNT_OP_ADD:
                         Snackbar.make(binding.accountList, "New account added: " + accName, Snackbar.LENGTH_LONG)
@@ -223,6 +231,10 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
                         break;
                 }
             }
+        } else if (resultCode == RESULT_CANCELED && requestCode == REQUEST_CODE_ADD) {
+            Snackbar.make(binding.accountList, "Canceled adding a new account", Snackbar.LENGTH_LONG)
+                    .setAnchorView(binding.fab)
+                    .show();
         }
     }
 }

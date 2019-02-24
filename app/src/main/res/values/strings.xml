@@ -69,10 +69,13 @@
     <string name="show_advanced">Show advanced</string>
     <string name="account_form_add_label">Add</string>
 
+    <string name="account_form_removed_label">Removed label: %s</string>
+
     <string name="account_list_dialog_title">Add label to account</string>
     <string name="account_list_dialog_create_new">Create new</string>
 
     <string name="save">Save</string>
+    <string name="undo">Undo</string>
 
     <!-- Account -->
     <string-array name="account_type_menu_entries">
