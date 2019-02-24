@@ -81,7 +81,7 @@ public class AccountEditorFragment extends BaseFragment<AccountFormFragmentBindi
 
     private void enableListDrag(@NonNull AccountFormFragmentBinding binding) {
         AccountEditorViewModel viewModel = binding.getViewModel();
-        ItemTouchHelper dragHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.START | ItemTouchHelper.END | ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
+        ItemTouchHelper dragHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.START | ItemTouchHelper.END, 0) {
 
             @Override
             public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
