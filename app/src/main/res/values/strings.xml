@@ -52,6 +52,8 @@
     <string name="account_type_totp_short">TOTP</string>
     <string name="account_type_hotp_short">HOTP</string>
 
+    <string name="account_hotp_generate_new_code_desc">Generate new code</string>
+
     <string name="label_new_form_title">Add label</string>
     <string name="label_edit_form_title">Edit label</string>
 

@@ -132,7 +132,7 @@ public class CodeGenerator {
 
             return Long.toString(code);
         } catch (Exception e) {
-            Timber.e(e,"Error while generating OTP");
+            Timber.e(e, "Error while generating OTP");
         }
         return null;
     }
@@ -253,6 +253,11 @@ public class CodeGenerator {
 
     @NonNull
     private static byte[] decodeBase32(@NonNull String data) {
+        int paddingIdx = data.indexOf('=');
+        if (paddingIdx > -1) {
+            data = data.substring(0, paddingIdx);
+        }
+
         int n = data.length();
 
         /*if (n % 16 != 0) {

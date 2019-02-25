@@ -67,6 +67,10 @@ public class AccountWrapper extends Account {
         return tuple.get(Account.TYPE);
     }
 
+    public static String getType(Tuple tuple) {
+        return tuple.get(Account.TYPE);
+    }
+
     @Override
     public String getSource() {
         return tuple.get(Account.SOURCE);
@@ -154,11 +158,11 @@ public class AccountWrapper extends Account {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj == null){
+        if (obj == null) {
             return false;
         }
 
-        if(obj instanceof AccountWrapper){
+        if (obj instanceof AccountWrapper) {
             return this.getId() == ((AccountWrapper) obj).getId();
         }
 

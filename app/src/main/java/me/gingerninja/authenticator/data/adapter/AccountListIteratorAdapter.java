@@ -26,16 +26,24 @@ import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.data.db.entity.Label;
 import me.gingerninja.authenticator.data.db.wrapper.AccountWrapper;
-import me.gingerninja.authenticator.databinding.AccountListItemBinding;
+import me.gingerninja.authenticator.data.repo.AccountRepository;
+import me.gingerninja.authenticator.databinding.AccountListItemHotpBinding;
+import me.gingerninja.authenticator.databinding.AccountListItemTotpBinding;
+import me.gingerninja.authenticator.ui.home.list.AccountListItemHotpViewModel;
+import me.gingerninja.authenticator.ui.home.list.AccountListItemTotpViewModel;
 import me.gingerninja.authenticator.ui.home.list.AccountListItemViewModel;
 import me.gingerninja.authenticator.util.BindingHelpers;
 import me.gingerninja.authenticator.util.CodeGenerator;
 
 public class AccountListIteratorAdapter extends RecyclerView.Adapter<BindingViewHolder> implements AccountListItemViewModel.AccountMenuItemClickListener {
+    @SuppressWarnings("WeakerAccess")
+    public static final int TYPE_ACCOUNT_HOTP = 0;
+    @SuppressWarnings("WeakerAccess")
     public static final int TYPE_ACCOUNT_TOTP = 1;
 
     private final AccountWrapper.Factory accountWrapperFactory;
     private final CodeGenerator codeGenerator;
+    private final AccountRepository accountRepository;
 
     private ResultSetIterator<Tuple> iterator;
 
@@ -46,9 +54,10 @@ public class AccountListIteratorAdapter extends RecyclerView.Adapter<BindingView
 
     private int moveFrom = -1, moveTo = -1;
 
-    public AccountListIteratorAdapter(@NonNull AccountWrapper.Factory accountWrapperFactory, @NonNull CodeGenerator codeGenerator) {
+    public AccountListIteratorAdapter(@NonNull AccountWrapper.Factory accountWrapperFactory, @NonNull CodeGenerator codeGenerator, @NonNull AccountRepository accountRepository) {
         this.accountWrapperFactory = accountWrapperFactory;
         this.codeGenerator = codeGenerator;
+        this.accountRepository = accountRepository;
     }
 
     public void setResults(ResultSetIterator<Tuple> iterator) {
@@ -105,27 +114,75 @@ public class AccountListIteratorAdapter extends RecyclerView.Adapter<BindingView
 
     @Override
     public int getItemViewType(int position) {
-        return TYPE_ACCOUNT_TOTP;
+        String type = AccountWrapper.getType(iterator.get(position));
+        switch (type) {
+            case Account.TYPE_HOTP:
+                return TYPE_ACCOUNT_HOTP;
+            case Account.TYPE_TOTP:
+                return TYPE_ACCOUNT_TOTP;
+            default:
+                throw new IllegalArgumentException("Account type not implemented: " + type);
+
+        }
     }
 
     @NonNull
     @Override
     public BindingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new BindingViewHolder<>(DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.account_list_item, parent, false));
+        switch (viewType) {
+            case TYPE_ACCOUNT_HOTP:
+                return new HotpViewHolder(parent);
+            case TYPE_ACCOUNT_TOTP:
+                return new TotpViewHolder(parent);
+            default:
+                throw new IllegalArgumentException("View type not implemented: " + viewType);
+        }
     }
 
     @Override
     public void onBindViewHolder(@NonNull BindingViewHolder holder, int position) {
-        AccountListItemBinding listItemBinding = (AccountListItemBinding) holder.getBinding();
+        switch (holder.getViewType()) {
+            case TYPE_ACCOUNT_HOTP:
+                onBindHotpViewHolder((HotpViewHolder) holder, position);
+                break;
+            case TYPE_ACCOUNT_TOTP:
+                onBindTotpViewHolder((TotpViewHolder) holder, position);
+                break;
+        }
+    }
 
-        AccountListItemViewModel oldViewModel = listItemBinding.getViewModel();
+    private void onBindHotpViewHolder(@NonNull HotpViewHolder holder, int position) {
+        AccountListItemHotpBinding listItemBinding = holder.getBinding();
+
+        Account account = accountWrapperFactory.create(iterator.get(position));
+
+        setupLabels(account, listItemBinding.labels);
+
+        AccountListItemHotpViewModel viewModel = new AccountListItemHotpViewModel(account, codeGenerator, accountRepository);
+        viewModel.setMenuItemClickListener(this);
+
+        listItemBinding.setViewModel(viewModel);
+    }
+
+    private void onBindTotpViewHolder(@NonNull TotpViewHolder holder, int position) {
+        AccountListItemTotpBinding listItemBinding = holder.getBinding();
+
+        AccountListItemTotpViewModel oldViewModel = listItemBinding.getViewModel();
         if (oldViewModel != null) {
             oldViewModel.stopClock();
         }
 
         Account account = accountWrapperFactory.create(iterator.get(position));
 
-        ChipGroup chipGroup = holder.itemView.findViewById(R.id.labels);
+        setupLabels(account, listItemBinding.labels);
+
+        AccountListItemTotpViewModel viewModel = new AccountListItemTotpViewModel(account, codeGenerator);
+        viewModel.setMenuItemClickListener(this);
+
+        listItemBinding.setViewModel(viewModel);
+    }
+
+    private void setupLabels(@NonNull Account account, @NonNull ChipGroup chipGroup) {
         chipGroup.removeAllViews();
 
         for (Label label : account.getLabels()) {
@@ -135,8 +192,6 @@ public class AccountListIteratorAdapter extends RecyclerView.Adapter<BindingView
             BindingHelpers.setChipTextColor(chip, label.getColor());
             chipGroup.addView(chip, new ChipGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
-
-        listItemBinding.setViewModel(new AccountListItemViewModel(account, codeGenerator).setMenuItemClickListener(this));
     }
 
 
@@ -149,7 +204,7 @@ public class AccountListIteratorAdapter extends RecyclerView.Adapter<BindingView
 
         switch (viewType) {
             case TYPE_ACCOUNT_TOTP:
-                AccountListItemViewModel viewModel = ((AccountListItemBinding) binding).getViewModel();
+                AccountListItemTotpViewModel viewModel = ((AccountListItemTotpBinding) binding).getViewModel();
                 if (viewModel != null) {
                     viewModel.startClock(clock);
                 }
@@ -166,7 +221,7 @@ public class AccountListIteratorAdapter extends RecyclerView.Adapter<BindingView
 
         switch (viewType) {
             case TYPE_ACCOUNT_TOTP:
-                AccountListItemViewModel viewModel = ((AccountListItemBinding) binding).getViewModel();
+                AccountListItemTotpViewModel viewModel = ((AccountListItemTotpBinding) binding).getViewModel();
                 if (viewModel != null) {
                     viewModel.stopClock();
                 }
@@ -221,9 +276,15 @@ public class AccountListIteratorAdapter extends RecyclerView.Adapter<BindingView
 
         switch (viewType) {
             case AccountListIteratorAdapter.TYPE_ACCOUNT_TOTP:
-                AccountListItemViewModel viewModel = ((AccountListItemBinding) binding).getViewModel();
+                AccountListItemTotpViewModel viewModel = ((AccountListItemTotpBinding) binding).getViewModel();
                 if (viewModel != null) {
                     viewModel.setMode(isDragging ? AccountListItemViewModel.MODE_DRAG : AccountListItemViewModel.MODE_IDLE);
+                }
+                break;
+            case AccountListIteratorAdapter.TYPE_ACCOUNT_HOTP:
+                AccountListItemHotpViewModel hotpViewModel = ((AccountListItemHotpBinding) binding).getViewModel();
+                if (hotpViewModel != null) {
+                    hotpViewModel.setMode(isDragging ? AccountListItemViewModel.MODE_DRAG : AccountListItemViewModel.MODE_IDLE);
                 }
                 break;
         }
@@ -233,6 +294,18 @@ public class AccountListIteratorAdapter extends RecyclerView.Adapter<BindingView
     public void onAccountMenuItemClicked(MenuItem item, Account account) {
         if (menuItemClickListener != null) {
             menuItemClickListener.onAccountMenuItemClicked(item, account);
+        }
+    }
+
+    private static class HotpViewHolder extends BindingViewHolder<AccountListItemHotpBinding> {
+        private HotpViewHolder(@NonNull ViewGroup parent) {
+            super(DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.account_list_item_hotp, parent, false), TYPE_ACCOUNT_HOTP);
+        }
+    }
+
+    private static class TotpViewHolder extends BindingViewHolder<AccountListItemTotpBinding> {
+        private TotpViewHolder(@NonNull ViewGroup parent) {
+            super(DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.account_list_item_totp, parent, false), TYPE_ACCOUNT_TOTP);
         }
     }
 }

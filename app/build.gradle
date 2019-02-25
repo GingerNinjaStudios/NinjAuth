@@ -81,7 +81,7 @@ dependencies {
     annotationProcessor 'io.requery:requery-processor:1.5.1'
 
     // Apache v2 - https://github.com/requery/sqlite-android
-    implementation 'io.requery:sqlite-android:3.26.0'
+    implementation 'io.requery:sqlite-android:3.27.1'
 
     // Apache v2 - https://github.com/google/dagger
     implementation 'com.google.dagger:dagger:2.19'

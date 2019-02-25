@@ -133,6 +133,10 @@ public class Parser {
 
         switch (name) {
             case "secret":
+                int paddingIdx = value.indexOf('=');
+                if (paddingIdx > -1) {
+                    value = value.substring(0, paddingIdx);
+                }
                 account.setSecret(value);
                 break;
             case "issuer":

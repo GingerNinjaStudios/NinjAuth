@@ -7,16 +7,16 @@
 
         <variable
             name="viewModel"
-            type="me.gingerninja.authenticator.ui.home.list.AccountListItemViewModel" />
+            type="me.gingerninja.authenticator.ui.home.list.AccountListItemHotpViewModel" />
 
-        <import type="me.gingerninja.authenticator.ui.home.list.AccountListItemViewModel" />
+        <import type="me.gingerninja.authenticator.ui.home.list.AccountListItemHotpViewModel" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:alpha="@{viewModel.mode == AccountListItemViewModel.MODE_DRAG ? .75f : 1f}"
+        android:alpha="@{viewModel.mode == AccountListItemHotpViewModel.MODE_DRAG ? .75f : 1f}"
         app:cardElevation="@dimen/account_list_card_elevation_normal"
         app:cardUseCompatPadding="true">
 
@@ -33,7 +33,7 @@
                 android:layout_marginEnd="16dp"
                 android:text="@{viewModel.code}"
                 android:textAppearance="@style/Widget.Account.Code"
-                app:layout_constraintEnd_toStartOf="@+id/circular_progress"
+                app:layout_constraintEnd_toStartOf="@+id/btn_refresh"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="123 456" />
@@ -47,34 +47,32 @@
                 android:layout_marginEnd="16dp"
                 android:text="@{viewModel.accountName}"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                app:layout_constraintEnd_toStartOf="@+id/circular_progress"
+                app:layout_constraintEnd_toStartOf="@+id/btn_refresh"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/text_code"
                 tools:text="Ninja (info@gingerninja.me)" />
 
-            <antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator
-                android:id="@+id/circular_progress"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_refresh"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="24dp"
                 android:layout_marginBottom="8dp"
-                app:currentProgress="@{viewModel.currentProgress}"
-                app:direction="counterclockwise"
-                app:dotColor="@color/colorPrimaryDark"
-                app:dotWidth="6dp"
-                app:drawDot="true"
-                app:enableProgressAnimation="true"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:onClick="@{viewModel::onRefreshButtonClick}"
+                android:paddingLeft="12dp"
+                android:paddingTop="12dp"
+                android:paddingRight="12dp"
+                android:paddingBottom="12dp"
+                android:tooltipText="@string/account_hotp_generate_new_code_desc"
+                app:cornerRadius="24dp"
+                app:icon="@drawable/ic_refresh_24dp"
                 app:layout_constraintBottom_toBottomOf="@+id/text_account"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/menu_button"
-                app:maxProgress="@{viewModel.maxProgress}"
-                app:progressCap="round"
-                app:progressColor="@color/colorPrimary"
-                app:progressStrokeWidth="4dp"
-                app:startAngle="270"
-                app:textAdapter="@{viewModel.TEXT_ADAPTER}"
-                app:textColor="?colorSurface" />
+                app:layout_constraintTop_toBottomOf="@+id/menu_button" />
 
             <ImageButton
                 android:id="@+id/menu_button"

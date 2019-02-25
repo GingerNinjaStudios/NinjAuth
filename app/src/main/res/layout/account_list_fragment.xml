@@ -68,7 +68,7 @@
             android:paddingBottom="@dimen/list_bottom_padding_fab"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            tools:listitem="@layout/account_list_item" />
+            tools:listitem="@layout/account_list_item_totp" />
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/app_bar"

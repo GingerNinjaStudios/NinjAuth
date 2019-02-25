@@ -3,16 +3,11 @@ package me.gingerninja.authenticator.ui.home.list;
 import android.view.MenuItem;
 import android.view.View;
 
-import java.util.concurrent.TimeUnit;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
-import antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator;
-import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
 import me.gingerninja.authenticator.BR;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.Account;
@@ -27,47 +22,24 @@ public class AccountListItemViewModel extends BaseObservable {
     @interface Mode {
     }
 
-    public static final CircularProgressIndicator.ProgressTextAdapter TEXT_ADAPTER = value -> "";
+    @NonNull
+    protected final CodeGenerator codeGenerator;
 
     @NonNull
-    private final Account account;
+    protected Account account;
 
-    @NonNull
-    private final CodeGenerator codeGenerator;
-
-    private Disposable clockDisposable;
-
-    private AccountMenuItemClickListener menuItemClickListener;
+    protected AccountMenuItemClickListener menuItemClickListener;
 
     @Mode
-    private int mode = MODE_IDLE;
+    protected int mode = MODE_IDLE;
 
     public AccountListItemViewModel(@NonNull Account account, @NonNull CodeGenerator codeGenerator) {
         this.account = account;
         this.codeGenerator = codeGenerator;
     }
 
-    public AccountListItemViewModel setMenuItemClickListener(AccountMenuItemClickListener menuItemClickListener) {
+    public void setMenuItemClickListener(AccountMenuItemClickListener menuItemClickListener) {
         this.menuItemClickListener = menuItemClickListener;
-        return this;
-    }
-
-    public void startClock(Observable<Long> clock) {
-        stopClock();
-
-        clockDisposable = clock.subscribe(this::onTimeUpdate);
-    }
-
-    public void stopClock() {
-        if (clockDisposable != null && !clockDisposable.isDisposed()) {
-            clockDisposable.dispose();
-        }
-    }
-
-    private void onTimeUpdate(Long seq) {
-        notifyPropertyChanged(BR.code);
-        notifyPropertyChanged(BR.secondsLeft);
-        notifyPropertyChanged(BR.currentProgress);
     }
 
     public void onOverflowClick(View v) {
@@ -91,27 +63,6 @@ public class AccountListItemViewModel extends BaseObservable {
     @Bindable
     public String getCode() {
         return codeGenerator.getFormattedCode(account);
-    }
-
-    @Bindable
-    public long getPeriod() {
-        return account.getTypeSpecificData();
-    }
-
-    @Bindable
-    public long getSecondsLeft() {
-        return codeGenerator.getRemainingTime(account, TimeUnit.SECONDS);
-    }
-
-    @Bindable
-    public double getMaxProgress() {
-        return 1000d;
-    }
-
-    @Bindable
-    public double getCurrentProgress() {
-        long period = TimeUnit.MILLISECONDS.convert(Math.max(1, account.getTypeSpecificData()), TimeUnit.SECONDS);
-        return codeGenerator.getRemainingTime(account, TimeUnit.MILLISECONDS) * 1000d / period;
     }
 
     @Mode
