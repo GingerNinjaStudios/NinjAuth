@@ -20,6 +20,7 @@ import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.data.repo.AccountRepository;
 import me.gingerninja.authenticator.ui.account.BaseAccountViewModel;
+import me.gingerninja.authenticator.util.CodeGenerator;
 import me.gingerninja.authenticator.util.Parser;
 import me.gingerninja.authenticator.util.SingleEvent;
 import me.gingerninja.authenticator.util.validator.Validator;
@@ -143,7 +144,8 @@ public class AccountEditorViewModel extends BaseAccountViewModel {
             return Validator.all(
                     createValidator(title.get(), account::setTitle, error.title::set),
                     createValidator(accountName.get(), account::setAccountName, error.accountName::set),
-                    createValidator(secret.get(), account::setSecret, error.secret::set),
+                    createValidator(secret.get(), account::setSecret, error.secret::set)
+                            .test(CodeGenerator::isValidSecret, R.string.error_invalid_secret),
                     Validator.from(issuer.get(), account::setIssuer, null)
                             .process(input -> input == null ? null : input.trim()),
                     typeValidator,

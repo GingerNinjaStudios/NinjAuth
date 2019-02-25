@@ -288,4 +288,16 @@ public class CodeGenerator {
 
         return bytes;
     }
+
+    public static boolean isValidSecret(@NonNull String secret) {
+        secret = secret.toUpperCase(Locale.US);
+
+        for (char ch : secret.toCharArray()) {
+            if (!BASE32_CHAR_MAP.containsKey(ch) && ch != '=') {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

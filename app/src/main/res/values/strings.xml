@@ -67,6 +67,7 @@
     <string name="error_field_number_zero">Must be more than 0</string>
     <string name="error_field_number_too_large">Too large number</string>
     <string name="error_field_number_1to8">Must be between 1 and 8</string>
+    <string name="error_invalid_secret">The secret contains invalid character(s)</string>
 
     <string name="show_advanced">Show advanced</string>
     <string name="account_form_add_label">Add</string>

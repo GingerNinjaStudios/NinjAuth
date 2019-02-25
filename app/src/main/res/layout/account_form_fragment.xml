@@ -179,6 +179,7 @@
                     android:layout_marginEnd="16dp"
                     android:hint="@string/account_secret_text"
                     android:visibility="@{viewModel.mode == AccountEditorViewModel.MODE_CREATE ? View.VISIBLE : View.GONE}"
+                    app:errorText="@{viewModel.error.secret}"
                     app:helperText="@string/account_secret_desc"
                     app:helperTextEnabled="true"
                     app:layout_constraintEnd_toEndOf="parent"
