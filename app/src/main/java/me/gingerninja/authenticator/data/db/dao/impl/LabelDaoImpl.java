@@ -1,16 +1,24 @@
 package me.gingerninja.authenticator.data.db.dao.impl;
 
-import android.annotation.SuppressLint;
+import android.os.Parcel;
 
+import java.security.SecureRandom;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.SingleSource;
+import io.reactivex.functions.BiPredicate;
 import io.requery.Persistable;
 import io.requery.Transaction;
+import io.requery.query.MutableTuple;
+import io.requery.query.NamedNumericExpression;
+import io.requery.query.Tuple;
 import io.requery.reactivex.ReactiveEntityStore;
 import me.gingerninja.authenticator.data.db.dao.LabelDao;
 import me.gingerninja.authenticator.data.db.entity.Account;
@@ -29,6 +37,7 @@ public class LabelDaoImpl implements LabelDao {
         return databaseHandler.getEntityStore();
     }
 
+    @CheckResult
     @Override
     public Single<Label> get(long id) {
         return getStore()
@@ -36,6 +45,18 @@ public class LabelDaoImpl implements LabelDao {
                 .toSingle();
     }
 
+    @CheckResult
+    @Override
+    public Single<Label> get(String uid) {
+        return getStore()
+                .select(Label.class)
+                .where(Label.UID.eq(uid))
+                .get()
+                .maybe()
+                .toSingle();
+    }
+
+    @CheckResult
     @Override
     public Observable<Label> getAll(long... exceptions) {
         List<Long> array = new ArrayList<>(exceptions.length);
@@ -51,6 +72,7 @@ public class LabelDaoImpl implements LabelDao {
                 .observable();
     }
 
+    @CheckResult
     @Override
     public Observable<AccountHasLabel> getLabelsByAccount(@NonNull Account account) {
         return getStore()
@@ -61,7 +83,7 @@ public class LabelDaoImpl implements LabelDao {
                 .observable();
     }
 
-    @SuppressLint("CheckResult")
+    @CheckResult
     @Override
     public Completable saveLabelsForAccount(@NonNull Account account, @NonNull List<Label> labels) {
         final List<AccountHasLabel> accountHasLabelList = new ArrayList<>(labels.size());
@@ -115,6 +137,7 @@ public class LabelDaoImpl implements LabelDao {
                 .ignoreElement();
     }
 
+    @CheckResult
     @Override
     public Observable<List<Label>> getAllAndListen() {
         return getStore()
@@ -125,22 +148,65 @@ public class LabelDaoImpl implements LabelDao {
                 .map(accounts -> accounts.observable().toList().blockingGet());
     }
 
+    @CheckResult
     @Override
     public Single<Label> save(Label label) {
         if (label.getPosition() < 0) {
             return getStore()
-                    .count(Label.class)
+                    .select(Label.POSITION.max().as("max"))
+                    .from(Label.class)
                     .get()
-                    .single()
+                    .maybe()
+                    .switchIfEmpty((SingleSource<? extends Tuple>) observer -> {
+                        MutableTuple tuple = new MutableTuple(1);
+                        tuple.set(0, new NamedNumericExpression<>("max", Integer.class), -1);
+                        observer.onSuccess(tuple);
+                    })
+                    .map(tuple -> {
+                        Integer t = tuple.get(0);
+                        if (t == null) {
+                            t = -1;
+                        }
+                        return t;
+                    })
                     .flatMap(cnt -> {
-                        label.setPosition(cnt);
-                        return getStore().upsert(label);
+                        label.setPosition(cnt + 1);
+                        return saveWithRetry(label);//getStore().upsert(label);
                     });
         } else {
             return getStore().upsert(label);
         }
     }
 
+    @CheckResult
+    private Single<Label> saveWithRetry(@NonNull Label label) {
+        Parcel parcel = label.writeToParcel();
+
+        return getStore()
+                .upsert(label)
+                .retry(new BiPredicate<Integer, Throwable>() {
+                    SecureRandom random = new SecureRandom();
+                    byte[] bytes = new byte[8];
+
+                    @Override
+                    public boolean test(Integer retryCount, Throwable throwable) {
+
+                        Throwable t = throwable.getCause();
+                        boolean isUniqueError = t instanceof SQLIntegrityConstraintViolationException && t.getMessage().contains("UNIQUE");
+
+                        if (isUniqueError) {
+                            Label.restoreFromParcel(label, parcel);
+                            random.nextBytes(bytes);
+                            label.generateUID(bytes);
+                        }
+
+                        return retryCount < 10 && isUniqueError;
+                    }
+                })
+                .doAfterTerminate(parcel::recycle);
+    }
+
+    @CheckResult
     @Override
     public Completable saveAll(List<Label> labelList) {
         return getStore()
@@ -161,6 +227,7 @@ public class LabelDaoImpl implements LabelDao {
                 .ignoreElement();
     }
 
+    @CheckResult
     @Override
     public Completable delete(Label label) {
         return getStore().delete(label);

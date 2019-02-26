@@ -16,6 +16,9 @@ public interface AccountDao {
     Single<Account> get(long id);
 
     @CheckResult
+    Single<Account> get(String uid);
+
+    @CheckResult
     Observable<List<Account>> getAllAndListen();
 
     Observable<ReactiveResult<Tuple>> getAccountsAndLabelsWithListen();

@@ -16,6 +16,9 @@ public interface LabelDao {
     Single<Label> get(long id);
 
     @CheckResult
+    Single<Label> get(String uid);
+
+    @CheckResult
     Observable<Label> getAll(long... exceptions);
 
     @CheckResult

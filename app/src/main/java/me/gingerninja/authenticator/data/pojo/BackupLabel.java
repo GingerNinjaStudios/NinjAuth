@@ -9,9 +9,9 @@ import androidx.annotation.NonNull;
 import me.gingerninja.authenticator.data.db.entity.Label;
 
 public class BackupLabel {
-    @SerializedName("id")
+    @SerializedName("uid")
     @Expose
-    private long id;
+    private String uid;
 
     @SerializedName("name")
     @Expose
@@ -29,7 +29,7 @@ public class BackupLabel {
     public static BackupLabel fromEntity(@NonNull Label label) {
         BackupLabel backupLabel = new BackupLabel();
 
-        backupLabel.id = label.getId();
+        backupLabel.uid = label.getUid();
         backupLabel.name = label.getName();
         backupLabel.color = String.format("#%06X", 0xFFFFFF & label.getColor());
         backupLabel.position = label.getPosition();
@@ -42,6 +42,7 @@ public class BackupLabel {
         Label label = new Label();
 
         label
+                .setUid(uid)
                 .setName(name)
                 .setColor(Color.parseColor(color))
                 .setPosition(position);

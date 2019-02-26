@@ -155,7 +155,8 @@ public class AccountEditorViewModel extends BaseAccountViewModel {
                             .process(String::trim)
                             .test(input -> !input.isEmpty(), R.string.error_field_empty)
                             .test(TextUtils::isDigitsOnly, R.string.error_field_empty)
-                            .transform(Integer::parseInt, account::setDigits),
+                            .transform(Integer::parseInt, account::setDigits)
+                            .test(value -> value >= 1 && value <= 8, R.string.error_field_number_1to8),
                     Validator.from(typeSpecificData.get(), null, error.typeSpecificData::set)
                             .notNull(R.string.error_field_empty)
                             .process(String::trim)

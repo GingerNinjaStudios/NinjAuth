@@ -1,7 +1,15 @@
 package me.gingerninja.authenticator.data.db.entity;
 
+import android.os.Parcel;
+import android.util.Base64;
+
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 
+import androidx.annotation.NonNull;
 import io.requery.Column;
 import io.requery.Entity;
 import io.requery.Generated;
@@ -9,6 +17,7 @@ import io.requery.JunctionTable;
 import io.requery.Key;
 import io.requery.ManyToMany;
 import io.requery.Nullable;
+import io.requery.PreInsert;
 import io.requery.PropertyNameStyle;
 
 @Entity(propertyNameStyle = PropertyNameStyle.FLUENT_BEAN)
@@ -29,6 +38,9 @@ abstract class AbstractAccount {
     @Key
     @Generated
     long id;
+
+    @Column(unique = true, nullable = false)
+    String uid;
 
     /**
      * Custom title for the code. Can be null.
@@ -67,4 +79,79 @@ abstract class AbstractAccount {
     @Column(value = "-1", nullable = false)
     int position = -1;
 
+    @NonNull
+    public Parcel writeToParcel() {
+        Parcel dest = Parcel.obtain();
+
+        dest.writeLong(id);
+        dest.writeString(uid);
+        dest.writeString(title);
+        dest.writeString(type);
+        dest.writeString(source);
+        dest.writeString(accountName);
+        dest.writeString(secret);
+        dest.writeString(issuer);
+        dest.writeString(algorithm);
+        dest.writeInt(digits);
+        dest.writeLong(typeSpecificData);
+        dest.writeInt(position);
+
+        return dest;
+    }
+
+    public static void restoreFromParcel(@NonNull Account account, @NonNull Parcel parcel) {
+        parcel.setDataPosition(0);
+
+        account.id = parcel.readInt();
+        account.setUid(parcel.readString());
+        account.setTitle(parcel.readString());
+        account.setType(parcel.readString());
+        account.setSource(parcel.readString());
+        account.setAccountName(parcel.readString());
+        account.setSecret(parcel.readString());
+        account.setIssuer(parcel.readString());
+        account.setAlgorithm(parcel.readString());
+        account.setDigits(parcel.readInt());
+        account.setTypeSpecificData(parcel.readLong());
+        account.setPosition(parcel.readInt());
+    }
+
+    @PreInsert
+    void generateUID() {
+        if (uid != null) {
+            return;
+        }
+
+        generateUID(null);
+    }
+
+    public void generateUID(@androidx.annotation.Nullable byte[] random) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-384");
+            digest.update(accountName.getBytes(StandardCharsets.UTF_8));
+            digest.update(source.getBytes(StandardCharsets.UTF_8));
+            digest.update(secret.getBytes(StandardCharsets.UTF_8));
+            digest.update(algorithm.getBytes(StandardCharsets.UTF_8));
+            digest.update(type.getBytes(StandardCharsets.UTF_8));
+
+            ByteBuffer buffer = ByteBuffer.allocate((Long.SIZE + Integer.SIZE) / Byte.SIZE);
+            buffer.putLong(typeSpecificData);
+            buffer.putInt(digits);
+
+            digest.update(buffer);
+
+            if (random != null) {
+                digest.update(random);
+            }
+
+
+            uid = Base64.encodeToString(digest.digest(), Base64.NO_WRAP);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*public void generateUID(boolean time) {
+        MessageDigest digest = MessageDigest.getInstance("SHA-384");
+    }*/
 }

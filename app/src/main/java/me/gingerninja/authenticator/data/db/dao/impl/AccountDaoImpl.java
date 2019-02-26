@@ -1,12 +1,22 @@
 package me.gingerninja.authenticator.data.db.dao.impl;
 
+import android.os.Parcel;
+
+import java.security.SecureRandom;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
+import androidx.annotation.CheckResult;
+import androidx.annotation.NonNull;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.SingleSource;
+import io.reactivex.functions.BiPredicate;
 import io.requery.Persistable;
 import io.requery.Transaction;
+import io.requery.query.MutableTuple;
+import io.requery.query.NamedNumericExpression;
 import io.requery.query.Tuple;
 import io.requery.query.function.Case;
 import io.requery.reactivex.ReactiveEntityStore;
@@ -33,6 +43,7 @@ public class AccountDaoImpl implements AccountDao {
         return databaseHandler.getEntityStore();
     }
 
+    @CheckResult
     @Override
     public Single<Account> get(long id) {
         return getStore()
@@ -40,6 +51,18 @@ public class AccountDaoImpl implements AccountDao {
                 .toSingle();
     }
 
+    @CheckResult
+    @Override
+    public Single<Account> get(@NonNull String uid) {
+        return getStore()
+                .select(Account.class)
+                .where(Account.UID.eq(uid))
+                .get()
+                .maybe()
+                .toSingle();
+    }
+
+    @CheckResult
     @Override
     public Observable<List<Account>> getAllAndListen() {
         return getStore()
@@ -50,6 +73,7 @@ public class AccountDaoImpl implements AccountDao {
                 .map(accounts -> accounts.observable().toList().blockingGet());
     }
 
+    @CheckResult
     @Override
     public Observable<ReactiveResult<Tuple>> getAccountsAndLabelsWithListen() {
         return getStore()
@@ -89,23 +113,65 @@ public class AccountDaoImpl implements AccountDao {
                 .observableResult();
     }
 
+    @CheckResult
     @Override
     public Single<Account> save(Account account) {
         if (account.getPosition() < 0) {
-            // FIXME what happens if we delete an element?
             return getStore()
-                    .count(Account.class)
+                    .select(Account.POSITION.max().as("max"))
+                    .from(Account.class)
                     .get()
-                    .single()
+                    .maybe()
+                    .switchIfEmpty((SingleSource<? extends Tuple>) observer -> {
+                        MutableTuple tuple = new MutableTuple(1);
+                        tuple.set(0, new NamedNumericExpression<>("max", Integer.class), -1);
+                        observer.onSuccess(tuple);
+                    })
+                    .map(tuple -> {
+                        Integer t = tuple.get(0);
+                        if (t == null) {
+                            t = -1;
+                        }
+                        return t;
+                    })
                     .flatMap(cnt -> {
-                        account.setPosition(cnt);
-                        return getStore().upsert(account);
+                        account.setPosition(cnt + 1);
+                        return saveWithRetry(account);//getStore().upsert(account);
                     });
         } else {
             return getStore().upsert(account);
         }
     }
 
+    @CheckResult
+    private Single<Account> saveWithRetry(@NonNull Account account) {
+        Parcel parcel = account.writeToParcel();
+
+        return getStore()
+                .upsert(account)
+                .retry(new BiPredicate<Integer, Throwable>() {
+                    SecureRandom random = new SecureRandom();
+                    byte[] bytes = new byte[8];
+
+                    @Override
+                    public boolean test(Integer retryCount, Throwable throwable) {
+
+                        Throwable t = throwable.getCause();
+                        boolean isUniqueError = t instanceof SQLIntegrityConstraintViolationException && t.getMessage().contains("UNIQUE");
+
+                        if (isUniqueError) {
+                            Account.restoreFromParcel(account, parcel);
+                            random.nextBytes(bytes);
+                            account.generateUID(bytes);
+                        }
+
+                        return retryCount < 10 && isUniqueError;
+                    }
+                })
+                .doAfterTerminate(parcel::recycle);
+    }
+
+    @CheckResult
     @Override
     public Completable saveAll(final List<Account> accountList) {
         return getStore()
@@ -126,6 +192,7 @@ public class AccountDaoImpl implements AccountDao {
                 .ignoreElement();
     }
 
+    @CheckResult
     @Override
     public Completable saveAccountOrder(int count, int from, int to, ResultSetIterator<Tuple> results) {
         return getStore()
@@ -167,6 +234,7 @@ public class AccountDaoImpl implements AccountDao {
                 .ignoreElement();
     }
 
+    @CheckResult
     @Override
     public Completable delete(Account account) {
         return getStore().delete(account);

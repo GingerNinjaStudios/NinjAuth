@@ -12,6 +12,10 @@ import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.data.db.entity.Label;
 
 public class BackupAccount {
+    @SerializedName("uid")
+    @Expose
+    private String uid;
+
     @SerializedName("title")
     @Expose
     private String title;
@@ -50,7 +54,7 @@ public class BackupAccount {
 
     @SerializedName("labels")
     @Expose
-    private long[] labelIds;
+    private String[] labelIds;
 
     @SerializedName("position")
     @Expose
@@ -59,6 +63,7 @@ public class BackupAccount {
     @NonNull
     public static BackupAccount fromEntity(@NonNull Account account) {
         BackupAccount backupAccount = new BackupAccount();
+        backupAccount.uid = account.getUid();
         backupAccount.title = account.getTitle();
         backupAccount.type = account.getType();
         backupAccount.source = account.getSource();
@@ -74,10 +79,10 @@ public class BackupAccount {
         if (labels != null && !labels.isEmpty()) {
             final int n = labels.size();
             Iterator<Label> iterator = labels.iterator();
-            backupAccount.labelIds = new long[n];
+            backupAccount.labelIds = new String[n];
 
             for (int i = 0; iterator.hasNext(); i++) {
-                backupAccount.labelIds[i] = iterator.next().getId();
+                backupAccount.labelIds[i] = iterator.next().getUid();
             }
         }
 
@@ -89,6 +94,7 @@ public class BackupAccount {
         Account account = new Account();
 
         account
+                .setUid(uid)
                 .setTitle(title)
                 .setType(type)
                 .setSource(source)
@@ -104,7 +110,7 @@ public class BackupAccount {
     }
 
     @Nullable
-    public long[] getLabelIds() {
+    public String[] getLabelIds() {
         return labelIds;
     }
 }
