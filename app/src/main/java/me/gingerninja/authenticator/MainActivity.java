@@ -3,6 +3,7 @@ package me.gingerninja.authenticator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -71,6 +72,9 @@ public class MainActivity extends AppCompatActivity {
 
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
                 Timber.v("Destination changed: %s", destination.getLabel());
+
+                int requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+
                 switch (destination.getId()) {
                     case R.id.accountListFragment:
                         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
@@ -80,9 +84,16 @@ public class MainActivity extends AppCompatActivity {
                         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                         navView.setCheckedItem(R.id.nav_labels);
                         break;
+                    case R.id.addAccountFromCameraFragment:
+                        setRequestedOrientation(requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+                        break;
                     default:
                         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
                         break;
+                }
+
+                if (requestedOrientation != getRequestedOrientation()) {
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                 }
             });
         }
