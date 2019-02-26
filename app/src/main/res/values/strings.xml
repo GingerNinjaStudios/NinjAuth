@@ -24,6 +24,7 @@
     <string name="account_add_manual">Enter details</string>
 
     <string name="no_accounts">You have no accounts saved</string>
+    <string name="no_labels_for_account">No available labels were found.</string>
 
     <string name="account_new_form_title">Add account</string>
     <string name="account_edit_form_title">Edit account</string>

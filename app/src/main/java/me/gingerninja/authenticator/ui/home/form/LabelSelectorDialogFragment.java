@@ -98,20 +98,25 @@ public class LabelSelectorDialogFragment extends DialogFragment implements Label
         List<Label> labels = accountRepo.getAllLabel(usedIds).toList().blockingGet();
 
         Context ctx = getContext();
-        View root = LayoutInflater.from(ctx).inflate(R.layout.account_label_list, null);
-        RecyclerView recyclerView = root.findViewById(R.id.list);
-        recyclerView.setAdapter(new AccountAvailableLabelListAdapter(labels).setLabelListClickListener(this));
-        //recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-
-        return new MaterialAlertDialogBuilder(ctx)
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(ctx)
                 .setTitle(R.string.account_list_dialog_title)
-                .setView(root)
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
                 })
                 .setNeutralButton(R.string.account_list_dialog_create_new, (dialog, which) -> {
                     navigateForResult(REQUEST_CODE_ADD_NEW_LABEL).navigate(R.id.labelEditorFragment);
-                })
-                .create();
+                });
+
+        if (!labels.isEmpty()) {
+            View root = LayoutInflater.from(ctx).inflate(R.layout.account_label_list, null);
+            RecyclerView recyclerView = root.findViewById(R.id.list);
+            recyclerView.setAdapter(new AccountAvailableLabelListAdapter(labels).setLabelListClickListener(this));
+            builder.setView(root);
+        } else {
+            builder.setMessage(R.string.no_labels_for_account);
+        }
+        //recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+
+        return builder.create();
     }
 
     @Override
