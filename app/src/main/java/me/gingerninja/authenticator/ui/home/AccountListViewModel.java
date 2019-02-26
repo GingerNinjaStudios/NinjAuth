@@ -1,10 +1,12 @@
 package me.gingerninja.authenticator.ui.home;
 
 import android.app.Application;
+import android.database.Cursor;
 import android.view.View;
 
 import javax.inject.Inject;
 
+import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -27,6 +29,9 @@ public class AccountListViewModel extends ViewModel {
     //private MutableLiveData<List<Account>> accountList = new MutableLiveData<>();
     private AutoClosingMutableLiveData<Tuple> accountList2 = new AutoClosingMutableLiveData<>();
 
+    public ObservableBoolean hasLoaded = new ObservableBoolean(false);
+    public ObservableBoolean hasData = new ObservableBoolean(false);
+
     private Disposable disposable;
 
     @Inject
@@ -44,8 +49,10 @@ public class AccountListViewModel extends ViewModel {
                     if (oldResults != null && !accountList2.hasActiveObservers()) {
                         oldResults.close();
                     }*/
-
-                    accountList2.setValue((ResultSetIterator<Tuple>) tuples.iterator());
+                    ResultSetIterator<Tuple> it = (ResultSetIterator<Tuple>) tuples.iterator();
+                    hasLoaded.set(true);
+                    hasData.set(it.unwrap(Cursor.class).getCount() > 0);
+                    accountList2.setValue(it);
                 });
 
         /*disposable = accountRepo.getAllAccountAndListen()

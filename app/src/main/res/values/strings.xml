@@ -23,6 +23,8 @@
     <string name="account_add_scan_barcode">Scan barcode</string>
     <string name="account_add_manual">Enter details</string>
 
+    <string name="no_accounts">You have no accounts saved</string>
+
     <string name="account_new_form_title">Add account</string>
     <string name="account_edit_form_title">Edit account</string>
     <string name="account_title_text">Title</string>
