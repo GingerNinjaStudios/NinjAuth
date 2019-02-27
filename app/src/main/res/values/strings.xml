@@ -127,6 +127,12 @@
     <string name="settings_backup_restore_title">Restore</string>
     <string name="settings_backup_restore_desc">Restore data from a file</string>
 
+    <string name="settings_restore_password_dialog_title">Password required</string>
+    <string name="settings_restore_password_dialog_msg">Enter the password for the ZIP file</string>
+    <string name="settings_restore_password_dialog_wrong_pass">Wrong password</string>
+
+    <string name="password">Password</string>
+
     <string name="settings_protection_title">Protection</string>
     <string name="settings_prot_none">None</string>
     <string name="settings_prot_pin">PIN</string>

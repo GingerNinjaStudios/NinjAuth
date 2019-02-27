@@ -12,7 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import dagger.android.support.AndroidSupportInjection;
@@ -49,6 +51,11 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends DaggerFrag
 
     public NavController getNavController() {
         return Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+    }
+
+    @NonNull
+    protected <U extends ViewModel> U getViewModel(@NonNull Class<U> modelClass) {
+        return ViewModelProviders.of(this, viewModelFactory).get(modelClass);
     }
 
     @LayoutRes

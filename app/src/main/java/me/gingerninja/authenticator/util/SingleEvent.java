@@ -10,15 +10,24 @@ public class SingleEvent<T> {
     @Nullable
     private final T content;
 
+    private final Throwable throwable;
+
     private boolean handled;
 
     public SingleEvent(@NonNull String id) {
-        this(id, null);
+        this(id, (T) null);
     }
 
     public SingleEvent(@NonNull String id, @Nullable T content) {
         this.id = id;
         this.content = content;
+        this.throwable = null;
+    }
+
+    public SingleEvent(@NonNull String id, @NonNull Throwable throwable) {
+        this.id = id;
+        this.content = null;
+        this.throwable = throwable;
     }
 
     /**
@@ -45,6 +54,14 @@ public class SingleEvent<T> {
     @Nullable
     public <A extends T> A getContent() {
         return (A) content;
+    }
+
+    public Throwable getThrowable() {
+        return throwable;
+    }
+
+    public boolean isSuccessful() {
+        return throwable == null;
     }
 
     public boolean isHandled() {

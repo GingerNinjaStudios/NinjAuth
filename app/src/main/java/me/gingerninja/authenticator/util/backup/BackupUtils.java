@@ -54,16 +54,14 @@ public class BackupUtils {
 
     @CheckReturnValue
     public Completable backup(@NonNull Uri uri) {
-        char[] password = null; // TODO
+        char[] password = "alma".toCharArray(); // TODO
 
         return new Backup(context, accountRepo, gson, uri).export(password);
     }
 
     @CheckReturnValue
-    public Completable restore(@NonNull Uri uri) {
-        char[] password = null; // TODO
-
-        return new Restore(context, accountRepo, gson, uri).restore(password);
+    public Restore restore(@NonNull Uri uri) {
+        return new Restore(context, accountRepo, gson, uri);
     }
 
     /*public void backup(@NonNull Uri uri) throws ZipException, IOException {
