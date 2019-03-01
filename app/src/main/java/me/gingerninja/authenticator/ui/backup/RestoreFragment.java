@@ -7,8 +7,11 @@ import android.view.ViewGroup;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.viewpager.widget.ViewPager;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import me.gingerninja.authenticator.R;
@@ -18,17 +21,27 @@ import me.gingerninja.authenticator.ui.base.BaseFragment;
 import me.gingerninja.authenticator.util.SingleEvent;
 import timber.log.Timber;
 
-public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> {
+public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> implements OnBackPressedCallback {
     private CompositeDisposable disposable = new CompositeDisposable();
 
     @Override
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, RestoreFragmentBinding binding) {
-        // TODO
-
-        subscribeToUi();
+        subscribeToUi(binding);
     }
 
-    private void subscribeToUi() {
+    private void subscribeToUi(RestoreFragmentBinding binding) {
+        binding.toolbar.setNavigationOnClickListener(v -> getNavController().navigateUp());
+
+        // overcoming MaterialButton's inability to set the icon to the end
+        binding.btnNext.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getActivity(), R.drawable.ic_chevron_next_24dp), null);
+
+        binding.btnPrev.setOnClickListener(this::handleBackButton);
+        binding.btnNext.setOnClickListener(this::handleNextButton);
+
+        // TODO binding.viewPager.setAdapter(pagerAdapter);
+        binding.progressIndicator.setViewPager(binding.viewPager);
+        binding.progressIndicator.setDotsClickable(false);
+
         assert getArguments() != null;
         disposable.add(
                 getViewModel(RestoreViewModel.class)
@@ -44,6 +57,27 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> {
 
         if (disposable != null) {
             disposable.dispose();
+        }
+    }
+
+    private void handleNextButton(View v) {
+        ViewPager viewPager = getDataBinding().viewPager;
+
+        boolean isFinalPage = true;// TODO viewPager.getCurrentItem() == pagerAdapter.getCount() - 1;
+
+        if (isFinalPage) {
+            // TODO
+            setResultAndLeave(RESULT_OK);
+        } else {
+            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
+        }
+    }
+
+    private void handleBackButton(View v) {
+        if (getDataBinding().viewPager.getCurrentItem() <= 0) {
+            setResultAndLeave(RESULT_CANCELED);
+        } else {
+            handleOnBackPressed();
         }
     }
 
@@ -89,5 +123,19 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> {
     @Override
     protected int getLayoutId() {
         return R.layout.restore_fragment;
+    }
+
+    @Override
+    public boolean handleOnBackPressed() {
+        boolean handled = false;
+
+        ViewPager viewPager = getDataBinding().viewPager;
+
+        if (viewPager.getCurrentItem() > 0) {
+            viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true);
+            handled = true;
+        }
+
+        return handled;
     }
 }

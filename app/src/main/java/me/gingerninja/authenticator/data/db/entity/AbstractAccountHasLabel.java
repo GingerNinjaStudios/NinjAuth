@@ -6,7 +6,9 @@ import io.requery.ForeignKey;
 import io.requery.Key;
 import io.requery.ManyToOne;
 import io.requery.PropertyNameStyle;
+import io.requery.Superclass;
 
+@Superclass
 @Entity(propertyNameStyle = PropertyNameStyle.FLUENT_BEAN)
 abstract class AbstractAccountHasLabel {
     @Key

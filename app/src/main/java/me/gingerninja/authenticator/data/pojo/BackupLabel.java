@@ -7,6 +7,7 @@ import com.google.gson.annotations.SerializedName;
 
 import androidx.annotation.NonNull;
 import me.gingerninja.authenticator.data.db.entity.Label;
+import me.gingerninja.authenticator.data.db.entity.TempLabel;
 
 public class BackupLabel {
     @SerializedName("uid")
@@ -21,6 +22,10 @@ public class BackupLabel {
     @Expose
     private String color;
 
+    @SerializedName("icon")
+    @Expose
+    private String icon;
+
     @SerializedName("position")
     @Expose
     private int position;
@@ -32,19 +37,21 @@ public class BackupLabel {
         backupLabel.uid = label.getUid();
         backupLabel.name = label.getName();
         backupLabel.color = String.format("#%06X", 0xFFFFFF & label.getColor());
+        backupLabel.icon = label.getIcon();
         backupLabel.position = label.getPosition();
 
         return backupLabel;
     }
 
     @NonNull
-    public Label toEntity() {
-        Label label = new Label();
+    public TempLabel toEntity() {
+        TempLabel label = new TempLabel();
 
         label
                 .setUid(uid)
                 .setName(name)
                 .setColor(Color.parseColor(color))
+                .setIcon(icon)
                 .setPosition(position);
 
         return label;

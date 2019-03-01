@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.data.db.entity.Label;
+import me.gingerninja.authenticator.data.db.entity.TempAccount;
 
 public class BackupAccount {
     @SerializedName("uid")
@@ -90,8 +91,8 @@ public class BackupAccount {
     }
 
     @NonNull
-    public Account toEntity() {
-        Account account = new Account();
+    public TempAccount toEntity() {
+        TempAccount account = new TempAccount();
 
         account
                 .setUid(uid)

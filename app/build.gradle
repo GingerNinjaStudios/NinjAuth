@@ -47,7 +47,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview-selection:1.0.0'
     implementation 'androidx.preference:preference:1.0.0'
     implementation 'androidx.palette:palette:1.0.0'
-    api 'androidx.annotation:annotation:1.0.1'
+    api 'androidx.annotation:annotation:1.0.2'
     implementation 'androidx.biometric:biometric:1.0.0-alpha03'
 
     // Android Architecture
@@ -55,10 +55,10 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-common-java8:2.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
     annotationProcessor 'androidx.lifecycle:lifecycle-compiler:2.0.0'
-    implementation 'android.arch.navigation:navigation-fragment:1.0.0-rc01'
-    implementation 'android.arch.navigation:navigation-ui:1.0.0-rc01'
+    implementation 'android.arch.navigation:navigation-fragment:1.0.0-rc02'
+    implementation 'android.arch.navigation:navigation-ui:1.0.0-rc02'
 
-    implementation 'com.google.android.play:core:1.3.7'
+    implementation 'com.google.android.play:core:1.4.0'
 
     // Apache v2 - https://github.com/takisoft/preferencex-android
     implementation 'com.takisoft.preferencex:preferencex:1.0.0'
@@ -70,7 +70,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-vision:17.0.2'
 
     // Apache v2 - https://github.com/material-components/material-components-android
-    implementation 'com.google.android.material:material:1.1.0-alpha03'
+    implementation 'com.google.android.material:material:1.1.0-alpha04'
 
     // BSD - https://www.zetetic.net/sqlcipher/sqlcipher-for-android/
     implementation 'net.zetetic:android-database-sqlcipher:4.0.0'

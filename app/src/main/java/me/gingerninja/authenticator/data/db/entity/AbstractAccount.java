@@ -19,7 +19,9 @@ import io.requery.ManyToMany;
 import io.requery.Nullable;
 import io.requery.PreInsert;
 import io.requery.PropertyNameStyle;
+import io.requery.Superclass;
 
+@Superclass
 @Entity(propertyNameStyle = PropertyNameStyle.FLUENT_BEAN)
 abstract class AbstractAccount {
     public static final long DEFAULT_COUNTER = 0;

@@ -7,6 +7,8 @@ import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 
 import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -20,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,8 +30,11 @@ import androidx.annotation.WorkerThread;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
+import me.gingerninja.authenticator.data.pojo.BackupAccount;
 import me.gingerninja.authenticator.data.pojo.BackupFile;
+import me.gingerninja.authenticator.data.pojo.BackupLabel;
 import me.gingerninja.authenticator.data.repo.AccountRepository;
+import timber.log.Timber;
 
 public class Restore {
     private final Context context;
@@ -168,11 +174,81 @@ public class Restore {
             throw new NotNinjAuthZipFile();
         } else {
             try (Reader in = new InputStreamReader(zipFile.getInputStream(dataFileHeader), StandardCharsets.UTF_8)) {
-                return gson.fromJson(in, BackupFile.class);
+                readData(in);
+                //return gson.fromJson(in, BackupFile.class);
+                return new BackupFile();
             } catch (IOException e) {
                 throw new ZipException("Whoops", ZipExceptionConstants.randomAccessFileNull);
             }
         }
+    }
+
+    private void readData(@NonNull Reader in) throws IOException {
+        JsonReader jsonReader = new JsonReader(in);
+
+        JsonToken token;
+
+        while ((token = jsonReader.peek()) != JsonToken.END_DOCUMENT) {
+            switch (token) {
+                case NAME:
+                    String name = jsonReader.nextName();
+                    switch (name) {
+                        case "accounts":
+                            readAccounts(jsonReader);
+                            break;
+                        case "labels":
+                            readLabels(jsonReader);
+                            break;
+                        default:
+                            jsonReader.skipValue();
+                    }
+                    break;
+                case BEGIN_OBJECT:
+                    jsonReader.beginObject();
+                    break;
+                case END_OBJECT:
+                    jsonReader.endObject();
+                    break;
+                default:
+                    jsonReader.skipValue();
+            }
+        }
+
+        jsonReader.close();
+
+        Timber.v("END of JSON");
+    }
+
+    private void readAccounts(@NonNull JsonReader jsonReader) throws IOException {
+        JsonToken token = jsonReader.peek();
+
+        if (token != JsonToken.BEGIN_ARRAY) {
+            return;
+        }
+
+        jsonReader.beginArray();
+        while (jsonReader.hasNext()) {
+            BackupAccount backupFile = gson.fromJson(jsonReader, BackupAccount.class);
+            Timber.v("Read account: %s, labels: %s", backupFile.toEntity(), Arrays.toString(backupFile.getLabelIds()));
+            // TODO save account
+        }
+        jsonReader.endArray();
+    }
+
+    private void readLabels(JsonReader jsonReader) throws IOException {
+        JsonToken token = jsonReader.peek();
+
+        if (token != JsonToken.BEGIN_ARRAY) {
+            return;
+        }
+
+        jsonReader.beginArray();
+        while (jsonReader.hasNext()) {
+            BackupLabel backup = gson.fromJson(jsonReader, BackupLabel.class);
+            Timber.v("Read label: %s", backup.toEntity());
+            // TODO save label
+        }
+        jsonReader.endArray();
     }
 
     public void dispose() {
