@@ -8,7 +8,7 @@
         android:layout_height="match_parent"
         app:layoutDescription="@xml/splash_scene_portrait">
 
-        <ImageView
+        <!--<ImageView
             android:id="@+id/app_icon"
             android:layout_width="128dp"
             android:layout_height="128dp"
@@ -22,7 +22,36 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0"
-            app:srcCompat="@mipmap/ic_launcher" />
+            app:srcCompat="@mipmap/ic_launcher" />-->
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/app_icon"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="8dp"
+            app:cardBackgroundColor="@color/ic_launcher_background"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp"
+            app:cardMaxElevation="4dp"
+            app:cardPreventCornerOverlap="true"
+            app:cardUseCompatPadding="false"
+            app:contentPadding="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/vertical_center_guideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0">
+
+            <ImageView
+                android:id="@+id/app_icon2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/app_name"
+                app:srcCompat="@drawable/logo_foreground" />
+        </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_next"
