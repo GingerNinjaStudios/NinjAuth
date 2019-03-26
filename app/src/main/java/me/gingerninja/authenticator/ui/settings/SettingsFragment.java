@@ -96,7 +96,7 @@ public class SettingsFragment extends BaseFragment<SettingsFragmentBinding> impl
 
                     Uri uri = backupUtils.getUriFromIntent(data);
                     if (uri != null) {
-                        SettingsFragmentDirections.SettingsToRestoreFragmentAction restoreAction = new SettingsFragmentDirections.SettingsToRestoreFragmentAction(uri);
+                        SettingsFragmentDirections.SettingsToRestoreFragmentAction restoreAction = SettingsFragmentDirections.settingsToRestoreFragmentAction(uri);
                         navigateForResult(RC_RESTORE).navigate(restoreAction);
                     }
 
