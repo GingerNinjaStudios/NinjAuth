@@ -9,7 +9,7 @@ import io.requery.query.NamedNumericExpression;
 import io.requery.query.Tuple;
 import io.requery.reactivex.ReactiveEntityStore;
 import io.requery.util.CloseableIterator;
-import me.gingerninja.authenticator.data.db.dao.TempAccountDao;
+import me.gingerninja.authenticator.data.db.dao.TempDao;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.data.db.entity.AccountHasLabel;
 import me.gingerninja.authenticator.data.db.entity.Label;
@@ -17,11 +17,16 @@ import me.gingerninja.authenticator.data.db.entity.TempAccount;
 import me.gingerninja.authenticator.data.db.entity.TempAccountHasLabel;
 import me.gingerninja.authenticator.data.db.entity.TempLabel;
 import me.gingerninja.authenticator.data.db.provider.DatabaseHandler;
+import me.gingerninja.authenticator.data.pojo.BackupAccount;
+import me.gingerninja.authenticator.data.pojo.BackupLabel;
+import me.gingerninja.authenticator.data.repo.TemporaryRepository;
+import me.gingerninja.authenticator.util.backup.Restore;
+import timber.log.Timber;
 
-public class TempAccountDaoImpl implements TempAccountDao {
+public class TempDaoImpl implements TempDao {
     private final DatabaseHandler databaseHandler;
 
-    public TempAccountDaoImpl(DatabaseHandler databaseHandler) {
+    public TempDaoImpl(DatabaseHandler databaseHandler) {
         this.databaseHandler = databaseHandler;
     }
 
@@ -32,10 +37,104 @@ public class TempAccountDaoImpl implements TempAccountDao {
     @Override
     public Completable clear() {
         return Completable.concatArray(
-                getStore().delete(TempAccount.class).get().single().ignoreElement(),
-                getStore().delete(TempLabel.class).get().single().ignoreElement(),
-                getStore().delete(TempAccountHasLabel.class).get().single().ignoreElement()
+                Completable.defer(() -> {
+                    try {
+                        getStore().delete(TempAccount.class).get().single().ignoreElement().blockingAwait();
+                    } catch (Throwable ignored) {
+                        // the table did not exist probably
+                    }
+                    return Completable.complete();
+                }),
+                Completable.defer(() -> {
+                    try {
+                        getStore().delete(TempLabel.class).get().single().ignoreElement().blockingAwait();
+                    } catch (Throwable ignored) {
+                        // the table did not exist probably
+                    }
+                    return Completable.complete();
+                }),
+                Completable.defer(() -> {
+                    try {
+                        getStore().delete(TempAccountHasLabel.class).get().single().ignoreElement().blockingAwait();
+                    } catch (Throwable ignored) {
+                        // the table did not exist probably
+                    }
+                    return Completable.complete();
+                })
+                //getStore().delete(TempAccount.class).get().single().ignoreElement(),
+                //getStore().delete(TempLabel.class).get().single().ignoreElement(),
+                //getStore().delete(TempAccountHasLabel.class).get().single().ignoreElement()
         );
+    }
+
+    @Override
+    public Completable loadJsonToDatabase(Restore.DatabaseProcessor processor) {
+        return clear()
+                .andThen(
+                        Completable.defer(() -> getStore()
+                                .runInTransaction(db -> {
+                                    TemporaryRepository.RestoreHandler restoreHandler = new TemporaryRepository.RestoreHandler() {
+                                        @Override
+                                        public void addAccount(BackupAccount backupAccount) throws Exception {
+                                            TempAccount inserted = backupAccount.toEntity();
+
+                                            Integer count = db.count(Account.class)
+                                                    .where(Account.UID.eq(inserted.getUid()))
+                                                    .get()
+                                                    .call();
+
+                                            if (count != null && count > 0) {
+                                                inserted.setRestoreMode(TempAccount.MODE_UPDATE);
+                                            }
+
+                                            db.insert(inserted);
+
+                                            if (backupAccount.getLabelIds() != null) {
+                                                String[] labelIds = backupAccount.getLabelIds();
+                                                for (int i = 0; i < labelIds.length; i++) {
+                                                    String labelUid = labelIds[i];
+                                                    // this should not fail because the defer_foreign_keys pragma is ON
+                                                    // TODO this needs to be tested
+
+                                                    db.insert(TempAccountHasLabel.class)
+                                                            .value(TempAccountHasLabel.ACCOUNT_ID, inserted.getUid())
+                                                            .value(TempAccountHasLabel.LABEL_ID, labelUid)
+                                                            .value(TempAccountHasLabel.POSITION, i)
+                                                            .get()
+                                                            .close();
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void addLabel(BackupLabel backupLabel) {
+                                            db.insert(backupLabel.toEntity());
+                                        }
+                                    };
+
+                                    Transaction transaction = db.transaction();
+                                    if (!transaction.active()) {
+                                        transaction.begin();
+                                    }
+                                    try {
+                                        db.raw("PRAGMA defer_foreign_keys = ON").close(); // TODO this needs to be tested
+
+                                        Timber.v("[DB] Temporary restore process starting");
+                                        processor.process(restoreHandler);
+                                        Timber.v("[DB] Temporary restore process done");
+
+                                        transaction.commit();
+                                    } catch (Throwable t) {
+                                        Timber.e(t, "Cannot finish temporary restore process: %s", t.getMessage());
+                                        transaction.rollback();
+                                        throw new RuntimeException(t);
+                                    }
+
+                                    return true;
+                                })
+                                .ignoreElement()
+                        )
+                );
     }
 
     @Override

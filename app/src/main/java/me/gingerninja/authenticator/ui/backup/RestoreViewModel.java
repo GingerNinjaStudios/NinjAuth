@@ -41,9 +41,6 @@ public class RestoreViewModel extends ViewModel {
     @NonNull
     private BehaviorSubject<SingleEvent<BackupFile>> restoreSubject = BehaviorSubject.create();
 
-    @Nullable
-    private BackupFile backupFile;
-
     @Inject
     RestoreViewModel(@NonNull BackupUtils backupUtils) {
         this.backupUtils = backupUtils;
@@ -54,12 +51,6 @@ public class RestoreViewModel extends ViewModel {
         super.onCleared();
         compositeDisposable.dispose();
         cancelRestore();
-        backupFile = null;
-    }
-
-    @Nullable
-    BackupFile getBackupFile() {
-        return backupFile;
     }
 
     @CheckResult
@@ -108,11 +99,9 @@ public class RestoreViewModel extends ViewModel {
         compositeDisposable.clear();
 
         compositeDisposable.add(
-                restoreInProgress.restore(password)
-                        .subscribe(backupFile -> {
-                            this.backupFile = backupFile;
+                restoreInProgress.readDataFile(password)
+                        .subscribe(() -> {
                             restoreSubject.onComplete();
-
                             restoreInProgress = null;
                         }, throwable -> {
                             if (throwable instanceof ZipException) {
@@ -128,6 +117,10 @@ public class RestoreViewModel extends ViewModel {
                             }
                         })
         );
+    }
+
+    void doRestore() {
+        // TODO
     }
 
     void cancelRestore() {

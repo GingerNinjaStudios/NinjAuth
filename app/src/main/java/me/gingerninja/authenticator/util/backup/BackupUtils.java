@@ -36,6 +36,7 @@ import androidx.fragment.app.Fragment;
 import io.reactivex.Completable;
 import io.reactivex.annotations.CheckReturnValue;
 import me.gingerninja.authenticator.data.repo.AccountRepository;
+import me.gingerninja.authenticator.data.repo.TemporaryRepository;
 
 @Singleton
 public class BackupUtils {
@@ -43,12 +44,14 @@ public class BackupUtils {
 
     private final Context context;
     private final AccountRepository accountRepo;
+    private final TemporaryRepository tempRepo;
     private final Gson gson;
 
     @Inject
-    public BackupUtils(Context context, AccountRepository accountRepo, Gson gson) {
+    public BackupUtils(Context context, AccountRepository accountRepo, TemporaryRepository tempRepo, Gson gson) {
         this.context = context;
         this.accountRepo = accountRepo;
+        this.tempRepo = tempRepo;
         this.gson = gson;
     }
 
@@ -61,7 +64,7 @@ public class BackupUtils {
 
     @CheckReturnValue
     public Restore restore(@NonNull Uri uri) {
-        return new Restore(context, accountRepo, gson, uri);
+        return new Restore(context, tempRepo, gson, uri);
     }
 
     /*public void backup(@NonNull Uri uri) throws ZipException, IOException {

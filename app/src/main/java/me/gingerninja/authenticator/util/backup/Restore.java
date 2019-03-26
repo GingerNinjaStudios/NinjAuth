@@ -33,21 +33,21 @@ import io.reactivex.schedulers.Schedulers;
 import me.gingerninja.authenticator.data.pojo.BackupAccount;
 import me.gingerninja.authenticator.data.pojo.BackupFile;
 import me.gingerninja.authenticator.data.pojo.BackupLabel;
-import me.gingerninja.authenticator.data.repo.AccountRepository;
+import me.gingerninja.authenticator.data.repo.TemporaryRepository;
 import timber.log.Timber;
 
 public class Restore {
     private final Context context;
-    private final AccountRepository accountRepo;
+    private final TemporaryRepository repo;
     private final Gson gson;
     private final Uri uri;
     private final File tmpFile;
 
     private ZipFile zipFile;
 
-    public Restore(Context context, AccountRepository accountRepo, Gson gson, @NonNull Uri uri) {
+    public Restore(Context context, TemporaryRepository repo, Gson gson, @NonNull Uri uri) {
         this.context = context;
-        this.accountRepo = accountRepo;
+        this.repo = repo;
         this.gson = gson;
         this.uri = uri;
 
@@ -88,23 +88,6 @@ public class Restore {
         fis.close();
     }
 
-    private Completable restore_OLD(@Nullable final char[] password) {
-        return Completable
-                .create(emitter -> {
-                    try {
-                        internalRestore(password);
-                        emitter.onComplete();
-                    } catch (Throwable t) {
-                        emitter.tryOnError(t);
-                    } finally {
-                        if (tmpFile.exists()) {
-                            tmpFile.delete();
-                        }
-                    }
-                })
-                .observeOn(Schedulers.io());
-    }
-
     public Single<Restore> prepare() {
         return Single.
                 <Restore>create(emitter -> {
@@ -136,14 +119,14 @@ public class Restore {
         return zipFile.isEncrypted();
     }
 
-    public Single<BackupFile> restore(@Nullable final char[] password) {
+    public Completable readDataFile(@Nullable final char[] password) {
         checkZipFile();
 
-        return Single
+        return Completable
                 .<BackupFile>create(emitter -> {
                     try {
-                        BackupFile backupFile = internalRestore(password);
-                        emitter.onSuccess(backupFile);
+                        internalRestore(password).blockingAwait();
+                        emitter.onComplete();
                         dispose();
                     } catch (Throwable t) {
                         if (!emitter.tryOnError(t)) {
@@ -159,7 +142,7 @@ public class Restore {
     }
 
     @WorkerThread
-    private BackupFile internalRestore(@Nullable char[] password) throws ZipException {
+    private Completable internalRestore(@Nullable char[] password) throws ZipException {
         if (zipFile.isEncrypted()) {
             if (password == null || password.length == 0) {
                 throw new ZipException("", ZipExceptionConstants.WRONG_PASSWORD);
@@ -173,17 +156,20 @@ public class Restore {
             // this is not an appropriate file
             throw new NotNinjAuthZipFile();
         } else {
-            try (Reader in = new InputStreamReader(zipFile.getInputStream(dataFileHeader), StandardCharsets.UTF_8)) {
-                readData(in);
-                //return gson.fromJson(in, BackupFile.class);
-                return new BackupFile();
-            } catch (IOException e) {
-                throw new ZipException("Whoops", ZipExceptionConstants.randomAccessFileNull);
-            }
+            //try (Reader in = new InputStreamReader(zipFile.getInputStream(dataFileHeader), StandardCharsets.UTF_8)) {
+            Reader in = new InputStreamReader(zipFile.getInputStream(dataFileHeader), StandardCharsets.UTF_8);
+            return repo.preprocessRestore(new DatabaseProcessorImpl(in));
+
+            //readData(in);
+            //return gson.fromJson(in, BackupFile.class);
+            //return new BackupFile();
+            //} catch (IOException e) {
+            //    throw new ZipException(e, ZipExceptionConstants.randomAccessFileNull);
+            //}
         }
     }
 
-    private void readData(@NonNull Reader in) throws IOException {
+    /*private void readData(@NonNull Reader in) throws IOException {
         JsonReader jsonReader = new JsonReader(in);
 
         JsonToken token;
@@ -230,7 +216,7 @@ public class Restore {
         while (jsonReader.hasNext()) {
             BackupAccount backupFile = gson.fromJson(jsonReader, BackupAccount.class);
             Timber.v("Read account: %s, labels: %s", backupFile.toEntity(), Arrays.toString(backupFile.getLabelIds()));
-            // TODO save account
+            // TO DO save account
         }
         jsonReader.endArray();
     }
@@ -246,16 +232,95 @@ public class Restore {
         while (jsonReader.hasNext()) {
             BackupLabel backup = gson.fromJson(jsonReader, BackupLabel.class);
             Timber.v("Read label: %s", backup.toEntity());
-            // TODO save label
+            // TO DO save label
         }
         jsonReader.endArray();
-    }
+    }*/
 
     public void dispose() {
         zipFile = null;
 
         if (tmpFile.exists()) {
             tmpFile.delete();
+        }
+    }
+
+    public interface DatabaseProcessor {
+
+        void process(@NonNull TemporaryRepository.RestoreHandler restoreHandler) throws Exception;
+    }
+
+    public class DatabaseProcessorImpl implements DatabaseProcessor {
+        private final JsonReader jsonReader;
+
+        private DatabaseProcessorImpl(@NonNull Reader in) {
+            jsonReader = new JsonReader(in);
+        }
+
+        @Override
+        public void process(@NonNull TemporaryRepository.RestoreHandler restoreHandler) throws Exception {
+            JsonToken token;
+
+            while ((token = jsonReader.peek()) != JsonToken.END_DOCUMENT) {
+                switch (token) {
+                    case NAME:
+                        String name = jsonReader.nextName();
+                        switch (name) {
+                            case "accounts":
+                                readAccounts(restoreHandler, jsonReader);
+                                break;
+                            case "labels":
+                                readLabels(restoreHandler, jsonReader);
+                                break;
+                            default:
+                                jsonReader.skipValue();
+                        }
+                        break;
+                    case BEGIN_OBJECT:
+                        jsonReader.beginObject();
+                        break;
+                    case END_OBJECT:
+                        jsonReader.endObject();
+                        break;
+                    default:
+                        jsonReader.skipValue();
+                }
+            }
+            jsonReader.close();
+
+            Timber.v("END of JSON");
+        }
+
+        private void readAccounts(@NonNull TemporaryRepository.RestoreHandler restoreHandler, @NonNull JsonReader jsonReader) throws Exception {
+            JsonToken token = jsonReader.peek();
+
+            if (token != JsonToken.BEGIN_ARRAY) {
+                return;
+            }
+
+            jsonReader.beginArray();
+            while (jsonReader.hasNext()) {
+                BackupAccount account = gson.fromJson(jsonReader, BackupAccount.class);
+                Timber.v("Read account: %s, labels: %s", account.toEntity(), Arrays.toString(account.getLabelIds()));
+                restoreHandler.addAccount(account);
+            }
+            jsonReader.endArray();
+        }
+
+        private void readLabels(@NonNull TemporaryRepository.RestoreHandler restoreHandler, JsonReader jsonReader) throws Exception {
+            JsonToken token = jsonReader.peek();
+
+            if (token != JsonToken.BEGIN_ARRAY) {
+                return;
+            }
+
+            jsonReader.beginArray();
+            while (jsonReader.hasNext()) {
+                BackupLabel label = gson.fromJson(jsonReader, BackupLabel.class);
+                Timber.v("Read label: %s", label.toEntity());
+                restoreHandler.addLabel(label);
+            }
+            jsonReader.endArray();
         }
     }
 }

@@ -12,8 +12,10 @@ import dagger.Module;
 import dagger.Provides;
 import me.gingerninja.authenticator.data.db.dao.AccountDao;
 import me.gingerninja.authenticator.data.db.dao.LabelDao;
+import me.gingerninja.authenticator.data.db.dao.TempDao;
 import me.gingerninja.authenticator.data.db.dao.impl.AccountDaoImpl;
 import me.gingerninja.authenticator.data.db.dao.impl.LabelDaoImpl;
+import me.gingerninja.authenticator.data.db.dao.impl.TempDaoImpl;
 import me.gingerninja.authenticator.data.db.provider.DatabaseHandler;
 import me.gingerninja.authenticator.data.db.wrapper.AccountWrapper;
 import me.gingerninja.authenticator.util.AppSettings;
@@ -36,6 +38,12 @@ public class DataModule {
     @Singleton
     public LabelDao provideCategoryDao(DatabaseHandler databaseHandler) {
         return new LabelDaoImpl(databaseHandler);
+    }
+
+    @Provides
+    @Singleton
+    public TempDao provideTempDao(DatabaseHandler databaseHandler) {
+        return new TempDaoImpl(databaseHandler);
     }
 
     @Provides

@@ -82,13 +82,13 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> implem
     }
 
     private void handleRestoreComplete() {
-        BackupFile backupFile = getViewModel(RestoreViewModel.class).getBackupFile();
+        /*BackupFile backupFile = getViewModel(RestoreViewModel.class).getBackupFile();
         if (backupFile != null) {
             // TODO
             Timber.v("Restore complete, accounts: %s, labels: %s", backupFile.getAccounts(), backupFile.getLabels());
         } else {
             Timber.v("Restore complete, no data");
-        }
+        }*/
 
         Snackbar.make(getView(), "Restore complete", Snackbar.LENGTH_LONG).show();
     }

@@ -2,5 +2,5 @@ package me.gingerninja.authenticator.data.db;
 
 public class DbConstants {
     public static final String NAME = "ninjauth.db";
-    public static final int VERSION = 10;
+    public static final int VERSION = 11;
 }
