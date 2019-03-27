@@ -66,8 +66,7 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> implem
         boolean isFinalPage = true;// TODO viewPager.getCurrentItem() == pagerAdapter.getCount() - 1;
 
         if (isFinalPage) {
-            // TODO
-            setResultAndLeave(RESULT_OK);
+            getViewModel(RestoreViewModel.class).doRestore();
         } else {
             viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
         }
@@ -91,6 +90,7 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> implem
         }*/
 
         Snackbar.make(getView(), "Restore complete", Snackbar.LENGTH_LONG).show();
+        setResultAndLeave(RESULT_OK);
     }
 
     private void handleRestoreEvents(@NonNull SingleEvent<BackupFile> backupFileEvent) {
@@ -106,6 +106,10 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> implem
             case RestoreViewModel.ACTION_RESTORE_WRONG_PASSWORD:
                 RestorePasswordDialogFragment.show(getChildFragmentManager(), true);
                 backupFileEvent.handle();
+                break;
+            case RestoreViewModel.ACTION_DATA_LOADED:
+                // TODO
+                Snackbar.make(getView(), "Restore data loaded", Snackbar.LENGTH_LONG).show();
                 break;
         }
     }

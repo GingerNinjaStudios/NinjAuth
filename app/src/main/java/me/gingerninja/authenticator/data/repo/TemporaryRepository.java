@@ -26,6 +26,12 @@ public class TemporaryRepository {
         return tempDao.loadJsonToDatabase(databaseProcessor);
     }
 
+    public Completable restoreAndPurge() {
+        return tempDao
+                .restore()
+                .andThen(Completable.defer(tempDao::clear));
+    }
+
     public interface RestoreHandler {
         void addAccount(BackupAccount backupAccount) throws Exception;
 

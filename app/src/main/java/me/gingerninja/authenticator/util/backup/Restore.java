@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -139,6 +138,10 @@ public class Restore {
                     }
                 })
                 .subscribeOn(Schedulers.io());
+    }
+
+    public Completable restore() {
+        return repo.restoreAndPurge();
     }
 
     @WorkerThread
@@ -301,7 +304,6 @@ public class Restore {
             jsonReader.beginArray();
             while (jsonReader.hasNext()) {
                 BackupAccount account = gson.fromJson(jsonReader, BackupAccount.class);
-                Timber.v("Read account: %s, labels: %s", account.toEntity(), Arrays.toString(account.getLabelIds()));
                 restoreHandler.addAccount(account);
             }
             jsonReader.endArray();
@@ -317,7 +319,6 @@ public class Restore {
             jsonReader.beginArray();
             while (jsonReader.hasNext()) {
                 BackupLabel label = gson.fromJson(jsonReader, BackupLabel.class);
-                Timber.v("Read label: %s", label.toEntity());
                 restoreHandler.addLabel(label);
             }
             jsonReader.endArray();

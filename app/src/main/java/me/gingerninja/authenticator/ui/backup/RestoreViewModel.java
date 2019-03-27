@@ -26,6 +26,9 @@ public class RestoreViewModel extends ViewModel {
     static final String ACTION_RESTORE_PASSWORD_NEEDED = "restore-password-needed";
     static final String ACTION_RESTORE_WRONG_PASSWORD = "restore-wrong-password";
 
+    static final String ACTION_DATA_LOADED = "restore-data-loaded";
+    //static final String ACTION_RESTORE_COMPLETE = "restore-complete";
+
     @NonNull
     private final BackupUtils backupUtils;
 
@@ -101,8 +104,9 @@ public class RestoreViewModel extends ViewModel {
         compositeDisposable.add(
                 restoreInProgress.readDataFile(password)
                         .subscribe(() -> {
-                            restoreSubject.onComplete();
-                            restoreInProgress = null;
+                            restoreSubject.onNext(new SingleEvent<>(ACTION_DATA_LOADED));
+                            //restoreSubject.onComplete();
+                            //restoreInProgress = null;
                         }, throwable -> {
                             if (throwable instanceof ZipException) {
                                 int code = ((ZipException) throwable).getCode();
@@ -120,7 +124,22 @@ public class RestoreViewModel extends ViewModel {
     }
 
     void doRestore() {
-        // TODO
+        if (restoreInProgress == null) {
+            throw new IllegalStateException("Restore is not in progress");
+        }
+
+        compositeDisposable.clear();
+
+        compositeDisposable.add(
+                restoreInProgress.restore().subscribe(() -> {
+                    Timber.v("Restore complete");
+                    //restoreSubject.onNext(new SingleEvent<>(ACTION_RESTORE_COMPLETE));
+                    restoreSubject.onComplete();
+                }, throwable -> {
+                    Timber.e(throwable, "Restore failed");
+                    restoreSubject.onError(throwable);
+                })
+        );
     }
 
     void cancelRestore() {
