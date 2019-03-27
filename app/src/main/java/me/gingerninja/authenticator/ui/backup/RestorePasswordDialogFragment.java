@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
@@ -15,6 +17,7 @@ import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
@@ -70,7 +73,7 @@ public class RestorePasswordDialogFragment extends DialogFragment {
             til.setError(ctx.getString(R.string.settings_restore_password_dialog_wrong_pass));
         }
 
-        return new MaterialAlertDialogBuilder(ctx)
+        AlertDialog d = new MaterialAlertDialogBuilder(ctx)
                 .setTitle(R.string.settings_restore_password_dialog_title)
                 .setView(root)
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> {
@@ -81,5 +84,15 @@ public class RestorePasswordDialogFragment extends DialogFragment {
                     settingsViewModel.cancelRestore();
                 })
                 .create();
+
+        d.setOnShowListener(dialog -> {
+            EditText editText = til.getEditText();
+            InputMethodManager imm = (InputMethodManager) ctx.getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null && editText != null) {
+                imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+            }
+        });
+
+        return d;
     }
 }
