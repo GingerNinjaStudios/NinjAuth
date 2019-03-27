@@ -94,8 +94,6 @@ public class TempDaoImpl implements TempDao {
                                                 for (int i = 0; i < labelIds.length; i++) {
                                                     String labelUid = labelIds[i];
                                                     // this should not fail because the defer_foreign_keys pragma is ON
-                                                    // TODO this needs to be tested
-
                                                     db.insert(TempAccountHasLabel.class)
                                                             .value(TempAccountHasLabel.ACCOUNT_ID, inserted.getUid())
                                                             .value(TempAccountHasLabel.LABEL_ID, labelUid)
@@ -107,8 +105,19 @@ public class TempDaoImpl implements TempDao {
                                         }
 
                                         @Override
-                                        public void addLabel(BackupLabel backupLabel) {
-                                            db.insert(backupLabel.toEntity());
+                                        public void addLabel(BackupLabel backupLabel) throws Exception {
+                                            TempLabel inserted = backupLabel.toEntity();
+
+                                            Integer count = db.count(Label.class)
+                                                    .where(Label.UID.eq(inserted.getUid()))
+                                                    .get()
+                                                    .call();
+
+                                            if (count != null && count > 0) {
+                                                inserted.setRestoreMode(TempLabel.MODE_UPDATE);
+                                            }
+
+                                            db.insert(inserted);
                                         }
                                     };
 
@@ -117,7 +126,7 @@ public class TempDaoImpl implements TempDao {
                                         transaction.begin();
                                     }
                                     try {
-                                        db.raw("PRAGMA defer_foreign_keys = ON").close(); // TODO this needs to be tested
+                                        db.raw("PRAGMA defer_foreign_keys = ON").close(); // defer foreign key check until the end of transaction
 
                                         Timber.v("[DB] Temporary restore process starting");
                                         processor.process(restoreHandler);
@@ -252,7 +261,10 @@ public class TempDaoImpl implements TempDao {
                                         .setLabel(label)
                                         .setPosition(pos + 1);
 
-                                db.upsert(accountHasLabel);
+                                accountHasLabel = db.upsert(accountHasLabel);
+                                // FIXME temporary fix of requery bug: https://github.com/requery/requery/issues/854
+                                accountHasLabel.setPosition(pos + 1);
+                                db.update(accountHasLabel);
                             }
                         }
 
