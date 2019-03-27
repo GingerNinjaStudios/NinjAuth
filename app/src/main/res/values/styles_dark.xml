@@ -9,6 +9,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
         <!--<item name="android:windowTranslucentStatus" tools:targetApi="kitkat">true</item>-->
         <item name="android:statusBarColor" tools:targetApi="lollipop">
             ?android:attr/colorBackground
@@ -20,6 +21,9 @@
     </style>
 
     <style name="BaseBottomSheetDialog.Dark" parent="@style/Theme.MaterialComponents.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
         <item name="bottomSheetStyle">@style/BottomSheet</item>
         <item name="colorPrimary">@color/colorPrimaryLight</item>
         <item name="colorPrimaryDark">@color/colorPrimary</item>

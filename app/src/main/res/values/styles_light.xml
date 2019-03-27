@@ -9,6 +9,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
         <!--
         remove windowTranslucentStatus and enable this on 21+ to achieve full screen white bg
         <item name="android:statusBarColor" tools:targetApi="lollipop">@android:color/transparent</item>
@@ -26,6 +27,16 @@
     </style>
 
     <style name="BaseBottomSheetDialog.Light" parent="@style/Theme.MaterialComponents.Light.BottomSheetDialog">
+        <!--
+        <!- - backgroundDimEnabled = false means that the navbar icons will be ok but we need to provide the window background, however, the animation messes it up because it also slides in and out - ->
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowBackground">@color/backgroundDim</item>
+        <item name="android:windowAnimationStyle">@style/Animation.MaterialComponents.BottomSheetDialog</item>-->
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
         <item name="bottomSheetStyle">@style/BottomSheet</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
