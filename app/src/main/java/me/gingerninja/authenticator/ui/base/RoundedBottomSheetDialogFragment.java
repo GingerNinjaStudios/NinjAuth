@@ -10,8 +10,8 @@ import android.util.TypedValue;
 import android.view.View;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.android.material.shape.CornerTreatment;
 import com.google.android.material.shape.MaterialShapeDrawable;
-import com.google.android.material.shape.RoundedCornerTreatment;
 import com.google.android.material.shape.ShapeAppearanceModel;
 
 import me.gingerninja.authenticator.R;
@@ -60,7 +60,7 @@ public class RoundedBottomSheetDialogFragment extends BottomSheetDialogFragment 
         view.setBackground(createBackground(view.getContext()));
     }
 
-    private static class NoCornerTreatment extends RoundedCornerTreatment {
+    private static class NoCornerTreatment extends CornerTreatment {
         /**
          * Instantiates a no-corner treatment.
          */
@@ -68,9 +68,10 @@ public class RoundedBottomSheetDialogFragment extends BottomSheetDialogFragment 
             super(0);
         }
 
-        @Override
-        public void setCornerSize(float cornerSize) {
-            // do nothing, the corner size is always 0
-        }
+        /*@Override
+        public void getCornerPath(float angle, float interpolation, ShapePath shapePath) {
+            shapePath.reset(0, 0, 180, 180 - angle);
+            shapePath.lineTo(0, 0);
+        }*/
     }
 }
