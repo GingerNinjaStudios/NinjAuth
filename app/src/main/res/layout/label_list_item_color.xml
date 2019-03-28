@@ -14,48 +14,49 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
+        app:cardBackgroundColor="@{viewModel.color}"
         app:cardElevation="@dimen/account_list_card_elevation_normal"
-        app:cardUseCompatPadding="false">
+        app:cardUseCompatPadding="false"
+        tools:cardBackgroundColor="@color/yellow">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
+            <TextView
                 android:id="@+id/label_circle"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:tint="@{viewModel.color}"
-                android:tintMode="src_atop"
+                android:layout_marginTop="16dp"
+                android:textSize="24sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/label_circle" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
+                android:id="@+id/label_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:tint="@{viewModel.foregroundColor}"
                 app:layout_constraintBottom_toBottomOf="@+id/label_circle"
                 app:layout_constraintEnd_toEndOf="@+id/label_circle"
                 app:layout_constraintStart_toStartOf="@+id/label_circle"
                 app:layout_constraintTop_toTopOf="@+id/label_circle"
-                android:tint="@{viewModel.foregroundColor}"
-                app:srcCompat="@drawable/ic_add_24dp" />
+                app:srcCompatRes="@{viewModel.icon}" />
 
             <TextView
                 android:id="@+id/label_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:ellipsize="end"
                 android:text="@{viewModel.name}"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                app:layout_constraintBottom_toBottomOf="@+id/label_circle"
+                android:textColor="@{viewModel.foregroundColor}"
+                app:layout_constraintBaseline_toBaselineOf="@+id/label_circle"
                 app:layout_constraintEnd_toStartOf="@+id/menu_button"
                 app:layout_constraintStart_toEndOf="@+id/label_circle"
-                app:layout_constraintTop_toTopOf="@+id/label_circle"
                 app:layout_goneMarginBottom="8dp"
                 tools:text="Personal" />
 
@@ -66,6 +67,7 @@
                 android:layout_marginTop="8dp"
                 android:text="@{viewModel.name}"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                android:textColor="@{viewModel.foregroundColor}"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="@+id/label_name"
                 app:layout_constraintStart_toStartOf="@+id/label_name"
@@ -98,8 +100,10 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
+                android:alpha="0.87"
                 android:text="@{@plurals/label_used_by_accounts(viewModel.accountCount, viewModel.accountCount)}"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                android:textColor="@{viewModel.foregroundColor}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
@@ -114,6 +118,7 @@
                 android:background="?selectableItemBackgroundBorderless"
                 android:onClick="@{viewModel::onOverflowClick}"
                 android:padding="8dp"
+                android:tint="@{viewModel.colorControlNormal}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_more_vert_24dp" />

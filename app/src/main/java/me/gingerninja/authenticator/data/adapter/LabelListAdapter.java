@@ -11,7 +11,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.Label;
-import me.gingerninja.authenticator.databinding.LabelListItemBinding;
+import me.gingerninja.authenticator.databinding.LabelListItemColorBinding;
 import me.gingerninja.authenticator.ui.label.LabelListItemViewModel;
 
 public class LabelListAdapter extends RecyclerView.Adapter<BindingViewHolder> implements LabelListItemViewModel.LabelMenuItemClickListener {
@@ -22,13 +22,13 @@ public class LabelListAdapter extends RecyclerView.Adapter<BindingViewHolder> im
     @NonNull
     @Override
     public BindingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new BindingViewHolder<>(DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.label_list_item, parent, false));
+        return new BindingViewHolder<>(DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.label_list_item_color, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull BindingViewHolder holder, int position) {
-        LabelListItemBinding binding = (LabelListItemBinding) holder.getBinding();
-        binding.setViewModel(new LabelListItemViewModel(labelList.get(position)).setMenuItemClickListener(this));
+        LabelListItemColorBinding binding = (LabelListItemColorBinding) holder.getBinding();
+        binding.setViewModel(new LabelListItemViewModel(labelList.get(position), holder.itemView).setMenuItemClickListener(this));
     }
 
     @Override

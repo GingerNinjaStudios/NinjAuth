@@ -1,10 +1,12 @@
 package me.gingerninja.authenticator.util;
 
 import android.content.res.ColorStateList;
+import android.widget.ImageView;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.textfield.TextInputLayout;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.core.graphics.ColorUtils;
 import androidx.databinding.BindingAdapter;
@@ -107,6 +109,12 @@ public class BindingHelpers {
 
         view.setTextColor(fgColorStateList);
         view.setCloseIconTint(closeIconTint);
+        view.setChipIconTint(fgColorStateList);
         view.setRippleColor(rippleColorStateList);
+    }
+
+    @BindingAdapter("srcCompatRes")
+    public static void setCompatImageViewDrawable(ImageView imageView, @DrawableRes int resId) {
+        imageView.setImageResource(resId);
     }
 }

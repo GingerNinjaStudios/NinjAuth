@@ -9,6 +9,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import io.requery.Column;
 import io.requery.Entity;
@@ -19,6 +20,7 @@ import io.requery.Nullable;
 import io.requery.PreInsert;
 import io.requery.PropertyNameStyle;
 import io.requery.Superclass;
+import me.gingerninja.authenticator.R;
 
 @Superclass
 @Entity(propertyNameStyle = PropertyNameStyle.FLUENT_BEAN)
@@ -98,5 +100,19 @@ abstract class AbstractLabel {
         label.setIcon(parcel.readString());
         label.setColor(parcel.readInt());
         label.setPosition(parcel.readInt());
+    }
+
+    @DrawableRes
+    public int getIconResourceId() {
+        if (icon == null) {
+            return 0;
+        }
+
+        switch (icon) {
+            case "work":
+                return R.drawable.label_icon_work;
+            default:
+                return 0;
+        }
     }
 }

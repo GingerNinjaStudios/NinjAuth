@@ -1,11 +1,18 @@
 package me.gingerninja.authenticator.ui.label;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.Label;
 
@@ -15,8 +22,27 @@ public class LabelListItemViewModel {
 
     private LabelMenuItemClickListener menuItemClickListener;
 
-    public LabelListItemViewModel(@NonNull Label label) {
+    private int fgColor;
+    private int colorControlNormal;
+
+    public LabelListItemViewModel(@NonNull Label label, @NonNull View view) {
         this.label = label;
+        boolean isDark = ColorUtils.calculateLuminance(label.getColor()) < 0.5;
+        Resources resources = view.getResources();
+        fgColor = isDark ? resources.getColor(R.color.colorLabelTextLight) : resources.getColor(R.color.colorLabelTextDark);
+
+        final TypedValue tv = new TypedValue();
+        final Context ctx;
+        if (isDark) {
+            // light color needed
+            ctx = new ContextThemeWrapper(view.getContext(), R.style.AppTheme_Dark);
+        } else {
+            // dark color needed
+            ctx = new ContextThemeWrapper(view.getContext(), R.style.AppTheme_Light);
+        }
+        ctx.getTheme().resolveAttribute(R.attr.colorControlNormal, tv, true);
+
+        colorControlNormal = ContextCompat.getColor(ctx, tv.resourceId);
     }
 
     public String getName() {
@@ -26,6 +52,21 @@ public class LabelListItemViewModel {
     @ColorInt
     public int getColor() {
         return label.getColor();
+    }
+
+    @ColorInt
+    public int getForegroundColor() {
+        return fgColor;
+    }
+
+    @ColorInt
+    public int getColorControlNormal() {
+        return colorControlNormal;
+    }
+
+    @DrawableRes
+    public int getIcon() {
+        return label.getIconResourceId();
     }
 
     public int getAccountCount() {

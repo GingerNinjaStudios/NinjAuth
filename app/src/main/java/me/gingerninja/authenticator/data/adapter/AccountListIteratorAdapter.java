@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Size;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
@@ -186,7 +187,13 @@ public class AccountListIteratorAdapter extends RecyclerView.Adapter<BindingView
         chipGroup.removeAllViews();
 
         for (Label label : account.getLabels()) {
+            int iconRes = label.getIconResourceId();
             Chip chip = new Chip(chipGroup.getContext());
+            chip.setChipIconSizeResource(R.dimen.chip_icon_size);
+            chip.setIconStartPaddingResource(R.dimen.chip_icon_start_padding);
+            if (iconRes != 0) {
+                chip.setChipIcon(AppCompatResources.getDrawable(chip.getContext(), iconRes));
+            }
             chip.setText(label.getName());
             chip.setChipBackgroundColor(ColorStateList.valueOf(label.getColor()));
             BindingHelpers.setChipTextColor(chip, label.getColor());
