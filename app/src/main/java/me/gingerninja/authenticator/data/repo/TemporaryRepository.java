@@ -5,6 +5,8 @@ import javax.inject.Singleton;
 
 import io.reactivex.Completable;
 import me.gingerninja.authenticator.data.db.dao.TempDao;
+import me.gingerninja.authenticator.data.db.entity.TempAccount;
+import me.gingerninja.authenticator.data.db.entity.TempLabel;
 import me.gingerninja.authenticator.data.pojo.BackupAccount;
 import me.gingerninja.authenticator.data.pojo.BackupLabel;
 import me.gingerninja.authenticator.util.backup.Restore;
@@ -14,7 +16,7 @@ public class TemporaryRepository {
     private final TempDao tempDao;
 
     @Inject
-    public TemporaryRepository(TempDao tempDao) {
+    TemporaryRepository(TempDao tempDao) {
         this.tempDao = tempDao;
     }
 
@@ -30,6 +32,22 @@ public class TemporaryRepository {
         return tempDao
                 .restore()
                 .andThen(Completable.defer(tempDao::clear));
+    }
+
+    public Completable setAccountRestoreEnabled(long id, boolean shouldRestore) {
+        return tempDao.updateAccountRestoreStatus(id, shouldRestore);
+    }
+
+    public Completable setAccountRestoreMode(long id, @TempAccount.RestoreMode int mode) {
+        return tempDao.updateAccountRestoreMode(id, mode);
+    }
+
+    public Completable setLabelRestoreEnabled(long id, boolean shouldRestore) {
+        return tempDao.updateLabelRestoreStatus(id, shouldRestore);
+    }
+
+    public Completable setLabelRestoreMode(long id, @TempLabel.RestoreMode int mode) {
+        return tempDao.updateLabelRestoreMode(id, mode);
     }
 
     public interface RestoreHandler {

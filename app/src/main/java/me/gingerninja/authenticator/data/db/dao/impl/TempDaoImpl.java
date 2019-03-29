@@ -75,16 +75,18 @@ public class TempDaoImpl implements TempDao {
                                 .runInTransaction(db -> {
                                     TemporaryRepository.RestoreHandler restoreHandler = new TemporaryRepository.RestoreHandler() {
                                         @Override
-                                        public void addAccount(BackupAccount backupAccount) throws Exception {
+                                        public void addAccount(BackupAccount backupAccount) {
                                             TempAccount inserted = backupAccount.toEntity();
 
-                                            Integer count = db.count(Account.class)
+                                            Account existingAccount = db.select(Account.class)
                                                     .where(Account.UID.eq(inserted.getUid()))
                                                     .get()
-                                                    .call();
+                                                    .firstOrNull();
 
-                                            if (count != null && count > 0) {
-                                                inserted.setRestoreMode(TempAccount.MODE_UPDATE);
+                                            if (existingAccount != null) {
+                                                // TODO check if existing === insterted, if it's true, setRestore(false) should be called
+                                                inserted.setRestoreMode(TempAccount.RestoreMode.UPDATE);
+                                                inserted.setRestoreMatchingUid(existingAccount.getUid());
                                             }
 
                                             db.insert(inserted);
@@ -105,16 +107,18 @@ public class TempDaoImpl implements TempDao {
                                         }
 
                                         @Override
-                                        public void addLabel(BackupLabel backupLabel) throws Exception {
+                                        public void addLabel(BackupLabel backupLabel) {
                                             TempLabel inserted = backupLabel.toEntity();
 
-                                            Integer count = db.count(Label.class)
+                                            Label existingLabel = db.select(Label.class)
                                                     .where(Label.UID.eq(inserted.getUid()))
                                                     .get()
-                                                    .call();
+                                                    .firstOrNull();
 
-                                            if (count != null && count > 0) {
-                                                inserted.setRestoreMode(TempLabel.MODE_UPDATE);
+                                            if (existingLabel != null) {
+                                                // TODO check if existing === insterted, if it's true, setRestore(false) should be called
+                                                inserted.setRestoreMode(TempLabel.RestoreMode.UPDATE);
+                                                inserted.setRestoreMatchingUid(existingLabel.getUid());
                                             }
 
                                             db.insert(inserted);
@@ -162,7 +166,7 @@ public class TempDaoImpl implements TempDao {
                         // insert accounts
                         CloseableIterator<TempAccount> accountIterator = db
                                 .select(TempAccount.class)
-                                .where(TempAccount.RESTORE_MODE.eq(TempAccount.MODE_INSERT))
+                                .where(TempAccount.RESTORE_MODE.eq(TempAccount.RestoreMode.INSERT))
                                 .get()
                                 .iterator();
 
@@ -178,7 +182,7 @@ public class TempDaoImpl implements TempDao {
                         // update accounts
                         accountIterator = db
                                 .select(TempAccount.class)
-                                .where(TempAccount.RESTORE_MODE.eq(TempAccount.MODE_UPDATE))
+                                .where(TempAccount.RESTORE_MODE.eq(TempAccount.RestoreMode.UPDATE))
                                 .get()
                                 .iterator();
 
@@ -197,7 +201,7 @@ public class TempDaoImpl implements TempDao {
                         // insert labels
                         CloseableIterator<TempLabel> labelIterator = db
                                 .select(TempLabel.class)
-                                .where(TempLabel.RESTORE_MODE.eq(TempLabel.MODE_INSERT))
+                                .where(TempLabel.RESTORE_MODE.eq(TempLabel.RestoreMode.INSERT))
                                 .get()
                                 .iterator();
 
@@ -213,7 +217,7 @@ public class TempDaoImpl implements TempDao {
                         // update labels
                         labelIterator = db
                                 .select(TempLabel.class)
-                                .where(TempLabel.RESTORE_MODE.eq(TempLabel.MODE_UPDATE))
+                                .where(TempLabel.RESTORE_MODE.eq(TempLabel.RestoreMode.UPDATE))
                                 .get()
                                 .iterator();
 
@@ -277,6 +281,50 @@ public class TempDaoImpl implements TempDao {
                     }
 
                     return true;
+                })
+                .ignoreElement();
+    }
+
+    @Override
+    public Completable updateAccountRestoreStatus(long id, boolean shouldRestore) {
+        return getStore()
+                .findByKey(TempAccount.class, id)
+                .flatMapSingle(tempAccount -> {
+                    tempAccount.setRestore(shouldRestore);
+                    return getStore().update(tempAccount);
+                })
+                .ignoreElement();
+    }
+
+    @Override
+    public Completable updateAccountRestoreMode(long id, @TempAccount.RestoreMode int mode) {
+        return getStore()
+                .findByKey(TempAccount.class, id)
+                .flatMapSingle(tempAccount -> {
+                    tempAccount.setRestoreMode(mode);
+                    return getStore().update(tempAccount);
+                })
+                .ignoreElement();
+    }
+
+    @Override
+    public Completable updateLabelRestoreStatus(long id, boolean shouldRestore) {
+        return getStore()
+                .findByKey(TempLabel.class, id)
+                .flatMapSingle(tempLabel -> {
+                    tempLabel.setRestore(shouldRestore);
+                    return getStore().update(tempLabel);
+                })
+                .ignoreElement();
+    }
+
+    @Override
+    public Completable updateLabelRestoreMode(long id, @TempLabel.RestoreMode int mode) {
+        return getStore()
+                .findByKey(TempLabel.class, id)
+                .flatMapSingle(tempLabel -> {
+                    tempLabel.setRestoreMode(mode);
+                    return getStore().update(tempLabel);
                 })
                 .ignoreElement();
     }

@@ -1,28 +1,41 @@
 package me.gingerninja.authenticator.data.db.entity;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Set;
 
+import androidx.annotation.IntDef;
 import io.requery.Column;
 import io.requery.Entity;
 import io.requery.Key;
 import io.requery.ManyToMany;
+import io.requery.Nullable;
 import io.requery.PropertyNameStyle;
 import io.requery.Table;
 
 @Table(/*createAttributes = {"TEMP"}, */name = "TempLabel")
 @Entity(propertyNameStyle = PropertyNameStyle.FLUENT_BEAN, cacheable = false)
 abstract class AbstractTempLabel extends AbstractLabel {
-    public static final int MODE_INSERT = 0;
-    public static final int MODE_UPDATE = 1;
+    @IntDef({RestoreMode.INSERT, RestoreMode.UPDATE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface RestoreMode {
+        int INSERT = 0;
+        int UPDATE = 1;
+    }
 
     @Key
     Long id;
 
-    /*@Column(value = "false", nullable = false)
-    boolean restoreExists;*/
+    /**
+     * Defines whether the label already has a matching pair in the normal database. This can help
+     * setup the UI so the user can select to replace the existing or insert a new label.
+     */
+    @Nullable
+    String restoreMatchingUid = null;
 
-    @Column(value = "" + MODE_INSERT, nullable = false)
-    int restoreMode = MODE_INSERT;
+    @RestoreMode
+    @Column(value = "" + RestoreMode.INSERT, nullable = false)
+    int restoreMode = RestoreMode.INSERT;
 
     @Column(value = "true", nullable = false)
     boolean restore = true;
