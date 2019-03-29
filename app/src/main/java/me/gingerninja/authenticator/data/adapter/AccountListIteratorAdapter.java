@@ -1,7 +1,6 @@
 package me.gingerninja.authenticator.data.adapter;
 
 import android.content.res.ColorStateList;
-import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
@@ -9,7 +8,6 @@ import android.view.ViewGroup;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
-import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
@@ -22,7 +20,6 @@ import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.BehaviorSubject;
 import io.requery.query.Tuple;
-import io.requery.sql.ResultSetIterator;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.data.db.entity.Label;
@@ -36,7 +33,7 @@ import me.gingerninja.authenticator.ui.home.list.AccountListItemViewModel;
 import me.gingerninja.authenticator.util.BindingHelpers;
 import me.gingerninja.authenticator.util.CodeGenerator;
 
-public class AccountListIteratorAdapter extends RecyclerView.Adapter<BindingViewHolder> implements AccountListItemViewModel.AccountMenuItemClickListener {
+public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewHolder, Tuple> implements AccountListItemViewModel.AccountMenuItemClickListener {
     @SuppressWarnings("WeakerAccess")
     public static final int TYPE_ACCOUNT_HOTP = 0;
     @SuppressWarnings("WeakerAccess")
@@ -45,8 +42,6 @@ public class AccountListIteratorAdapter extends RecyclerView.Adapter<BindingView
     private final AccountWrapper.Factory accountWrapperFactory;
     private final CodeGenerator codeGenerator;
     private final AccountRepository accountRepository;
-
-    private ResultSetIterator<Tuple> iterator;
 
     private AccountListItemViewModel.AccountMenuItemClickListener menuItemClickListener;
 
@@ -59,26 +54,6 @@ public class AccountListIteratorAdapter extends RecyclerView.Adapter<BindingView
         this.accountWrapperFactory = accountWrapperFactory;
         this.codeGenerator = codeGenerator;
         this.accountRepository = accountRepository;
-    }
-
-    public void setResults(ResultSetIterator<Tuple> iterator) {
-        if (this.iterator == iterator) {
-            return;
-        }
-
-        if (this.iterator != null) {
-            this.iterator.close();
-        }
-        this.iterator = iterator;
-
-        notifyDataSetChanged();
-    }
-
-    public void close() {
-        if (iterator != null) {
-            iterator.close();
-            iterator = null;
-        }
     }
 
     /**
@@ -236,31 +211,6 @@ public class AccountListIteratorAdapter extends RecyclerView.Adapter<BindingView
         }
     }
 
-    @Override
-    public long getItemId(int position) {
-        return iterator == null ? RecyclerView.NO_ID : iterator.get(position).get(Account.ID);
-    }
-
-    @Override
-    public int getItemCount() {
-        if (iterator == null) {
-            return 0;
-        }
-
-        try {
-            Cursor cursor = iterator.unwrap(Cursor.class);
-            return cursor.getCount();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
-        super.onDetachedFromRecyclerView(recyclerView);
-        close();
-    }
-
     public boolean onItemMove(int fromPosition, int toPosition) {
         if (moveFrom < 0) {
             moveFrom = fromPosition;
@@ -302,6 +252,11 @@ public class AccountListIteratorAdapter extends RecyclerView.Adapter<BindingView
         if (menuItemClickListener != null) {
             menuItemClickListener.onAccountMenuItemClicked(item, account);
         }
+    }
+
+    @Override
+    protected long getItemId(Tuple item) {
+        return item.get(Account.ID);
     }
 
     private static class HotpViewHolder extends BindingViewHolder<AccountListItemHotpBinding> {
