@@ -32,7 +32,7 @@ public class ThemeSelectorPageFragment extends BaseFragment<SetupPageThemeSelect
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, SetupPageThemeSelectorBinding binding) {
         binding.setViewModel(setupViewModel);
 
-        binding.themeSpinner.setOnSpinnerChangeListener((newValue, oldValue) -> {
+        binding.themeSpinner.setOnSpinnerChangeListener((spinner, newValue, oldValue) -> {
             appSettings.setTemporaryTheme((String) newValue);
             getActivity().recreate();
             return true;

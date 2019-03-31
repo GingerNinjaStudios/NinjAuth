@@ -149,7 +149,7 @@ public class MaterialSpinner extends TextInputEditText implements PopupMenu.OnMe
     private void setValueInternal(CharSequence value, boolean notifySpinnerChangeListener) {
         final boolean changed = !TextUtils.equals(value, this.value);
 
-        if (changed && (!notifySpinnerChangeListener || onSpinnerChangeListener == null || onSpinnerChangeListener.onValueChange(value, this.value))) {
+        if (changed && (!notifySpinnerChangeListener || onSpinnerChangeListener == null || onSpinnerChangeListener.onValueChange(this, value, this.value))) {
             this.value = value;
             //if (changed) {
             refreshText();
@@ -196,10 +196,11 @@ public class MaterialSpinner extends TextInputEditText implements PopupMenu.OnMe
          * Notifies about value change. Returning {@code true} means that the value actually should
          * change internally; otherwise the old value will be retained.
          *
+         * @param spinner  the spinner view whose state has changed
          * @param newValue the new value
          * @param oldValue the old value
          * @return whether the change should happen
          */
-        boolean onValueChange(@Nullable CharSequence newValue, @Nullable CharSequence oldValue);
+        boolean onValueChange(MaterialSpinner spinner, @Nullable CharSequence newValue, @Nullable CharSequence oldValue);
     }
 }
