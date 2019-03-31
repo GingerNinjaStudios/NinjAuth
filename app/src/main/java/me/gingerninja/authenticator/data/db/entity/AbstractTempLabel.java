@@ -5,6 +5,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Set;
 
 import androidx.annotation.IntDef;
+import androidx.core.util.ObjectsCompat;
 import io.requery.Column;
 import io.requery.Entity;
 import io.requery.Key;
@@ -42,4 +43,10 @@ abstract class AbstractTempLabel extends AbstractLabel {
 
     @ManyToMany
     Set<TempAccount> accounts;
+
+    public boolean equalsToLabel(Label label) {
+        return ObjectsCompat.equals(this.name, label.getName()) &&
+                this.color == label.getColor() &&
+                ObjectsCompat.equals(this.icon, label.getIcon());
+    }
 }

@@ -84,7 +84,7 @@ public class TempDaoImpl implements TempDao {
                                                     .firstOrNull();
 
                                             if (existingAccount != null) {
-                                                // TODO check if existing === insterted, if it's true, setRestore(false) should be called
+                                                inserted.setRestore(!inserted.equalsToAccount(existingAccount));
                                                 inserted.setRestoreMode(TempAccount.RestoreMode.UPDATE);
                                                 inserted.setRestoreMatchingUid(existingAccount.getUid());
                                             }
@@ -116,7 +116,7 @@ public class TempDaoImpl implements TempDao {
                                                     .firstOrNull();
 
                                             if (existingLabel != null) {
-                                                // TODO check if existing === insterted, if it's true, setRestore(false) should be called
+                                                inserted.setRestore(!inserted.equalsToLabel(existingLabel));
                                                 inserted.setRestoreMode(TempLabel.RestoreMode.UPDATE);
                                                 inserted.setRestoreMatchingUid(existingLabel.getUid());
                                             }

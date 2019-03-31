@@ -5,6 +5,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Set;
 
 import androidx.annotation.IntDef;
+import androidx.core.util.ObjectsCompat;
 import io.requery.Column;
 import io.requery.Entity;
 import io.requery.JunctionTable;
@@ -44,4 +45,14 @@ abstract class AbstractTempAccount extends AbstractAccount {
     @ManyToMany
     @JunctionTable(type = AbstractTempAccountHasLabel.class)
     Set<TempLabel> labels;
+
+    public boolean equalsToAccount(Account account) {
+        return ObjectsCompat.equals(this.accountName, account.getAccountName()) &&
+                ObjectsCompat.equals(this.title, account.getTitle()) &&
+                ObjectsCompat.equals(this.issuer, account.getIssuer()) &&
+                ObjectsCompat.equals(this.secret, account.getSecret()) &&
+                ObjectsCompat.equals(this.type, account.getType()) &&
+                ObjectsCompat.equals(this.algorithm, account.getAlgorithm()) &&
+                this.digits == account.getDigits();
+    }
 }
