@@ -152,4 +152,20 @@
         <item quantity="one">Used by %d account</item>
         <item quantity="other">Used by %d accounts</item>
     </plurals>
+
+    <string name="restore_mode_insert">Create new</string>
+    <string name="restore_mode_update">Update existing</string>
+
+    <!-- If these are modified, BaseRestoreCheckableAdapter needs to be updated too -->
+    <string name="restore_mode_insert_value" translatable="false">insert</string>
+    <string name="restore_mode_update_value" translatable="false">update</string>
+
+    <string-array name="restore_mode_selector_entries">
+        <item>@string/restore_mode_insert</item>
+        <item>@string/restore_mode_update</item>
+    </string-array>
+    <string-array name="restore_mode_selector_values">
+        <item>@string/restore_mode_insert_value</item>
+        <item>@string/restore_mode_update_value</item>
+    </string-array>
 </resources>
