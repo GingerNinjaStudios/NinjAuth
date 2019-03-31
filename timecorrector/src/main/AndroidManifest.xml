@@ -7,7 +7,6 @@
     <dist:module
         dist:onDemand="true"
         dist:title="@string/title_timecorrector">
-        <dist:fusing dist:include="true" />
     </dist:module>
 </manifest>
 
