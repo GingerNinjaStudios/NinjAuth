@@ -41,7 +41,7 @@ public class AccountListViewModel extends ViewModel {
 
         disposable = accountRepo.getAllAccountAndListen2()
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                //.observeOn(AndroidSchedulers.mainThread())
                 .subscribe(tuples -> {
                     /*ResultSetIterator<Tuple> oldResults = accountList2.getValue();
 
@@ -52,7 +52,7 @@ public class AccountListViewModel extends ViewModel {
                     ResultSetIterator<Tuple> it = (ResultSetIterator<Tuple>) tuples.iterator();
                     hasLoaded.set(true);
                     hasData.set(it.unwrap(Cursor.class).getCount() > 0);
-                    accountList2.setValue(it);
+                    accountList2.postValue(it);
                 });
 
         /*disposable = accountRepo.getAllAccountAndListen()
