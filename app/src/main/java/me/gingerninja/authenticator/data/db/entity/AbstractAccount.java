@@ -104,7 +104,7 @@ abstract class AbstractAccount {
     public static void restoreFromParcel(@NonNull Account account, @NonNull Parcel parcel) {
         parcel.setDataPosition(0);
 
-        account.id = parcel.readInt();
+        account.id = parcel.readLong();
         account.setUid(parcel.readString());
         account.setTitle(parcel.readString());
         account.setType(parcel.readString());

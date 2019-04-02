@@ -300,31 +300,35 @@ public class TempDaoImpl implements TempDao {
 
     private <T extends Persistable> void insertWithRetry(BlockingEntityStore<Persistable> db, T entity, Supplier<Parcel> parcelCreator, BiConsumer<T, Parcel> parcelRestoreFunction, Consumer<byte[]> uidGenerator) throws Exception {
         Parcel parcel = parcelCreator.get(); //entity.writeToParcel();
-        int retryCount = 0;
-        SecureRandom random = new SecureRandom();
-        byte[] bytes = new byte[8];
+        try {
+            int retryCount = 0;
+            SecureRandom random = new SecureRandom();
+            byte[] bytes = new byte[8];
 
-        while (retryCount++ < 10) {
-            try {
-                db.insert(entity);
-                return;
-            } catch (Throwable throwable) {
-                Throwable t = throwable.getCause();
-                boolean isUniqueError = t instanceof SQLIntegrityConstraintViolationException && t.getMessage().contains("UNIQUE");
+            while (retryCount++ < 10) {
+                try {
+                    db.insert(entity);
+                    return;
+                } catch (Throwable throwable) {
+                    Throwable t = throwable.getCause();
+                    boolean isUniqueError = t instanceof SQLIntegrityConstraintViolationException && t.getMessage().contains("UNIQUE");
 
-                if (isUniqueError) {
-                    //Label.restoreFromParcel(label, parcel);
-                    parcelRestoreFunction.accept(entity, parcel);
-                    random.nextBytes(bytes);
-                    //entity.generateUID(bytes);
-                    uidGenerator.accept(bytes);
-                } else {
-                    throw throwable;
+                    if (isUniqueError) {
+                        //Label.restoreFromParcel(label, parcel);
+                        parcelRestoreFunction.accept(entity, parcel);
+                        random.nextBytes(bytes);
+                        //entity.generateUID(bytes);
+                        uidGenerator.accept(bytes);
+                    } else {
+                        throw throwable;
+                    }
                 }
             }
-        }
 
-        throw new IllegalStateException("Too many retries");
+            throw new IllegalStateException("Too many retries");
+        } finally {
+            parcel.recycle();
+        }
     }
 
     @Override

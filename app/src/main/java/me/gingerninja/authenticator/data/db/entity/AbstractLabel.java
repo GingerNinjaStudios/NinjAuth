@@ -94,7 +94,7 @@ abstract class AbstractLabel {
     public static void restoreFromParcel(@NonNull Label label, @NonNull Parcel parcel) {
         parcel.setDataPosition(0);
 
-        label.id = parcel.readInt();
+        label.id = parcel.readLong();
         label.setUid(parcel.readString());
         label.setName(parcel.readString());
         label.setIcon(parcel.readString());
