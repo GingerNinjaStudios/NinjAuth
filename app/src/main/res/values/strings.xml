@@ -153,6 +153,7 @@
         <item quantity="other">Used by %d accounts</item>
     </plurals>
 
+    <string name="restore_mode">Restore mode</string>
     <string name="restore_mode_insert">Create new</string>
     <string name="restore_mode_update">Update existing</string>
 

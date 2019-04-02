@@ -4,6 +4,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.Completable;
+import io.reactivex.Observable;
+import io.requery.query.Tuple;
+import io.requery.reactivex.ReactiveResult;
 import me.gingerninja.authenticator.data.db.dao.TempDao;
 import me.gingerninja.authenticator.data.db.entity.TempAccount;
 import me.gingerninja.authenticator.data.db.entity.TempLabel;
@@ -48,6 +51,10 @@ public class TemporaryRepository {
 
     public Completable setLabelRestoreMode(long id, @TempLabel.RestoreMode int mode) {
         return tempDao.updateLabelRestoreMode(id, mode);
+    }
+
+    public Observable<ReactiveResult<Tuple>> getAccounts() {
+        return tempDao.getAccounts();
     }
 
     public interface RestoreHandler {

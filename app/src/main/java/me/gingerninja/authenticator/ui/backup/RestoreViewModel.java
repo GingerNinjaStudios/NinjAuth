@@ -6,12 +6,15 @@ import android.os.Bundle;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.exception.ZipExceptionConstants;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.inject.Inject;
 
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -22,12 +25,14 @@ import me.gingerninja.authenticator.util.backup.BackupUtils;
 import me.gingerninja.authenticator.util.backup.Restore;
 import timber.log.Timber;
 
-public class RestoreViewModel extends ViewModel {
+public class RestoreViewModel extends ViewModel implements WorkUpdateHandler {
     static final String ACTION_RESTORE_PASSWORD_NEEDED = "restore-password-needed";
     static final String ACTION_RESTORE_WRONG_PASSWORD = "restore-wrong-password";
 
     static final String ACTION_DATA_LOADED = "restore-data-loaded";
     //static final String ACTION_RESTORE_COMPLETE = "restore-complete";
+
+    private AtomicInteger requestCounter = new AtomicInteger(0);
 
     @NonNull
     private final BackupUtils backupUtils;
@@ -128,6 +133,10 @@ public class RestoreViewModel extends ViewModel {
             throw new IllegalStateException("Restore is not in progress");
         }
 
+        if (requestCounter.get() > 0) {
+            // TODO wait for the DB jobs to finish
+        }
+
         compositeDisposable.clear();
 
         compositeDisposable.add(
@@ -151,5 +160,17 @@ public class RestoreViewModel extends ViewModel {
         if (!restoreSubject.hasComplete() && !restoreSubject.hasThrowable()) {
             restoreSubject.onError(new UserCanceledRestoreException());
         }
+    }
+
+    /**
+     * Handles a database request, such as updating the restore mode or should-restore.
+     *
+     * @param completable
+     */
+    public void handleRequest(@NonNull Completable completable) {
+        requestCounter.incrementAndGet();
+        completable
+                .doOnTerminate(() -> requestCounter.decrementAndGet())
+                .subscribe();
     }
 }

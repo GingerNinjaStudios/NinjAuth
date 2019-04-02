@@ -4,10 +4,12 @@ import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
 import me.gingerninja.authenticator.di.module.fragment.AccountListModule;
 import me.gingerninja.authenticator.di.module.fragment.LabelListModule;
+import me.gingerninja.authenticator.di.module.fragment.RestoreFragmentModule;
 import me.gingerninja.authenticator.di.module.fragment.SetupFragmentModule;
 import me.gingerninja.authenticator.ui.account.camera.AddAccountFromCameraFragment;
 import me.gingerninja.authenticator.ui.backup.RestoreFragment;
 import me.gingerninja.authenticator.ui.backup.RestorePasswordDialogFragment;
+import me.gingerninja.authenticator.ui.backup.page.RestoreAccountPageFragment;
 import me.gingerninja.authenticator.ui.home.AccountListFragment;
 import me.gingerninja.authenticator.ui.home.DeleteAccountBottomFragment;
 import me.gingerninja.authenticator.ui.home.form.AccountEditorFragment;
@@ -60,8 +62,11 @@ public abstract class FragmentBuilder {
     @ContributesAndroidInjector
     abstract SettingsScreenFragment bindSettingsScreenFragment();
 
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(modules = RestoreFragmentModule.class)
     abstract RestoreFragment bindRestoreFragment();
+
+    @ContributesAndroidInjector
+    abstract RestoreAccountPageFragment bindRestoreAccountPageFragment();
 
     @ContributesAndroidInjector
     abstract RestorePasswordDialogFragment bindRestorePasswordDialogFragment();

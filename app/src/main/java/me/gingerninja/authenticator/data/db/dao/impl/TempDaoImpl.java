@@ -2,12 +2,14 @@ package me.gingerninja.authenticator.data.db.dao.impl;
 
 import androidx.annotation.NonNull;
 import io.reactivex.Completable;
+import io.reactivex.Observable;
 import io.requery.Persistable;
 import io.requery.Transaction;
 import io.requery.query.MutableTuple;
 import io.requery.query.NamedNumericExpression;
 import io.requery.query.Tuple;
 import io.requery.reactivex.ReactiveEntityStore;
+import io.requery.reactivex.ReactiveResult;
 import io.requery.util.CloseableIterator;
 import me.gingerninja.authenticator.data.db.dao.TempDao;
 import me.gingerninja.authenticator.data.db.entity.Account;
@@ -349,6 +351,15 @@ public class TempDaoImpl implements TempDao {
         label.setIcon(tempLabel.getIcon());
         label.setUid(tempLabel.getUid());
         label.setPosition(tempLabel.getPosition());
+    }
+
+    @Override
+    public Observable<ReactiveResult<Tuple>> getAccounts() {
+        return getStore()
+                .select(TempAccount.ID, TempAccount.TITLE, TempAccount.ACCOUNT_NAME, TempAccount.RESTORE, TempAccount.RESTORE_MODE, TempAccount.RESTORE_MATCHING_UID)
+                .orderBy(TempAccount.POSITION.asc())
+                .get()
+                .observableResult();
     }
 
     /*Long[] ids = new Long[options.insertAccountIds.length];

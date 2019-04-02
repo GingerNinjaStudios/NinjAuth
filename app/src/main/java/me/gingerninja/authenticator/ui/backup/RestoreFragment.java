@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import javax.inject.Inject;
+
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +18,7 @@ import androidx.viewpager.widget.ViewPager;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import me.gingerninja.authenticator.R;
+import me.gingerninja.authenticator.data.adapter.RestorePagerAdapter;
 import me.gingerninja.authenticator.data.pojo.BackupFile;
 import me.gingerninja.authenticator.databinding.RestoreFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
@@ -23,6 +26,9 @@ import me.gingerninja.authenticator.util.SingleEvent;
 import timber.log.Timber;
 
 public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> implements OnBackPressedCallback {
+    @Inject
+    RestorePagerAdapter pagerAdapter;
+
     private CompositeDisposable disposable = new CompositeDisposable();
 
     @Override
@@ -48,7 +54,7 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> implem
         binding.btnPrev.setOnClickListener(this::handleBackButton);
         binding.btnNext.setOnClickListener(this::handleNextButton);
 
-        // TODO binding.viewPager.setAdapter(pagerAdapter);
+        binding.viewPager.setAdapter(pagerAdapter);
         binding.progressIndicator.setViewPager(binding.viewPager);
         binding.progressIndicator.setDotsClickable(false);
 
@@ -73,7 +79,7 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> implem
     private void handleNextButton(View v) {
         ViewPager viewPager = getDataBinding().viewPager;
 
-        boolean isFinalPage = true;// TODO viewPager.getCurrentItem() == pagerAdapter.getCount() - 1;
+        boolean isFinalPage = viewPager.getCurrentItem() == pagerAdapter.getCount() - 1;
 
         if (isFinalPage) {
             getViewModel(RestoreViewModel.class).doRestore();

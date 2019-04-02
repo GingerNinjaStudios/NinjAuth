@@ -38,7 +38,7 @@ public abstract class BaseRestoreCheckableAdapter<T extends ViewDataBinding> ext
 
     protected abstract void onItemRestoreStatusChanged(Tuple item, boolean shouldRestore);
 
-    protected abstract void onItemRestoreModeChanged(Tuple item, @RestoreMode CharSequence mode);
+    protected abstract void onItemRestoreModeChanged(Tuple item, @RestoreMode String mode);
 
     @NonNull
     @Override
@@ -60,7 +60,7 @@ public abstract class BaseRestoreCheckableAdapter<T extends ViewDataBinding> ext
     }
 
     private boolean onSpinnerChanged(MaterialSpinner view, CharSequence newValue, CharSequence oldValue) {
-        onItemRestoreModeChanged((Tuple) view.getTag(), newValue);
+        onItemRestoreModeChanged((Tuple) view.getTag(), newValue != null ? newValue.toString() : null);
         return true;
     }
 
