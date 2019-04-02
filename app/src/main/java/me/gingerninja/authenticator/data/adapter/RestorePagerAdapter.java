@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import me.gingerninja.authenticator.ui.backup.page.RestoreAccountPageFragment;
+import me.gingerninja.authenticator.ui.backup.page.RestoreLabelPageFragment;
 
 public class RestorePagerAdapter extends FragmentPagerAdapter {
     public RestorePagerAdapter(@NonNull FragmentManager fm) {
@@ -17,6 +18,8 @@ public class RestorePagerAdapter extends FragmentPagerAdapter {
         switch (position) {
             case 0:
                 return new RestoreAccountPageFragment();
+            case 1:
+                return new RestoreLabelPageFragment();
         }
 
         return null;
@@ -24,6 +27,6 @@ public class RestorePagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 1;
+        return 2;
     }
 }

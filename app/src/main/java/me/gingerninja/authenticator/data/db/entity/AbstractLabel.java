@@ -104,6 +104,11 @@ abstract class AbstractLabel {
 
     @DrawableRes
     public int getIconResourceId() {
+        return getIconResourceId(icon);
+    }
+
+    @DrawableRes
+    public static int getIconResourceId(String icon) {
         if (icon == null) {
             return 0;
         }

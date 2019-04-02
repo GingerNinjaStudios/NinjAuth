@@ -111,6 +111,11 @@ public class MaterialSpinner extends TextInputEditText implements PopupMenu.OnMe
         setFocusableInTouchMode(false);
     }
 
+    @Override
+    protected boolean getDefaultEditable() {
+        return false;
+    }
+
     public CharSequence[] getMenuEntries() {
         return menuEntries;
     }

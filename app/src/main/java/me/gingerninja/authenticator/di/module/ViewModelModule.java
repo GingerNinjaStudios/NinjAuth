@@ -10,6 +10,7 @@ import me.gingerninja.authenticator.di.ViewModelKey;
 import me.gingerninja.authenticator.ui.account.camera.AddAccountFromCameraViewModel;
 import me.gingerninja.authenticator.ui.backup.RestoreViewModel;
 import me.gingerninja.authenticator.ui.backup.page.RestoreAccountPageViewModel;
+import me.gingerninja.authenticator.ui.backup.page.RestoreLabelPageViewModel;
 import me.gingerninja.authenticator.ui.home.AccountListViewModel;
 import me.gingerninja.authenticator.ui.home.DeleteAccountViewModel;
 import me.gingerninja.authenticator.ui.home.form.AccountEditorViewModel;
@@ -64,6 +65,11 @@ public abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(RestoreAccountPageViewModel.class)
     abstract ViewModel bindRestoreAccountPageViewModel(RestoreAccountPageViewModel viewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(RestoreLabelPageViewModel.class)
+    abstract ViewModel bindRestoreLabelPageViewModel(RestoreLabelPageViewModel viewModel);
 
     @Binds
     abstract ViewModelProvider.Factory bindViewModelFactory(NinjaViewModelFactory factory);

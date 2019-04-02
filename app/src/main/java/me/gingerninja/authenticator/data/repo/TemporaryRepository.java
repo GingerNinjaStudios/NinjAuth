@@ -57,6 +57,10 @@ public class TemporaryRepository {
         return tempDao.getAccounts();
     }
 
+    public Observable<ReactiveResult<Tuple>> getLabels() {
+        return tempDao.getLabels();
+    }
+
     public interface RestoreHandler {
         void addAccount(BackupAccount backupAccount) throws Exception;
 

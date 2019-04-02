@@ -1,8 +1,17 @@
 package me.gingerninja.authenticator.data.db.dao.impl;
 
+import android.os.Parcel;
+
+import java.security.SecureRandom;
+import java.sql.SQLIntegrityConstraintViolationException;
+
 import androidx.annotation.NonNull;
+import androidx.core.util.Consumer;
+import androidx.core.util.Supplier;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.functions.BiConsumer;
+import io.requery.BlockingEntityStore;
 import io.requery.Persistable;
 import io.requery.Transaction;
 import io.requery.query.MutableTuple;
@@ -176,7 +185,8 @@ public class TempDaoImpl implements TempDao {
                             TempAccount tempAccount = accountIterator.next();
                             Account account = new Account();
                             setupAccount(account, tempAccount);
-                            db.insert(account);
+                            //db.insert(account);
+                            insertWithRetry(db, account, account::writeToParcel, Account::restoreFromParcel, account::generateUID);
                         }
 
                         accountIterator.close();
@@ -211,7 +221,8 @@ public class TempDaoImpl implements TempDao {
                             TempLabel tempLabel = labelIterator.next();
                             Label label = new Label();
                             setupLabel(label, tempLabel);
-                            db.insert(label);
+                            //db.insert(label);
+                            insertWithRetry(db, label, label::writeToParcel, Label::restoreFromParcel, label::generateUID);
                         }
 
                         labelIterator.close();
@@ -287,6 +298,35 @@ public class TempDaoImpl implements TempDao {
                 .ignoreElement();
     }
 
+    private <T extends Persistable> void insertWithRetry(BlockingEntityStore<Persistable> db, T entity, Supplier<Parcel> parcelCreator, BiConsumer<T, Parcel> parcelRestoreFunction, Consumer<byte[]> uidGenerator) throws Exception {
+        Parcel parcel = parcelCreator.get(); //entity.writeToParcel();
+        int retryCount = 0;
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[8];
+
+        while (retryCount++ < 10) {
+            try {
+                db.insert(entity);
+                return;
+            } catch (Throwable throwable) {
+                Throwable t = throwable.getCause();
+                boolean isUniqueError = t instanceof SQLIntegrityConstraintViolationException && t.getMessage().contains("UNIQUE");
+
+                if (isUniqueError) {
+                    //Label.restoreFromParcel(label, parcel);
+                    parcelRestoreFunction.accept(entity, parcel);
+                    random.nextBytes(bytes);
+                    //entity.generateUID(bytes);
+                    uidGenerator.accept(bytes);
+                } else {
+                    throw throwable;
+                }
+            }
+        }
+
+        throw new IllegalStateException("Too many retries");
+    }
+
     @Override
     public Completable updateAccountRestoreStatus(long id, boolean shouldRestore) {
         return getStore()
@@ -358,6 +398,15 @@ public class TempDaoImpl implements TempDao {
         return getStore()
                 .select(TempAccount.ID, TempAccount.TITLE, TempAccount.ACCOUNT_NAME, TempAccount.RESTORE, TempAccount.RESTORE_MODE, TempAccount.RESTORE_MATCHING_UID)
                 .orderBy(TempAccount.POSITION.asc())
+                .get()
+                .observableResult();
+    }
+
+    @Override
+    public Observable<ReactiveResult<Tuple>> getLabels() {
+        return getStore()
+                .select(TempLabel.ID, TempLabel.NAME, TempLabel.COLOR, TempLabel.ICON, TempLabel.RESTORE, TempLabel.RESTORE_MODE, TempLabel.RESTORE_MATCHING_UID)
+                .orderBy(TempLabel.POSITION.asc())
                 .get()
                 .observableResult();
     }

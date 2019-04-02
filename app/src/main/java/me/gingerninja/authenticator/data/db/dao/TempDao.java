@@ -32,4 +32,6 @@ public interface TempDao {
     Completable updateLabelRestoreMode(long id, @TempLabel.RestoreMode int mode);
 
     Observable<ReactiveResult<Tuple>> getAccounts();
+
+    Observable<ReactiveResult<Tuple>> getLabels();
 }
