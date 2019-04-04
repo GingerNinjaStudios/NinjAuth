@@ -27,7 +27,7 @@ public class AccountListViewModel extends ViewModel {
 
     private MutableLiveData<SingleEvent<String>> navAction = new MutableLiveData<>();
     //private MutableLiveData<List<Account>> accountList = new MutableLiveData<>();
-    private AutoClosingMutableLiveData<Tuple> accountList2 = new AutoClosingMutableLiveData<>();
+    private AutoClosingMutableLiveData<ResultSetIterator<Tuple>> accountList2 = new AutoClosingMutableLiveData<>();
 
     public ObservableBoolean hasLoaded = new ObservableBoolean(false);
     public ObservableBoolean hasData = new ObservableBoolean(false);

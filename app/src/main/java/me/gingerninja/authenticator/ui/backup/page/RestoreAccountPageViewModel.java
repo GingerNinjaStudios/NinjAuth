@@ -16,7 +16,7 @@ public class RestoreAccountPageViewModel extends ViewModel {
     private final TemporaryRepository repo;
 
     private Disposable disposable;
-    private AutoClosingMutableLiveData<Tuple> accounts = new AutoClosingMutableLiveData<>();
+    private AutoClosingMutableLiveData<ResultSetIterator<Tuple>> accounts = new AutoClosingMutableLiveData<>();
 
     @Inject
     RestoreAccountPageViewModel(TemporaryRepository repo) {

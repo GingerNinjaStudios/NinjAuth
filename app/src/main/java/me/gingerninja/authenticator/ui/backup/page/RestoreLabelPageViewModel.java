@@ -16,7 +16,7 @@ public class RestoreLabelPageViewModel extends ViewModel {
     private final TemporaryRepository repo;
 
     private Disposable disposable;
-    private AutoClosingMutableLiveData<Tuple> labels = new AutoClosingMutableLiveData<>();
+    private AutoClosingMutableLiveData<ResultSetIterator<Tuple>> labels = new AutoClosingMutableLiveData<>();
 
     @Inject
     RestoreLabelPageViewModel(TemporaryRepository repo) {
