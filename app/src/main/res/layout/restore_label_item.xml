@@ -44,10 +44,9 @@
                 android:layout_marginEnd="8dp"
                 android:ellipsize="end"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                app:layout_constraintBottom_toBottomOf="@+id/label_circle"
+                app:layout_constraintBaseline_toBaselineOf="@+id/restore_checkbox"
                 app:layout_constraintEnd_toStartOf="@+id/restore_checkbox"
                 app:layout_constraintStart_toEndOf="@+id/label_circle"
-                app:layout_constraintTop_toTopOf="@+id/label_circle"
                 app:layout_goneMarginBottom="8dp"
                 tools:text="Personal" />
 
@@ -73,9 +72,9 @@
                 android:id="@id/restore_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/label_circle"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@+id/label_circle" />
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
