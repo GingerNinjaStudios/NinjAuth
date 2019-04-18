@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <item name="welcome_message" type="id" />
+    <item name="btn_next" type="id" />
+    <item name="btn_skip_setup" type="id" />
+
     <item name="restore_checkbox" type="id" />
     <item name="restore_mode_spinner" type="id" />
 </resources>

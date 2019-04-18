@@ -10,15 +10,15 @@
             <KeyAttribute
                 android:alpha="0"
                 motion:framePosition="40"
-                motion:target="@id/welcome_message" />
+                motion:motionTarget="@id/welcome_message" />
             <KeyAttribute
                 android:alpha="0"
                 motion:framePosition="60"
-                motion:target="@id/btn_next" />
+                motion:motionTarget="@id/btn_next" />
             <KeyAttribute
                 android:alpha="0"
                 motion:framePosition="60"
-                motion:target="@id/btn_skip_setup" />
+                motion:motionTarget="@id/btn_skip_setup" />
         </KeyFrameSet>
     </Transition>
 
