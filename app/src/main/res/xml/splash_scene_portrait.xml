@@ -10,15 +10,15 @@
             <KeyAttribute
                 android:alpha="0"
                 motion:framePosition="40"
-                motion:motionTarget="@id/welcome_message" />
+                motion:motionTarget="@+id/welcome_message" />
             <KeyAttribute
                 android:alpha="0"
                 motion:framePosition="60"
-                motion:motionTarget="@id/btn_next" />
+                motion:motionTarget="@+id/btn_next" />
             <KeyAttribute
                 android:alpha="0"
                 motion:framePosition="60"
-                motion:motionTarget="@id/btn_skip_setup" />
+                motion:motionTarget="@+id/btn_skip_setup" />
         </KeyFrameSet>
     </Transition>
 
@@ -60,8 +60,9 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="0dp"
             android:alpha="0.0"
-            android:visibility="gone"
-            motion:layout_constraintBottom_toTopOf="@id/btn_skip_setup"
+            android:clickable="false"
+            android:visibility="visible"
+            motion:layout_constraintBottom_toTopOf="@+id/btn_skip_setup"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toStartOf="parent" />
         <Constraint
@@ -72,7 +73,8 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="0dp"
             android:alpha="0.0"
-            android:visibility="gone"
+            android:clickable="false"
+            android:visibility="visible"
             motion:layout_constraintBottom_toBottomOf="parent"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toStartOf="parent" />
@@ -117,7 +119,9 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="0dp"
             android:alpha="1.0"
-            motion:layout_constraintBottom_toTopOf="@id/btn_skip_setup"
+            android:clickable="true"
+            android:visibility="visible"
+            motion:layout_constraintBottom_toTopOf="@+id/btn_skip_setup"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toStartOf="parent" />
 
@@ -129,6 +133,8 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="24dp"
             android:alpha="1.0"
+            android:clickable="true"
+            android:visibility="visible"
             motion:layout_constraintBottom_toBottomOf="parent"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toStartOf="parent" />

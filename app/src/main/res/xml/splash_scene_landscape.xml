@@ -10,15 +10,15 @@
             <KeyAttribute
                 android:alpha="0"
                 motion:framePosition="40"
-                motion:motionTarget="@id/welcome_message" />
+                motion:motionTarget="@+id/welcome_message" />
             <KeyAttribute
                 android:alpha="0"
                 motion:framePosition="60"
-                motion:motionTarget="@id/btn_next" />
+                motion:motionTarget="@+id/btn_next" />
             <KeyAttribute
                 android:alpha="0"
                 motion:framePosition="60"
-                motion:motionTarget="@id/btn_skip_setup" />
+                motion:motionTarget="@+id/btn_skip_setup" />
         </KeyFrameSet>
     </Transition>
 
@@ -61,7 +61,8 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:alpha="0"
-            android:visibility="gone"
+            android:clickable="false"
+            android:visibility="visible"
             motion:layout_constraintBottom_toBottomOf="parent"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintHorizontal_bias="0.5"
@@ -74,7 +75,8 @@
             android:layout_marginStart="16dp"
             android:layout_marginBottom="16dp"
             android:alpha="0"
-            android:visibility="gone"
+            android:clickable="false"
+            android:visibility="visible"
             motion:layout_constraintBottom_toBottomOf="parent"
             motion:layout_constraintEnd_toStartOf="@+id/btn_next"
             motion:layout_constraintHorizontal_bias="0.5"
@@ -124,6 +126,8 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:alpha="1"
+            android:clickable="true"
+            android:visibility="visible"
             motion:layout_constraintBottom_toBottomOf="parent"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintHorizontal_bias="0.5"
@@ -136,6 +140,8 @@
             android:layout_marginStart="16dp"
             android:layout_marginBottom="16dp"
             android:alpha="1"
+            android:clickable="true"
+            android:visibility="visible"
             motion:layout_constraintBottom_toBottomOf="parent"
             motion:layout_constraintEnd_toStartOf="@+id/btn_next"
             motion:layout_constraintHorizontal_bias="0.5"

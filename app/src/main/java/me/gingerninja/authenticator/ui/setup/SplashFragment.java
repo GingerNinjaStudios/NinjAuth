@@ -7,10 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import javax.inject.Inject;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import javax.inject.Inject;
+
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.databinding.SplashFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
@@ -32,12 +33,15 @@ public class SplashFragment extends BaseFragment<SplashFragmentBinding> implemen
             binding.btnSkipSetup.setOnClickListener(v -> SkipConfirmationBottomFragment.show(getChildFragmentManager()));
             binding.btnNext.setOnClickListener(v -> getNavController().navigate(R.id.startSetupAction));
 
+            //binding.motionLayout.rebuildScene();
+
             if (savedInstanceState == null && !hasAnimated) {
                 animationRunnable = binding.motionLayout::transitionToEnd;
                 binding.motionLayout.postDelayed(animationRunnable, 750);
                 hasAnimated = true;
             } else {
-                binding.motionLayout.setState(R.id.end, -1, -1);
+                //binding.motionLayout.setState(R.id.end, -1, -1);
+                binding.motionLayout.transitionToState(R.id.end);
             }
         } else {
             getNavController().navigate(R.id.skipSetupToAccountListAction);

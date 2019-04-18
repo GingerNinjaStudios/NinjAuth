@@ -8,22 +8,6 @@
         android:layout_height="match_parent"
         app:layoutDescription="@xml/splash_scene_portrait">
 
-        <!--<ImageView
-            android:id="@+id/app_icon"
-            android:layout_width="128dp"
-            android:layout_height="128dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="8dp"
-            android:contentDescription="@string/app_name"
-            app:layout_constraintBottom_toTopOf="@+id/vertical_center_guideline"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0"
-            app:srcCompat="@mipmap/ic_launcher" />-->
-
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/app_icon"
             android:layout_width="128dp"
@@ -54,19 +38,19 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@id/btn_next"
+            android:id="@+id/btn_next"
             style="@style/Widget.MaterialComponents.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:text="@string/btn_splash_next"
-            app:layout_constraintBottom_toTopOf="@id/btn_skip_setup"
+            app:layout_constraintBottom_toTopOf="@+id/btn_skip_setup"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@id/btn_skip_setup"
+            android:id="@+id/btn_skip_setup"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -92,7 +76,7 @@
             app:layout_constraintTop_toBottomOf="@+id/app_icon" />
 
         <TextView
-            android:id="@id/welcome_message"
+            android:id="@+id/welcome_message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -103,7 +87,7 @@
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
             android:textSize="18sp"
-            app:layout_constraintBottom_toTopOf="@id/btn_next"
+            app:layout_constraintBottom_toTopOf="@+id/btn_next"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/app_name" />
