@@ -34,33 +34,33 @@ android {
 }
 
 dependencies {
-    def nav_version = "2.1.0-alpha01"
+    def nav_version = "2.1.0-alpha02"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    api 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    api 'androidx.appcompat:appcompat:1.1.0-alpha04'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha4'
+    testImplementation 'junit:junit:4.13-beta-2'
+    androidTestImplementation 'androidx.test:runner:1.2.0-alpha03'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0-alpha03'
 
-    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.0.0'
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0-alpha01'
     implementation 'androidx.drawerlayout:drawerlayout:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview-selection:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha04'
+    implementation 'androidx.recyclerview:recyclerview-selection:1.1.0-alpha01'
     implementation 'androidx.preference:preference:1.0.0'
     implementation 'androidx.palette:palette:1.0.0'
-    api 'androidx.annotation:annotation:1.0.2'
-    implementation 'androidx.biometric:biometric:1.0.0-alpha03'
+    api 'androidx.annotation:annotation:1.1.0-beta01'
+    implementation 'androidx.biometric:biometric:1.0.0-alpha04'
 
     // Android Architecture
-    implementation 'androidx.lifecycle:lifecycle-runtime:2.0.0'
-    implementation 'androidx.lifecycle:lifecycle-common-java8:2.0.0'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
-    annotationProcessor 'androidx.lifecycle:lifecycle-compiler:2.0.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime:2.1.0-alpha04'
+    implementation 'androidx.lifecycle:lifecycle-common-java8:2.1.0-alpha04'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0-alpha04'
+    annotationProcessor 'androidx.lifecycle:lifecycle-compiler:2.1.0-alpha04'
     implementation "androidx.navigation:navigation-fragment:$nav_version"
     implementation "androidx.navigation:navigation-ui:$nav_version"
 
-    implementation 'com.google.android.play:core:1.4.0'
+    implementation 'com.google.android.play:core:1.4.1'
 
     // Apache v2 - https://github.com/takisoft/preferencex-android
     implementation 'com.takisoft.preferencex:preferencex:1.0.0'
