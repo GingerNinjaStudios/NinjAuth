@@ -2,11 +2,12 @@ package me.gingerninja.authenticator.data.adapter;
 
 import android.database.Cursor;
 
-import java.sql.SQLException;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.sql.SQLException;
+
 import io.requery.sql.ResultSetIterator;
 
 public abstract class BaseIteratorAdapter<VH extends RecyclerView.ViewHolder, ItemType> extends RecyclerView.Adapter<VH> {

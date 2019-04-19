@@ -5,17 +5,18 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
-
-import java.util.concurrent.TimeUnit;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Size;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.BehaviorSubject;
@@ -90,7 +91,7 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
 
     @Override
     public int getItemViewType(int position) {
-        String type = AccountWrapper.getType(iterator.get(position));
+        String type = AccountWrapper.getType(iterator.get(getAdjustedPosition(position)));
         switch (type) {
             case Account.TYPE_HOTP:
                 return TYPE_ACCOUNT_HOTP;
@@ -119,10 +120,10 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
     public void onBindViewHolder(@NonNull BindingViewHolder holder, int position) {
         switch (holder.getViewType()) {
             case TYPE_ACCOUNT_HOTP:
-                onBindHotpViewHolder((HotpViewHolder) holder, position);
+                onBindHotpViewHolder((HotpViewHolder) holder, getAdjustedPosition(position));
                 break;
             case TYPE_ACCOUNT_TOTP:
-                onBindTotpViewHolder((TotpViewHolder) holder, position);
+                onBindTotpViewHolder((TotpViewHolder) holder, getAdjustedPosition(position));
                 break;
         }
     }
@@ -142,13 +143,18 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
 
     private void onBindTotpViewHolder(@NonNull TotpViewHolder holder, int position) {
         AccountListItemTotpBinding listItemBinding = holder.getBinding();
+        Account account = accountWrapperFactory.create(iterator.get(position));
 
         AccountListItemTotpViewModel oldViewModel = listItemBinding.getViewModel();
         if (oldViewModel != null) {
+            Account oldAccount = oldViewModel.getAccount();
+
+            if (account.equals(oldAccount)) {
+                return;
+            }
+
             oldViewModel.stopClock();
         }
-
-        Account account = accountWrapperFactory.create(iterator.get(position));
 
         setupLabels(account, listItemBinding.labels);
 
@@ -211,6 +217,36 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
         }
     }
 
+    /**
+     * Converts the static iterator position to a dynamic position that is adjusted according to the
+     * move factors ({@link #moveFrom} and {@link #moveTo}) set by {@link #onItemMove(int, int)}
+     * when the user drags a list item to a new position.
+     *
+     * @param position the position to be converted
+     * @return Returns the dynamic position of the item.
+     * @see #onItemMove(int, int)
+     */
+    private int getAdjustedPosition(int position) {
+        if (moveFrom < 0 || moveFrom == moveTo) {
+            return position;
+        } else {
+            int min = Math.min(moveFrom, moveTo);
+            int max = Math.max(moveFrom, moveTo);
+
+            if (position == moveTo) {
+                return moveFrom;
+            } else if (position >= min && position <= max) {
+                if (moveFrom < moveTo) {
+                    return position + 1;
+                } else {
+                    return position - 1;
+                }
+            } else {
+                return position;
+            }
+        }
+    }
+
     public boolean onItemMove(int fromPosition, int toPosition) {
         if (moveFrom < 0) {
             moveFrom = fromPosition;
@@ -218,7 +254,23 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
 
         moveTo = toPosition;
 
-        notifyItemMoved(fromPosition, toPosition);
+        /*if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                //Collections.swap(accountList, i, i + 1);
+                int tmp = positions[i];
+                positions[i] = positions[i + 1];
+                positions[i + 1] = tmp;
+            }
+        } else {
+            for (int i = fromPosition; i > toPosition; i--) {
+                //Collections.swap(accountList, i, i - 1);
+                int tmp = positions[i];
+                positions[i] = positions[i - 1];
+                positions[i - 1] = tmp;
+            }
+        }*/
+
+        notifyItemMoved(fromPosition, toPosition); // FIXME the backing iterator does not represent the change so it will not work properly
         return true;
     }
 
@@ -252,6 +304,16 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
         if (menuItemClickListener != null) {
             menuItemClickListener.onAccountMenuItemClicked(item, account);
         }
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return super.getItemId(getAdjustedPosition(position));
+    }
+
+    @Override
+    public Tuple getItem(int position) {
+        return super.getItem(getAdjustedPosition(position));
     }
 
     @Override

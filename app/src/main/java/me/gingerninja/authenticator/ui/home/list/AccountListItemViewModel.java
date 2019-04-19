@@ -56,6 +56,11 @@ public class AccountListItemViewModel extends BaseObservable {
         popupMenu.show();
     }
 
+    @NonNull
+    public Account getAccount() {
+        return account;
+    }
+
     public String getAccountName() {
         return account.getTitle();
     }
