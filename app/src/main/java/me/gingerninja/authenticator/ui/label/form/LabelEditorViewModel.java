@@ -66,7 +66,7 @@ public class LabelEditorViewModel extends BaseLabelViewModel {
 
     @ColorInt
     public int getColor() {
-        return label.getColor();
+        return data.color.get();
     }
 
     public void setColor(@ColorInt int color) {
