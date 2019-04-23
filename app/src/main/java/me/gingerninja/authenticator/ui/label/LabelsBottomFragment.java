@@ -6,11 +6,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import javax.inject.Inject;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
+
+import javax.inject.Inject;
+
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.adapter.LabelListAdapter;
 import me.gingerninja.authenticator.data.db.entity.Label;
@@ -34,16 +35,8 @@ public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> im
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         labelListAdapter.setMenuItemClickListener(this);
-    }
 
-    @Override
-    protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, LabelsFragmentBinding viewDataBinding) {
-        subscribeToUi(getDataBinding());
-    }
-
-    private void subscribeToUi(LabelsFragmentBinding binding) {
         LabelsViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(LabelsViewModel.class);
-        binding.setViewModel(viewModel);
 
         viewModel
                 .getNavigationAction()
@@ -60,6 +53,16 @@ public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> im
                 });
 
         viewModel.getLabelList().observe(this, labelListAdapter::setLabelList);
+    }
+
+    @Override
+    protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, LabelsFragmentBinding viewDataBinding) {
+        subscribeToUi(getDataBinding());
+    }
+
+    private void subscribeToUi(LabelsFragmentBinding binding) {
+        LabelsViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(LabelsViewModel.class);
+        binding.setViewModel(viewModel);
 
         binding.labelList.setAdapter(labelListAdapter);
 

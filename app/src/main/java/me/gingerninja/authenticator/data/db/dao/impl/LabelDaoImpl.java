@@ -132,6 +132,8 @@ public class LabelDaoImpl implements LabelDao {
 
                     transaction.close();
 
+                    db.update(account); // this is basically no-op but it refreshes the accounts list
+
                     return true;
                 })
                 .ignoreElement();

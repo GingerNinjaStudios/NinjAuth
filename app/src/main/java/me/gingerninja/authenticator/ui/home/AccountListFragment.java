@@ -7,15 +7,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.material.snackbar.Snackbar;
-
-import javax.inject.Inject;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.snackbar.Snackbar;
+
+import javax.inject.Inject;
+
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.adapter.AccountListIteratorAdapter;
 import me.gingerninja.authenticator.data.db.entity.Account;
@@ -43,6 +44,23 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         accountListAdapter.setMenuItemClickListener(this);
+
+        AccountListViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountListViewModel.class);
+
+        viewModel.getAccountList2().observe(this, accountListAdapter::setResults);
+
+        viewModel
+                .getNavigationAction()
+                .observe(this, rawEvent -> {
+                    if (rawEvent.handle()) {
+                        String eventId = rawEvent.getId();
+                        switch (eventId) {
+                            case AccountListViewModel.NAV_ADD_ACCOUNT_FROM_CAMERA:
+                                showAddNewAccountMenu();
+                                break;
+                        }
+                    }
+                });
     }
 
     @Override
@@ -66,7 +84,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
         AccountListViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountListViewModel.class);
         binding.setViewModel(viewModel);
 
-        viewModel
+        /*viewModel
                 .getNavigationAction()
                 .observe(this, rawEvent -> {
                     if (rawEvent.handle()) {
@@ -79,7 +97,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
                     }
                 });
 
-        viewModel.getAccountList2().observe(this, accountListAdapter::setResults);
+        viewModel.getAccountList2().observe(this, accountListAdapter::setResults);*/
 
         binding.accountList.setAdapter(accountListAdapter);
         enableListDrag(binding);
