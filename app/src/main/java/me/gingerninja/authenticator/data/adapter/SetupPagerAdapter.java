@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+
 import me.gingerninja.authenticator.ui.setup.page.BackupSetupPageFragment;
 import me.gingerninja.authenticator.ui.setup.page.ProtectionSelectorPageFragment;
 import me.gingerninja.authenticator.ui.setup.page.ThemeSelectorPageFragment;

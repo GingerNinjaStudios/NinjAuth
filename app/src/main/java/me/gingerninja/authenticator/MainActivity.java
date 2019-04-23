@@ -9,10 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
-import com.google.android.material.navigation.NavigationView;
-
-import javax.inject.Inject;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
@@ -20,6 +16,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
+
+import com.google.android.material.navigation.NavigationView;
+
+import javax.inject.Inject;
+
 import dagger.android.AndroidInjection;
 import me.gingerninja.authenticator.crypto.Crypto;
 import me.gingerninja.authenticator.data.db.provider.DatabaseHandler;

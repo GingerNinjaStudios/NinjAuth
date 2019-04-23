@@ -4,13 +4,13 @@ import android.app.Application;
 import android.database.Cursor;
 import android.view.View;
 
-import javax.inject.Inject;
-
 import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+
+import javax.inject.Inject;
+
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.requery.query.Tuple;
@@ -24,14 +24,11 @@ public class AccountListViewModel extends ViewModel {
 
     private final Application application;
     private final AccountRepository accountRepo;
-
+    public ObservableBoolean hasLoaded = new ObservableBoolean(false);
+    public ObservableBoolean hasData = new ObservableBoolean(false);
     private MutableLiveData<SingleEvent<String>> navAction = new MutableLiveData<>();
     //private MutableLiveData<List<Account>> accountList = new MutableLiveData<>();
     private AutoClosingMutableLiveData<ResultSetIterator<Tuple>> accountList2 = new AutoClosingMutableLiveData<>();
-
-    public ObservableBoolean hasLoaded = new ObservableBoolean(false);
-    public ObservableBoolean hasData = new ObservableBoolean(false);
-
     private Disposable disposable;
 
     @Inject

@@ -17,18 +17,18 @@ public class ResultViewModelProvider extends ViewModelProvider {
     @NonNull
     private final DisablerFactory factory;
 
+    private ResultViewModelProvider(@NonNull ViewModelStore store, @NonNull DisablerFactory factory) {
+        super(store, factory);
+        this.factory = factory;
+        this.viewModelStore = store;
+    }
+
     public static ResultViewModelProvider of(FragmentActivity activity) {
         return new ResultViewModelProvider(activity.getViewModelStore(), DisablerFactory.getInstance());
     }
 
     public static ResultViewModelProvider of(Fragment fragment) {
         return new ResultViewModelProvider(fragment.getViewModelStore(), DisablerFactory.getInstance());
-    }
-
-    private ResultViewModelProvider(@NonNull ViewModelStore store, @NonNull DisablerFactory factory) {
-        super(store, factory);
-        this.factory = factory;
-        this.viewModelStore = store;
     }
 
     @Nullable

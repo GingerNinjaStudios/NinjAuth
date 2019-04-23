@@ -27,6 +27,8 @@ import me.gingerninja.authenticator.di.module.ViewModelModule;
 })
 public interface AppComponent {
 
+    void inject(MyApplication app);
+
     @Component.Builder
     interface Builder {
 
@@ -36,7 +38,5 @@ public interface AppComponent {
         AppComponent build();
 
     }
-
-    void inject(MyApplication app);
 
 }

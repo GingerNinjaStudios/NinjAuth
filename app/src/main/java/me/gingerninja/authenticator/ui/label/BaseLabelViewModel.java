@@ -9,6 +9,7 @@ import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableInt;
 import androidx.lifecycle.ViewModel;
+
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -19,14 +20,11 @@ import timber.log.Timber;
 
 public abstract class BaseLabelViewModel extends ViewModel {
     public final ObservableBoolean hasLoaded = new ObservableBoolean(false);
-
-    protected Label label;
-    public Data data;
-
-    private Disposable disposable;
-
     protected final Application application;
     protected final AccountRepository accountRepo;
+    public Data data;
+    protected Label label;
+    private Disposable disposable;
 
     public BaseLabelViewModel(Application application, @NonNull AccountRepository accountRepo) {
         this.application = application;

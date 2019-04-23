@@ -3,13 +3,14 @@ package me.gingerninja.authenticator.util;
 import android.content.res.ColorStateList;
 import android.widget.ImageView;
 
-import com.google.android.material.chip.Chip;
-import com.google.android.material.textfield.TextInputLayout;
-
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.core.graphics.ColorUtils;
 import androidx.databinding.BindingAdapter;
+
+import com.google.android.material.chip.Chip;
+import com.google.android.material.textfield.TextInputLayout;
+
 import antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator;
 import me.gingerninja.authenticator.R;
 

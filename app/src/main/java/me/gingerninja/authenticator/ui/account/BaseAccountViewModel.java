@@ -3,9 +3,6 @@ package me.gingerninja.authenticator.ui.account;
 import android.os.Bundle;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.BaseObservable;
@@ -15,6 +12,10 @@ import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableInt;
 import androidx.lifecycle.ViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -30,28 +31,22 @@ import timber.log.Timber;
 
 public abstract class BaseAccountViewModel extends ViewModel {
     public final ObservableBoolean hasLoaded = new ObservableBoolean(false);
-
-    protected Account account;
     public Data data;
-
-    private CompositeDisposable disposable = new CompositeDisposable();
-
     public ObservableInt typeSpecificTitle = new ObservableInt();
     public ObservableInt typeSpecificDesc = new ObservableInt();
-
-    public ObservableBoolean showAdvanced = new ObservableBoolean(false);
-
-    @NonNull
-    protected AccountRepository accountRepository;
-
-    protected SingleSubject<List<LabelData>> labels = SingleSubject.create();
-
     private final Observable.OnPropertyChangedCallback typeChangeCallback = new Observable.OnPropertyChangedCallback() {
         @Override
         public void onPropertyChanged(Observable sender, int propertyId) {
             changeTypeSpecificDetails(data.type.get());
         }
     };
+    public ObservableBoolean showAdvanced = new ObservableBoolean(false);
+    protected Account account;
+    @NonNull
+    protected AccountRepository accountRepository;
+
+    protected SingleSubject<List<LabelData>> labels = SingleSubject.create();
+    private CompositeDisposable disposable = new CompositeDisposable();
 
     public BaseAccountViewModel(@NonNull AccountRepository accountRepository) {
         this.accountRepository = accountRepository;

@@ -1,9 +1,10 @@
 package me.gingerninja.authenticator.ui.home.list;
 
-import java.util.concurrent.TimeUnit;
-
 import androidx.annotation.NonNull;
 import androidx.databinding.Bindable;
+
+import java.util.concurrent.TimeUnit;
+
 import antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;

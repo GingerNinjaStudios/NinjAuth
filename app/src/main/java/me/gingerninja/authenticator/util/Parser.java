@@ -3,12 +3,13 @@ package me.gingerninja.authenticator.util;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
 import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import androidx.annotation.NonNull;
 import me.gingerninja.authenticator.data.db.entity.Account;
 
 public class Parser {

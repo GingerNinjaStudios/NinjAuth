@@ -3,6 +3,10 @@ package me.gingerninja.authenticator.module;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
+
 import com.google.android.play.core.splitinstall.SplitInstallManager;
 import com.google.android.play.core.splitinstall.SplitInstallManagerFactory;
 import com.google.android.play.core.splitinstall.SplitInstallRequest;
@@ -19,28 +23,17 @@ import java.util.Set;
 
 import javax.inject.Provider;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringDef;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 import me.gingerninja.authenticator.module.timecorrector.TimeCorrector;
 
 public class ModuleHandler implements SplitInstallStateUpdatedListener {
-    private static final String SHARED_PREF_NAME = "dynamic_modules";
     public static final String MODULE_TIME_CORRECTOR = "timecorrector";
-
-    private Map<String, Provider<?>> moduleProviders = new HashMap<>();
-
-    @StringDef({MODULE_TIME_CORRECTOR})
-    @interface DynamicModule {
-    }
-
+    private static final String SHARED_PREF_NAME = "dynamic_modules";
     @NonNull
     private final SharedPreferences sharedPrefs;
-
+    private Map<String, Provider<?>> moduleProviders = new HashMap<>();
     private SplitInstallManager splitInstallManager;
-
     private BehaviorSubject<SplitInstallSessionState> sessionStateSubject = BehaviorSubject.create();
 
     {
@@ -209,5 +202,9 @@ public class ModuleHandler implements SplitInstallStateUpdatedListener {
     @Override
     public void onStateUpdate(SplitInstallSessionState sessionState) {
         sessionStateSubject.onNext(sessionState);
+    }
+
+    @StringDef({MODULE_TIME_CORRECTOR})
+    @interface DynamicModule {
     }
 }

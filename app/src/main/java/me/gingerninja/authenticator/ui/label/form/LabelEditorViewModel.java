@@ -4,8 +4,6 @@ import android.app.Application;
 import android.os.Bundle;
 import android.view.View;
 
-import javax.inject.Inject;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -13,6 +11,9 @@ import androidx.annotation.Nullable;
 import androidx.databinding.ObservableInt;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+
+import javax.inject.Inject;
+
 import io.reactivex.disposables.Disposable;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.Label;
@@ -27,16 +28,9 @@ public class LabelEditorViewModel extends BaseLabelViewModel {
 
     public static final int MODE_CREATE = 0;
     public static final int MODE_EDIT = 1;
-
-    @IntDef({MODE_CREATE, MODE_EDIT})
-    @interface Mode {
-    }
-
     public Error error = new Error();
-    private Disposable saveDisposable;
-
     protected MutableLiveData<SingleEvent<Label>> navAction = new MutableLiveData<>();
-
+    private Disposable saveDisposable;
     @Mode
     private int mode = MODE_CREATE;
 
@@ -106,6 +100,10 @@ public class LabelEditorViewModel extends BaseLabelViewModel {
     @Override
     protected Data createData() {
         return new EditableData();
+    }
+
+    @IntDef({MODE_CREATE, MODE_EDIT})
+    @interface Mode {
     }
 
     public static class Error {

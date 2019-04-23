@@ -77,18 +77,8 @@ public class ResultNavController {
     }
 
     @CallSuper
-    public void setGraph(int graphResId) {
-        navController.setGraph(graphResId);
-    }
-
-    @CallSuper
     public void setGraph(int graphResId, @Nullable Bundle startDestinationArgs) {
         navController.setGraph(graphResId, startDestinationArgs);
-    }
-
-    @CallSuper
-    public void setGraph(@NonNull NavGraph graph) {
-        navController.setGraph(graph);
     }
 
     @CallSuper
@@ -103,6 +93,16 @@ public class ResultNavController {
     @NonNull
     public NavGraph getGraph() {
         return navController.getGraph();
+    }
+
+    @CallSuper
+    public void setGraph(int graphResId) {
+        navController.setGraph(graphResId);
+    }
+
+    @CallSuper
+    public void setGraph(@NonNull NavGraph graph) {
+        navController.setGraph(graph);
     }
 
     @Nullable

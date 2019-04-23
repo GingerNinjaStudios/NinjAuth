@@ -5,11 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import javax.inject.Inject;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
+
+import javax.inject.Inject;
+
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.repo.TemporaryRepository;
 import me.gingerninja.authenticator.databinding.RestorePageFragmentBinding;

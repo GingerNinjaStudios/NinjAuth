@@ -3,6 +3,11 @@ package me.gingerninja.authenticator.ui.backup;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.CheckResult;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModel;
+
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.exception.ZipExceptionConstants;
 
@@ -10,10 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
-import androidx.annotation.CheckResult;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModel;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -31,12 +32,9 @@ public class RestoreViewModel extends ViewModel implements WorkUpdateHandler {
 
     static final String ACTION_DATA_LOADED = "restore-data-loaded";
     //static final String ACTION_RESTORE_COMPLETE = "restore-complete";
-
-    private AtomicInteger requestCounter = new AtomicInteger(0);
-
     @NonNull
     private final BackupUtils backupUtils;
-
+    private AtomicInteger requestCounter = new AtomicInteger(0);
     @NonNull
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 

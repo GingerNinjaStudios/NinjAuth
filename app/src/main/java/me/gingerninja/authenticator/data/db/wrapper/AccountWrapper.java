@@ -25,6 +25,10 @@ public class AccountWrapper extends Account {
         this.tuple = tuple;
     }
 
+    public static String getType(Tuple tuple) {
+        return tuple.get(Account.TYPE);
+    }
+
     @Override
     public String getTitle() {
         return tuple.get(Account.TITLE);
@@ -64,10 +68,6 @@ public class AccountWrapper extends Account {
 
     @Override
     public String getType() {
-        return tuple.get(Account.TYPE);
-    }
-
-    public static String getType(Tuple tuple) {
         return tuple.get(Account.TYPE);
     }
 

@@ -21,13 +21,11 @@ import me.gingerninja.authenticator.ui.home.BottomNavigationFragment;
 import me.gingerninja.authenticator.ui.label.form.LabelEditorFragment;
 
 public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> implements BottomNavigationFragment.BottomNavigationListener, LabelListItemViewModel.LabelMenuItemClickListener {
-    private static final int REQUEST_CODE_ADD = 0x2000;
-    private static final int REQUEST_CODE_EDIT = 0x2001;
-
     public static final String LABEL_OP_ADD = "labelAdded";
     public static final String LABEL_OP_UPDATE = "labelUpdated";
     public static final String LABEL_OP_DELETE = "labelDeleted";
-
+    private static final int REQUEST_CODE_ADD = 0x2000;
+    private static final int REQUEST_CODE_EDIT = 0x2001;
     @Inject
     LabelListAdapter labelListAdapter;
 

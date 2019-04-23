@@ -1,8 +1,9 @@
 package me.gingerninja.authenticator.data.db.function;
 
+import androidx.core.util.Pair;
+
 import java.util.LinkedList;
 
-import androidx.core.util.Pair;
 import io.requery.query.Expression;
 import io.requery.query.function.Function;
 

@@ -10,6 +10,9 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
+
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -18,8 +21,6 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 import java.io.IOException;
 import java.util.List;
 
-import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -27,12 +28,10 @@ import io.reactivex.schedulers.Schedulers;
 
 public class BarcodeCameraPreview extends SurfaceView implements SurfaceHolder.Callback, Detector.Processor<Barcode> {
     private static final String TAG = BarcodeCameraPreview.class.getSimpleName();
-
+    private final BarcodeDetector barcodeDetector;
     private boolean startRequested;
     private boolean isPlaying;
     private boolean surfaceReady;
-
-    private final BarcodeDetector barcodeDetector;
     private Detector.Processor<Barcode> barcodeProcessor;
     private CameraSource cameraSource;
 
@@ -59,6 +58,58 @@ public class BarcodeCameraPreview extends SurfaceView implements SurfaceHolder.C
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public BarcodeCameraPreview(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    @Nullable
+    public static Camera.Size getOptimalPreviewSize(@Nullable List<Camera.Size> sizes, int w, int h) {
+        Log.d(TAG, "getOptimalPreviewSize()");
+        if (sizes != null) {
+            for (Camera.Size size : sizes) {
+                Log.d(TAG, "-- size: " + size.width + "x" + size.height);
+            }
+        }
+        /*if (w > h) {
+            int tmp = h;
+            h = w;
+            w = tmp;
+        }*/
+
+        final double ASPECT_TOLERANCE = 0.1;
+        double targetRatio = (double) h / w;
+        //double targetRatio = h > w ? (double) h / w : (double) w / h;
+
+        Log.d(TAG, "Target ratio: " + targetRatio);
+
+        if (sizes == null) return null;
+
+        Camera.Size optimalSize = null;
+        double minDiff = Double.MAX_VALUE;
+
+        int targetHeight = h;
+
+        for (Camera.Size size : sizes) {
+            //Log.d("CameraPreview", "size " + size.width + "x" + size.height);
+
+            double ratio = (double) size.width / size.height;
+            if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE)
+                continue;
+
+            if (Math.abs(size.height - targetHeight) < minDiff) {
+                optimalSize = size;
+                minDiff = Math.abs(size.height - targetHeight);
+            }
+        }
+
+        if (optimalSize == null) {
+            minDiff = Double.MAX_VALUE;
+            for (Camera.Size size : sizes) {
+                if (Math.abs(size.height - targetHeight) < minDiff) {
+                    optimalSize = size;
+                    minDiff = Math.abs(size.height - targetHeight);
+                }
+            }
+        }
+        return optimalSize;
     }
 
     public boolean isDetectorOperational() {
@@ -116,10 +167,6 @@ public class BarcodeCameraPreview extends SurfaceView implements SurfaceHolder.C
         }
     }
 
-    public void setBarcodeProcessor(Detector.Processor<Barcode> processor) {
-        this.barcodeProcessor = processor;
-    }
-
     /*@Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -131,6 +178,10 @@ public class BarcodeCameraPreview extends SurfaceView implements SurfaceHolder.C
 
         setMeasuredDimension(w, h);
     }*/
+
+    public void setBarcodeProcessor(Detector.Processor<Barcode> processor) {
+        this.barcodeProcessor = processor;
+    }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
@@ -221,57 +272,5 @@ public class BarcodeCameraPreview extends SurfaceView implements SurfaceHolder.C
 
     private interface OptimalSizeCallback {
         void optimalSizeFound(int w, int h);
-    }
-
-    @Nullable
-    public static Camera.Size getOptimalPreviewSize(@Nullable List<Camera.Size> sizes, int w, int h) {
-        Log.d(TAG, "getOptimalPreviewSize()");
-        if (sizes != null) {
-            for (Camera.Size size : sizes) {
-                Log.d(TAG, "-- size: " + size.width + "x" + size.height);
-            }
-        }
-        /*if (w > h) {
-            int tmp = h;
-            h = w;
-            w = tmp;
-        }*/
-
-        final double ASPECT_TOLERANCE = 0.1;
-        double targetRatio = (double) h / w;
-        //double targetRatio = h > w ? (double) h / w : (double) w / h;
-
-        Log.d(TAG, "Target ratio: " + targetRatio);
-
-        if (sizes == null) return null;
-
-        Camera.Size optimalSize = null;
-        double minDiff = Double.MAX_VALUE;
-
-        int targetHeight = h;
-
-        for (Camera.Size size : sizes) {
-            //Log.d("CameraPreview", "size " + size.width + "x" + size.height);
-
-            double ratio = (double) size.width / size.height;
-            if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE)
-                continue;
-
-            if (Math.abs(size.height - targetHeight) < minDiff) {
-                optimalSize = size;
-                minDiff = Math.abs(size.height - targetHeight);
-            }
-        }
-
-        if (optimalSize == null) {
-            minDiff = Double.MAX_VALUE;
-            for (Camera.Size size : sizes) {
-                if (Math.abs(size.height - targetHeight) < minDiff) {
-                    optimalSize = size;
-                    minDiff = Math.abs(size.height - targetHeight);
-                }
-            }
-        }
-        return optimalSize;
     }
 }

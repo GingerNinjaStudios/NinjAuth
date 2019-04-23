@@ -6,12 +6,13 @@ import android.app.Service;
 import android.content.Context;
 import android.os.StrictMode;
 
+import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManagerFix;
+
 import com.google.android.play.core.splitcompat.SplitCompat;
 
 import javax.inject.Inject;
 
-import androidx.fragment.app.Fragment;
-import androidx.preference.PreferenceManagerFix;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;

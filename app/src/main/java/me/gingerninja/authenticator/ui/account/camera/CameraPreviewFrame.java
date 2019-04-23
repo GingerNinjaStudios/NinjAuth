@@ -15,6 +15,12 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.PermissionChecker;
+import androidx.core.util.Pair;
+import androidx.core.view.MarginLayoutParamsCompat;
+
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.Frame;
@@ -24,11 +30,6 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 import java.io.IOException;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.PermissionChecker;
-import androidx.core.util.Pair;
-import androidx.core.view.MarginLayoutParamsCompat;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -37,6 +38,13 @@ import io.reactivex.schedulers.Schedulers;
 @SuppressLint("LogNotTimber")
 public class CameraPreviewFrame extends FrameLayout implements SurfaceHolder.Callback {
     private static final String TAG = "CameraPreviewFrame";
+    private SurfaceView cameraSurfaceView;
+    private boolean startRequested;
+    private boolean isPlaying;
+    private boolean surfaceReady;
+    private boolean cameraPreviewAttached;
+    private BarcodeDetector barcodeDetector;
+    private Detector.Processor<Barcode> barcodeProcessor;
     private final Detector.Processor<Barcode> internalProcessor = new Detector.Processor<Barcode>() {
         @Override
         public void release() {
@@ -96,16 +104,6 @@ public class CameraPreviewFrame extends FrameLayout implements SurfaceHolder.Cal
             }
         }
     };
-
-    private SurfaceView cameraSurfaceView;
-
-    private boolean startRequested;
-    private boolean isPlaying;
-    private boolean surfaceReady;
-    private boolean cameraPreviewAttached;
-
-    private BarcodeDetector barcodeDetector;
-    private Detector.Processor<Barcode> barcodeProcessor;
     private CameraSource cameraSource;
     private int[] selectedPreviewSize = new int[]{-1, -1};
 
@@ -146,6 +144,58 @@ public class CameraPreviewFrame extends FrameLayout implements SurfaceHolder.Cal
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }*/
+
+    @Nullable
+    private static Camera.Size getOptimalPreviewSize(@Nullable List<Camera.Size> sizes, int w, int h) {
+        Log.v(TAG, "getOptimalPreviewSize()");
+        if (sizes != null) {
+            for (Camera.Size size : sizes) {
+                Log.v(TAG, "-- size: " + size.width + "x" + size.height);
+            }
+        }
+        /*if (w > h) {
+            int tmp = h;
+            h = w;
+            w = tmp;
+        }*/
+
+        final double ASPECT_TOLERANCE = 0.1;
+        double targetRatio = (double) h / w;
+        //double targetRatio = h > w ? (double) h / w : (double) w / h;
+
+        Log.d(TAG, "Target ratio: " + targetRatio);
+
+        if (sizes == null) return null;
+
+        Camera.Size optimalSize = null;
+        double minDiff = Double.MAX_VALUE;
+
+        int targetHeight = h;
+
+        for (Camera.Size size : sizes) {
+            //Log.d("CameraPreview", "size " + size.width + "x" + size.height);
+
+            double ratio = (double) size.width / size.height;
+            if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE)
+                continue;
+
+            if (Math.abs(size.height - targetHeight) < minDiff) {
+                optimalSize = size;
+                minDiff = Math.abs(size.height - targetHeight);
+            }
+        }
+
+        if (optimalSize == null) {
+            minDiff = Double.MAX_VALUE;
+            for (Camera.Size size : sizes) {
+                if (Math.abs(size.height - targetHeight) < minDiff) {
+                    optimalSize = size;
+                    minDiff = Math.abs(size.height - targetHeight);
+                }
+            }
+        }
+        return optimalSize;
+    }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
@@ -299,58 +349,6 @@ public class CameraPreviewFrame extends FrameLayout implements SurfaceHolder.Cal
                     return retVal;
                 })
                 .subscribe(integerCameraInfoPair -> callback.optimalSizeFound(integerCameraInfoPair.first, integerCameraInfoPair.second));
-    }
-
-    @Nullable
-    private static Camera.Size getOptimalPreviewSize(@Nullable List<Camera.Size> sizes, int w, int h) {
-        Log.v(TAG, "getOptimalPreviewSize()");
-        if (sizes != null) {
-            for (Camera.Size size : sizes) {
-                Log.v(TAG, "-- size: " + size.width + "x" + size.height);
-            }
-        }
-        /*if (w > h) {
-            int tmp = h;
-            h = w;
-            w = tmp;
-        }*/
-
-        final double ASPECT_TOLERANCE = 0.1;
-        double targetRatio = (double) h / w;
-        //double targetRatio = h > w ? (double) h / w : (double) w / h;
-
-        Log.d(TAG, "Target ratio: " + targetRatio);
-
-        if (sizes == null) return null;
-
-        Camera.Size optimalSize = null;
-        double minDiff = Double.MAX_VALUE;
-
-        int targetHeight = h;
-
-        for (Camera.Size size : sizes) {
-            //Log.d("CameraPreview", "size " + size.width + "x" + size.height);
-
-            double ratio = (double) size.width / size.height;
-            if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE)
-                continue;
-
-            if (Math.abs(size.height - targetHeight) < minDiff) {
-                optimalSize = size;
-                minDiff = Math.abs(size.height - targetHeight);
-            }
-        }
-
-        if (optimalSize == null) {
-            minDiff = Double.MAX_VALUE;
-            for (Camera.Size size : sizes) {
-                if (Math.abs(size.height - targetHeight) < minDiff) {
-                    optimalSize = size;
-                    minDiff = Math.abs(size.height - targetHeight);
-                }
-            }
-        }
-        return optimalSize;
     }
 
     @Override

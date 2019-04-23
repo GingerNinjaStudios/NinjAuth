@@ -1,6 +1,7 @@
 package me.gingerninja.authenticator.ui.backup;
 
 import androidx.annotation.NonNull;
+
 import io.reactivex.Completable;
 
 public interface WorkUpdateHandler {

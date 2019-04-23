@@ -5,13 +5,14 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.module.ModuleHandler;
 

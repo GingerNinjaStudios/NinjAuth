@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.core.graphics.ColorUtils;
 import androidx.databinding.DataBindingUtil;
+
 import io.requery.query.Tuple;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.TempLabel;

@@ -171,28 +171,6 @@ public class Validator<T> {
         return data;
     }
 
-    public static class Result<T> {
-        private final T data;
-        private final int resultCode;
-
-        private Result(T data, int resultCode) {
-            this.data = data;
-            this.resultCode = resultCode;
-        }
-
-        public boolean isSuccessful() {
-            return resultCode == RESULT_OK;
-        }
-
-        public T getData() {
-            return data;
-        }
-
-        public int getResultCode() {
-            return resultCode;
-        }
-    }
-
     public interface Consumer<T> {
 
         /**
@@ -216,5 +194,27 @@ public class Validator<T> {
          * @return the function result.
          */
         O apply(I input);
+    }
+
+    public static class Result<T> {
+        private final T data;
+        private final int resultCode;
+
+        private Result(T data, int resultCode) {
+            this.data = data;
+            this.resultCode = resultCode;
+        }
+
+        public boolean isSuccessful() {
+            return resultCode == RESULT_OK;
+        }
+
+        public T getData() {
+            return data;
+        }
+
+        public int getResultCode() {
+            return resultCode;
+        }
     }
 }

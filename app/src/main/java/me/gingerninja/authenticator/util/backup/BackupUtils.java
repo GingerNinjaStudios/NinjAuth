@@ -8,6 +8,10 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.google.gson.Gson;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -30,9 +34,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import io.reactivex.Completable;
 import io.reactivex.annotations.CheckReturnValue;
 import me.gingerninja.authenticator.data.repo.AccountRepository;
@@ -55,16 +56,36 @@ public class BackupUtils {
         this.gson = gson;
     }
 
-    @CheckReturnValue
-    public Completable backup(@NonNull Uri uri) {
-        char[] password = "alma".toCharArray(); // TODO
+    private static Intent getCreateFileIntent(@NonNull String fileName, boolean persistable) {
+        String mimeType = "application/zip"; // TODO or application/octet-stream
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
 
-        return new Backup(context, accountRepo, gson, uri).export(password);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        intent.setType(mimeType);
+
+        if (persistable) {
+            intent.setFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        }
+
+        intent.putExtra(Intent.EXTRA_TITLE, fileName);
+
+        return intent;
     }
 
-    @CheckReturnValue
-    public Restore restore(@NonNull Uri uri) {
-        return new Restore(context, tempRepo, gson, uri);
+    private static Intent getOpenFileIntent(boolean persistable) {
+        String mimeType = "application/zip"; // TODO or application/octet-stream
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        intent.setType(mimeType);
+
+        if (persistable) {
+            intent.setFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        }
+
+        return intent;
     }
 
     /*public void backup(@NonNull Uri uri) throws ZipException, IOException {
@@ -177,6 +198,18 @@ public class BackupUtils {
         }
     }*/
 
+    @CheckReturnValue
+    public Completable backup(@NonNull Uri uri) {
+        char[] password = "alma".toCharArray(); // TODO
+
+        return new Backup(context, accountRepo, gson, uri).export(password);
+    }
+
+    @CheckReturnValue
+    public Restore restore(@NonNull Uri uri) {
+        return new Restore(context, tempRepo, gson, uri);
+    }
+
     public void createFile(@NonNull Activity activity, int requestCode, @NonNull String fileName, boolean persistable) {
         Intent intent = getCreateFileIntent(fileName, persistable);
         activity.startActivityForResult(intent, requestCode);
@@ -195,20 +228,6 @@ public class BackupUtils {
     public void openFile(@NonNull Fragment fragment, int requestCode, boolean persistable) {
         Intent intent = getOpenFileIntent(persistable);
         fragment.startActivityForResult(intent, requestCode);
-    }
-
-    @NonNull
-    private FileOutputStream openFileForWrite(Uri uri) throws FileNotFoundException {
-        ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, "w");
-        assert pfd != null;
-        return new FileOutputStream(pfd.getFileDescriptor());
-    }
-
-    @NonNull
-    private FileInputStream openFileForRead(Uri uri) throws FileNotFoundException {
-        ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, "rw");
-        assert pfd != null;
-        return new FileInputStream(pfd.getFileDescriptor());
     }
 
     /*private void openFileForWrite(Uri uri) {
@@ -236,6 +255,20 @@ public class BackupUtils {
         }
     }*/
 
+    @NonNull
+    private FileOutputStream openFileForWrite(Uri uri) throws FileNotFoundException {
+        ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, "w");
+        assert pfd != null;
+        return new FileOutputStream(pfd.getFileDescriptor());
+    }
+
+    @NonNull
+    private FileInputStream openFileForRead(Uri uri) throws FileNotFoundException {
+        ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, "rw");
+        assert pfd != null;
+        return new FileInputStream(pfd.getFileDescriptor());
+    }
+
     private void closeFile(@Nullable Closeable closeable) {
         if (closeable != null) {
             try {
@@ -244,38 +277,6 @@ public class BackupUtils {
                 e.printStackTrace();
             }
         }
-    }
-
-    private static Intent getCreateFileIntent(@NonNull String fileName, boolean persistable) {
-        String mimeType = "application/zip"; // TODO or application/octet-stream
-        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-
-        intent.setType(mimeType);
-
-        if (persistable) {
-            intent.setFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-        }
-
-        intent.putExtra(Intent.EXTRA_TITLE, fileName);
-
-        return intent;
-    }
-
-    private static Intent getOpenFileIntent(boolean persistable) {
-        String mimeType = "application/zip"; // TODO or application/octet-stream
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-
-        intent.setType(mimeType);
-
-        if (persistable) {
-            intent.setFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-        }
-
-        return intent;
     }
 
     @Nullable

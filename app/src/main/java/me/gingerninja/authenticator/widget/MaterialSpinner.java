@@ -10,8 +10,6 @@ import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.google.android.material.textfield.TextInputEditText;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.PopupMenu;
@@ -20,6 +18,9 @@ import androidx.databinding.BindingMethods;
 import androidx.databinding.InverseBindingListener;
 import androidx.databinding.InverseBindingMethod;
 import androidx.databinding.InverseBindingMethods;
+
+import com.google.android.material.textfield.TextInputEditText;
+
 import me.gingerninja.authenticator.R;
 
 @InverseBindingMethods({

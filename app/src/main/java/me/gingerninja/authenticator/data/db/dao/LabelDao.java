@@ -1,9 +1,10 @@
 package me.gingerninja.authenticator.data.db.dao;
 
-import java.util.List;
-
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
+
+import java.util.List;
+
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;

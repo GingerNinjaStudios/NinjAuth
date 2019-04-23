@@ -2,12 +2,13 @@ package me.gingerninja.authenticator.data.db.dao.impl;
 
 import android.os.Parcel;
 
-import java.security.SecureRandom;
-import java.sql.SQLIntegrityConstraintViolationException;
-
 import androidx.annotation.NonNull;
 import androidx.core.util.Consumer;
 import androidx.core.util.Supplier;
+
+import java.security.SecureRandom;
+import java.sql.SQLIntegrityConstraintViolationException;
+
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.functions.BiConsumer;

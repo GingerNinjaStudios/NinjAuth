@@ -10,6 +10,15 @@ import android.security.keystore.KeyProperties;
 import android.text.TextUtils;
 import android.util.Base64;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
+import androidx.biometric.BiometricConstants;
+import androidx.biometric.BiometricPrompt;
+import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
+import androidx.fragment.app.FragmentActivity;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -41,14 +50,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.security.auth.DestroyFailedException;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringDef;
-import androidx.biometric.BiometricConstants;
-import androidx.biometric.BiometricPrompt;
-import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
-import androidx.fragment.app.FragmentActivity;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -66,50 +67,24 @@ public class Crypto {
     public static final String PROTECTION_MODE_PASSWORD = "password";
     public static final String PROTECTION_MODE_BIO_PIN = "bio_pin";
     public static final String PROTECTION_MODE_BIO_PASSWORD = "bio_password";
-
-    @StringDef({PROTECTION_MODE_NONE, PROTECTION_MODE_PIN, PROTECTION_MODE_PASSWORD, PROTECTION_MODE_BIO_PIN, PROTECTION_MODE_BIO_PASSWORD})
-    @interface ProtectionMode {
-    }
-
-    @IntDef({Cipher.ENCRYPT_MODE, Cipher.WRAP_MODE})
-    @interface CipherPurposeWrite {
-    }
-
-    @IntDef({Cipher.DECRYPT_MODE, Cipher.UNWRAP_MODE})
-    @interface CipherPurposeRead {
-    }
-
-    private static final String KEYSTORE_PROVIDER = "AndroidKeyStore";
-    private static final String KEY_ALIAS_BIOMETRIC = "biometric";
-
-    private static final String KEY_MASTER_PASS = "key_pass";
-    private static final String KEY_MASTER_BIO = "key_bio";
-
     public static final int AUTH_MODE_PASSWORD = 0;
     public static final int AUTH_MODE_BIOMETRIC = 1;
-
-    @IntDef({AUTH_MODE_PASSWORD, AUTH_MODE_BIOMETRIC})
-    @interface AuthMode {
-    }
-
+    private static final String KEYSTORE_PROVIDER = "AndroidKeyStore";
+    private static final String KEY_ALIAS_BIOMETRIC = "biometric";
+    private static final String KEY_MASTER_PASS = "key_pass";
+    private static final String KEY_MASTER_BIO = "key_bio";
     @NonNull
     private final Context context;
-
     private final KeyguardManager keyguardManager;
-
     @NonNull
     private final DatabaseHandler dbHandler;
-
     @NonNull
     private final SharedPreferences sharedPrefs;
-
+    private final Features features;
     private SecureRandom secureRandom = new SecureRandom();
     private KeyStore keyStore;
-
     @ProtectionMode
     private String protectionMode;
-
-    private final Features features;
 
     @Inject
     Crypto(@NonNull Context context, @NonNull DatabaseHandler dbHandler, @NonNull SharedPreferences sharedPrefs) {
@@ -171,19 +146,6 @@ public class Crypto {
         }
     }
 
-    // TODO how to store auto-backup password securely in memory
-    /*
-    Initial setup:
-        1. create RSA key in AndroidKeyStore with setEncryptionRequired()
-
-    Usage:
-        1. read & decrypt the auto-backup password
-        2. get RSA key from AndroidKeyStore
-        3. encrypt the auto-backup password using RSA and store those bytes anywhere
-            a. if exception is thrown at the cipher, the RSA key must be regenerated first
-        4. when the password is needed, use the RSA key to decrypt the data into a char array
-     */
-
     private void openDatabase(SecretKey secretKey) {
         String encrypted = sharedPrefs.getString("", null);
     }
@@ -205,6 +167,19 @@ public class Crypto {
     public void authenticate(@NonNull FragmentActivity activity) {
         authenticate(activity, AUTH_MODE_BIOMETRIC);
     }
+
+    // TODO how to store auto-backup password securely in memory
+    /*
+    Initial setup:
+        1. create RSA key in AndroidKeyStore with setEncryptionRequired()
+
+    Usage:
+        1. read & decrypt the auto-backup password
+        2. get RSA key from AndroidKeyStore
+        3. encrypt the auto-backup password using RSA and store those bytes anywhere
+            a. if exception is thrown at the cipher, the RSA key must be regenerated first
+        4. when the password is needed, use the RSA key to decrypt the data into a char array
+     */
 
     public void authenticate(@NonNull FragmentActivity activity, @AuthMode int mode) {
         switch (mode) {
@@ -463,22 +438,6 @@ public class Crypto {
         return cipher;
     }
 
-    /*private void createCipher() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException {
-        // creating AES
-        byte[] key = new byte[16];
-        secureRandom.nextBytes(key);
-        SecretKey secretKey = new SecretKeySpec(key, "AES");
-
-        // creating IV for AES
-        byte[] iv = new byte[12]; //NEVER REUSE THIS IV WITH SAME KEY
-        secureRandom.nextBytes(iv);
-
-        // creating the cipher
-        final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-        GCMParameterSpec parameterSpec = new GCMParameterSpec(128, iv); //128 bit auth tag length
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey, parameterSpec);
-    }*/
-
     private SecretKey generateMasterKey() {
         // creating AES
         byte[] key = new byte[16];
@@ -513,6 +472,38 @@ public class Crypto {
         keyGenerator.init(specBuilder.build());
 
         return keyGenerator.generateKey();
+    }
+
+    @StringDef({PROTECTION_MODE_NONE, PROTECTION_MODE_PIN, PROTECTION_MODE_PASSWORD, PROTECTION_MODE_BIO_PIN, PROTECTION_MODE_BIO_PASSWORD})
+    @interface ProtectionMode {
+    }
+
+    /*private void createCipher() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException {
+        // creating AES
+        byte[] key = new byte[16];
+        secureRandom.nextBytes(key);
+        SecretKey secretKey = new SecretKeySpec(key, "AES");
+
+        // creating IV for AES
+        byte[] iv = new byte[12]; //NEVER REUSE THIS IV WITH SAME KEY
+        secureRandom.nextBytes(iv);
+
+        // creating the cipher
+        final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        GCMParameterSpec parameterSpec = new GCMParameterSpec(128, iv); //128 bit auth tag length
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey, parameterSpec);
+    }*/
+
+    @IntDef({Cipher.ENCRYPT_MODE, Cipher.WRAP_MODE})
+    @interface CipherPurposeWrite {
+    }
+
+    @IntDef({Cipher.DECRYPT_MODE, Cipher.UNWRAP_MODE})
+    @interface CipherPurposeRead {
+    }
+
+    @IntDef({AUTH_MODE_PASSWORD, AUTH_MODE_BIOMETRIC})
+    @interface AuthMode {
     }
 
     public static class ChangeRequest {

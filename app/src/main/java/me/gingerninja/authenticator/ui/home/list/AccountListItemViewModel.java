@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
+
 import me.gingerninja.authenticator.BR;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.Account;
@@ -17,19 +18,11 @@ public class AccountListItemViewModel extends BaseObservable {
     public static final int MODE_IDLE = 0;
     public static final int MODE_DRAG = 1;
     public static final int MODE_EDIT = 2;
-
-    @IntDef({MODE_IDLE, MODE_DRAG, MODE_EDIT})
-    @interface Mode {
-    }
-
     @NonNull
     protected final CodeGenerator codeGenerator;
-
     @NonNull
     protected Account account;
-
     protected AccountMenuItemClickListener menuItemClickListener;
-
     @Mode
     protected int mode = MODE_IDLE;
 
@@ -79,6 +72,10 @@ public class AccountListItemViewModel extends BaseObservable {
     public void setMode(@Mode int mode) {
         this.mode = mode;
         notifyPropertyChanged(BR.mode);
+    }
+
+    @IntDef({MODE_IDLE, MODE_DRAG, MODE_EDIT})
+    @interface Mode {
     }
 
     public interface AccountMenuItemClickListener {

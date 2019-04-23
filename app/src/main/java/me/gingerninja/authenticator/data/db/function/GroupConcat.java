@@ -1,6 +1,7 @@
 package me.gingerninja.authenticator.data.db.function;
 
 import androidx.annotation.Nullable;
+
 import io.requery.query.Expression;
 import io.requery.query.function.Function;
 

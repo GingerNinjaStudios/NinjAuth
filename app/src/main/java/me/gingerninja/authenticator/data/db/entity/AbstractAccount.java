@@ -3,13 +3,14 @@ package me.gingerninja.authenticator.data.db.entity;
 import android.os.Parcel;
 import android.util.Base64;
 
+import androidx.annotation.NonNull;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 
-import androidx.annotation.NonNull;
 import io.requery.Column;
 import io.requery.Entity;
 import io.requery.Generated;
@@ -81,6 +82,23 @@ abstract class AbstractAccount {
     @Column(value = "-1", nullable = false)
     int position = -1;
 
+    public static void restoreFromParcel(@NonNull Account account, @NonNull Parcel parcel) {
+        parcel.setDataPosition(0);
+
+        account.id = parcel.readLong();
+        account.setUid(parcel.readString());
+        account.setTitle(parcel.readString());
+        account.setType(parcel.readString());
+        account.setSource(parcel.readString());
+        account.setAccountName(parcel.readString());
+        account.setSecret(parcel.readString());
+        account.setIssuer(parcel.readString());
+        account.setAlgorithm(parcel.readString());
+        account.setDigits(parcel.readInt());
+        account.setTypeSpecificData(parcel.readLong());
+        account.setPosition(parcel.readInt());
+    }
+
     @NonNull
     public Parcel writeToParcel() {
         Parcel dest = Parcel.obtain();
@@ -99,23 +117,6 @@ abstract class AbstractAccount {
         dest.writeInt(position);
 
         return dest;
-    }
-
-    public static void restoreFromParcel(@NonNull Account account, @NonNull Parcel parcel) {
-        parcel.setDataPosition(0);
-
-        account.id = parcel.readLong();
-        account.setUid(parcel.readString());
-        account.setTitle(parcel.readString());
-        account.setType(parcel.readString());
-        account.setSource(parcel.readString());
-        account.setAccountName(parcel.readString());
-        account.setSecret(parcel.readString());
-        account.setIssuer(parcel.readString());
-        account.setAlgorithm(parcel.readString());
-        account.setDigits(parcel.readInt());
-        account.setTypeSpecificData(parcel.readLong());
-        account.setPosition(parcel.readInt());
     }
 
     @PreInsert

@@ -3,12 +3,13 @@ package me.gingerninja.authenticator.ui.backup;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
 import androidx.databinding.ViewDataBinding;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 import io.requery.query.Tuple;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.adapter.BaseIteratorAdapter;
@@ -17,13 +18,6 @@ import me.gingerninja.authenticator.data.repo.TemporaryRepository;
 import me.gingerninja.authenticator.widget.MaterialSpinner;
 
 public abstract class BaseRestoreCheckableAdapter<T extends ViewDataBinding> extends BaseIteratorAdapter<BaseRestoreCheckableAdapter.BaseRestoreViewHolder<T>, Tuple> {
-    @StringDef({RestoreMode.INSERT, RestoreMode.UPDATE})
-    @Retention(RetentionPolicy.SOURCE)
-    protected @interface RestoreMode {
-        String INSERT = "insert"; // maps @string/restore_mode_insert_value
-        String UPDATE = "update"; // maps @string/restore_mode_update_value
-    }
-
     @NonNull
     protected TemporaryRepository temporaryRepository;
 
@@ -62,6 +56,13 @@ public abstract class BaseRestoreCheckableAdapter<T extends ViewDataBinding> ext
     private boolean onSpinnerChanged(MaterialSpinner view, CharSequence newValue, CharSequence oldValue) {
         onItemRestoreModeChanged((Tuple) view.getTag(), newValue != null ? newValue.toString() : null);
         return true;
+    }
+
+    @StringDef({RestoreMode.INSERT, RestoreMode.UPDATE})
+    @Retention(RetentionPolicy.SOURCE)
+    protected @interface RestoreMode {
+        String INSERT = "insert"; // maps @string/restore_mode_insert_value
+        String UPDATE = "update"; // maps @string/restore_mode_update_value
     }
 
     public static class BaseRestoreViewHolder<T extends ViewDataBinding> extends BindingViewHolder<T> {

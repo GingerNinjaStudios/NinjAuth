@@ -2,10 +2,11 @@ package me.gingerninja.authenticator.data.pojo;
 
 import android.graphics.Color;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import androidx.annotation.NonNull;
 import me.gingerninja.authenticator.data.db.entity.Label;
 import me.gingerninja.authenticator.data.db.entity.TempLabel;
 

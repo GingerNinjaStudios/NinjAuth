@@ -2,14 +2,15 @@ package me.gingerninja.authenticator.ui.settings;
 
 import android.os.Bundle;
 
-import com.takisoft.preferencex.PreferenceFragmentCompat;
-
-import javax.inject.Inject;
-
 import androidx.annotation.Nullable;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
+
+import com.takisoft.preferencex.PreferenceFragmentCompat;
+
+import javax.inject.Inject;
+
 import dagger.android.support.AndroidSupportInjection;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.util.AppSettings;

@@ -1,5 +1,10 @@
 package me.gingerninja.authenticator.util;
 
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
+
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
@@ -13,10 +18,6 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import androidx.annotation.IntRange;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringDef;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.module.timecorrector.TimeCorrector;
 import timber.log.Timber;
@@ -34,13 +35,6 @@ public class CodeGenerator {
     private static final String ALGO_SHA256 = "HmacSHA256";
     private static final String ALGO_SHA512 = "HmacSHA512";
 
-    @StringDef({ALGO_SHA1, ALGO_SHA256, ALGO_SHA512})
-    @interface Algorithm {
-    }
-
-    @NonNull
-    private TimeCorrector timeCorrector;
-
     static {
         BASE32_CHAR_MAP = new HashMap<>();
         for (int i = 0; i < BASE32_ARRAY.length; i++) {
@@ -48,137 +42,12 @@ public class CodeGenerator {
         }
     }
 
+    @NonNull
+    private TimeCorrector timeCorrector;
+
     @Inject
     public CodeGenerator(@NonNull TimeCorrector timeCorrector) {
         this.timeCorrector = timeCorrector;
-    }
-
-    /**
-     * @param secret    the shared secret
-     * @param period    the period in seconds
-     * @param steps     the extra period count (can be negative)
-     * @param algorithm the algorithm to use
-     * @param digits    number of digits to use between 0 and 8
-     * @return the OTP
-     * @throws InvalidKeyException      if the generated key is invalid
-     * @throws NoSuchAlgorithmException if the given crypto algorithm is non-existent
-     */
-    private long getTOTP(@NonNull String secret, long period, long steps, @NonNull @Algorithm String algorithm, @IntRange(from = 1) int digits) throws InvalidKeyException, NoSuchAlgorithmException {
-        //    long value = -1; // 18446744073709551615
-        //    BigDecimal maxLong = new BigDecimal(Long.MAX_VALUE).add(BigDecimal.ONE).multiply(new BigDecimal(2));
-        //    BigDecimal bigValue = new BigDecimal(value);
-        //    BigDecimal actualValue = (value < 0) ? bigValue.add(maxLong) : bigValue;
-        long T = (long) (Math.floor(timeCorrector.getCurrentTime(TimeUnit.SECONDS) / period) + steps);
-
-        StringBuilder timeStr = new StringBuilder(Long.toHexString(T).toUpperCase());
-        while (timeStr.length() < 16) {
-            timeStr.insert(0, "0");
-        }
-
-        return getHOTP(secret, hexToBytes(timeStr.toString()), algorithm, digits);
-    }
-
-    private long getHOTP(@NonNull String secret, long data, @NonNull @Algorithm String algorithm, @IntRange(from = 1) int digits) throws InvalidKeyException, NoSuchAlgorithmException {
-        ByteBuffer buffer = ByteBuffer.allocate(8);
-        //buffer.order(ByteOrder.BIG_ENDIAN);
-        buffer.putLong(data);
-
-        return getHOTP(secret, buffer.array(), algorithm, digits);
-    }
-
-    private long getHOTP(@NonNull String secret, byte[] data, @NonNull @Algorithm String algorithm, @IntRange(from = 1) int digits) throws InvalidKeyException, NoSuchAlgorithmException {
-        byte[] hash = getRawHMAC(data, decodeBase32(secret), algorithm);
-
-        // DT
-        int offset = hash[hash.length - 1] & 0xf;
-
-        int binary =
-                ((hash[offset] & 0x7f) << 24) |
-                        ((hash[offset + 1] & 0xff) << 16) |
-                        ((hash[offset + 2] & 0xff) << 8) |
-                        (hash[offset + 3] & 0xff);
-
-        // ST
-        return binary % DIGITS_POWER[digits];
-        //return binary % (long) Math.pow(10, digits);
-    }
-
-    public long getRemainingTime(@NonNull Account account, TimeUnit timeUnit) {
-        long period = timeUnit.convert(Math.max(account.getTypeSpecificData(), 1), TimeUnit.SECONDS);
-        long time = timeCorrector.getCurrentTime(timeUnit);
-        long fracturedTime = (time / period) * period;
-
-        return period - (time - fracturedTime);
-    }
-
-    public String getCode(@NonNull Account account) {
-        final String secret = account.getSecret();
-        final int digits = account.getDigits();
-        final String algo = getAccountAlgorithm(account);
-
-        long code;
-
-        try {
-            switch (account.getType()) {
-                case Account.TYPE_HOTP:
-                    code = getHOTP(secret, account.getTypeSpecificData(), algo, digits);
-                    break;
-                case Account.TYPE_TOTP:
-                    code = getTOTP(secret, account.getTypeSpecificData(), 0, algo, digits);
-                    break;
-                default:
-                    throw new IllegalArgumentException("No suitable account type found: " + account.getType());
-            }
-
-            return Long.toString(code);
-        } catch (Exception e) {
-            Timber.e(e, "Error while generating OTP");
-        }
-        return null;
-    }
-
-    @Nullable
-    public String getFormattedCode(@NonNull Account account) {
-        String code = getCode(account);
-
-        if (code != null) {
-            code = formatCode(code, account.getDigits());
-        }
-
-        return code;
-    }
-
-    @NonNull
-    public String formatCode(String code, @IntRange(from = 1) int digits) {
-        StringBuilder stringBuilder = new StringBuilder(digits);
-        stringBuilder.append(code);
-
-        while (stringBuilder.length() < digits) {
-            stringBuilder.insert(0, "0");
-        }
-
-        if (digits > 3) {
-            switch (digits) {
-                case 4:
-                    stringBuilder.insert(2, ' ');
-                    break;
-                case 5:
-                case 6:
-                    stringBuilder.insert(3, ' ');
-                    break;
-                case 7:
-                    stringBuilder.insert(2, ' ');
-                    stringBuilder.insert(6, ' ');
-                    break;
-                case 8:
-                    stringBuilder.insert(3, ' ');
-                    stringBuilder.insert(6, ' ');
-                    break;
-
-            }
-        }
-
-        return stringBuilder.toString();
     }
 
     private static String getAccountAlgorithm(@NonNull Account account) {
@@ -194,15 +63,6 @@ public class CodeGenerator {
         throw new IllegalArgumentException("No suitable algorithm found: " + account.getAlgorithm());
     }
 
-    /*public static byte[] longToBytes(long l) {
-        byte[] result = new byte[Long.SIZE / Byte.SIZE];
-        for (int i = 7; i >= 0; i--) {
-            result[i] = (byte) (l & 0xFF);
-            l >>= Byte.SIZE;
-        }
-        return result;
-    }*/
-
     @NonNull
     private static byte[] getRawHMAC(@NonNull byte[] data, @NonNull byte[] key, @NonNull @Algorithm String algorithm) throws NoSuchAlgorithmException, InvalidKeyException {
         SecretKeySpec signingKey = new SecretKeySpec(key, algorithm); // algorithm was "RAW" here?
@@ -216,17 +76,6 @@ public class CodeGenerator {
     private static String getHMAC(@NonNull byte[] data, @NonNull byte[] key, @NonNull @Algorithm String algorithm) throws NoSuchAlgorithmException, InvalidKeyException {
         return bytesToHex(getRawHMAC(data, key, algorithm));
     }
-
-    /*@NonNull
-    private static String toHexString(@NonNull byte[] bytes) {
-        Formatter formatter = new Formatter();
-
-        for (byte b : bytes) {
-            formatter.format("%02x", b);
-        }
-
-        return formatter.toString();
-    }*/
 
     @NonNull
     private static String bytesToHex(@NonNull byte[] bytes) {
@@ -299,5 +148,157 @@ public class CodeGenerator {
         }
 
         return true;
+    }
+
+    /**
+     * @param secret    the shared secret
+     * @param period    the period in seconds
+     * @param steps     the extra period count (can be negative)
+     * @param algorithm the algorithm to use
+     * @param digits    number of digits to use between 0 and 8
+     * @return the OTP
+     * @throws InvalidKeyException      if the generated key is invalid
+     * @throws NoSuchAlgorithmException if the given crypto algorithm is non-existent
+     */
+    private long getTOTP(@NonNull String secret, long period, long steps, @NonNull @Algorithm String algorithm, @IntRange(from = 1) int digits) throws InvalidKeyException, NoSuchAlgorithmException {
+        //    long value = -1; // 18446744073709551615
+        //    BigDecimal maxLong = new BigDecimal(Long.MAX_VALUE).add(BigDecimal.ONE).multiply(new BigDecimal(2));
+        //    BigDecimal bigValue = new BigDecimal(value);
+        //    BigDecimal actualValue = (value < 0) ? bigValue.add(maxLong) : bigValue;
+        long T = (long) (Math.floor(timeCorrector.getCurrentTime(TimeUnit.SECONDS) / period) + steps);
+
+        StringBuilder timeStr = new StringBuilder(Long.toHexString(T).toUpperCase());
+        while (timeStr.length() < 16) {
+            timeStr.insert(0, "0");
+        }
+
+        return getHOTP(secret, hexToBytes(timeStr.toString()), algorithm, digits);
+    }
+
+    private long getHOTP(@NonNull String secret, long data, @NonNull @Algorithm String algorithm, @IntRange(from = 1) int digits) throws InvalidKeyException, NoSuchAlgorithmException {
+        ByteBuffer buffer = ByteBuffer.allocate(8);
+        //buffer.order(ByteOrder.BIG_ENDIAN);
+        buffer.putLong(data);
+
+        return getHOTP(secret, buffer.array(), algorithm, digits);
+    }
+
+    /*public static byte[] longToBytes(long l) {
+        byte[] result = new byte[Long.SIZE / Byte.SIZE];
+        for (int i = 7; i >= 0; i--) {
+            result[i] = (byte) (l & 0xFF);
+            l >>= Byte.SIZE;
+        }
+        return result;
+    }*/
+
+    private long getHOTP(@NonNull String secret, byte[] data, @NonNull @Algorithm String algorithm, @IntRange(from = 1) int digits) throws InvalidKeyException, NoSuchAlgorithmException {
+        byte[] hash = getRawHMAC(data, decodeBase32(secret), algorithm);
+
+        // DT
+        int offset = hash[hash.length - 1] & 0xf;
+
+        int binary =
+                ((hash[offset] & 0x7f) << 24) |
+                        ((hash[offset + 1] & 0xff) << 16) |
+                        ((hash[offset + 2] & 0xff) << 8) |
+                        (hash[offset + 3] & 0xff);
+
+        // ST
+        return binary % DIGITS_POWER[digits];
+        //return binary % (long) Math.pow(10, digits);
+    }
+
+    public long getRemainingTime(@NonNull Account account, TimeUnit timeUnit) {
+        long period = timeUnit.convert(Math.max(account.getTypeSpecificData(), 1), TimeUnit.SECONDS);
+        long time = timeCorrector.getCurrentTime(timeUnit);
+        long fracturedTime = (time / period) * period;
+
+        return period - (time - fracturedTime);
+    }
+
+    /*@NonNull
+    private static String toHexString(@NonNull byte[] bytes) {
+        Formatter formatter = new Formatter();
+
+        for (byte b : bytes) {
+            formatter.format("%02x", b);
+        }
+
+        return formatter.toString();
+    }*/
+
+    public String getCode(@NonNull Account account) {
+        final String secret = account.getSecret();
+        final int digits = account.getDigits();
+        final String algo = getAccountAlgorithm(account);
+
+        long code;
+
+        try {
+            switch (account.getType()) {
+                case Account.TYPE_HOTP:
+                    code = getHOTP(secret, account.getTypeSpecificData(), algo, digits);
+                    break;
+                case Account.TYPE_TOTP:
+                    code = getTOTP(secret, account.getTypeSpecificData(), 0, algo, digits);
+                    break;
+                default:
+                    throw new IllegalArgumentException("No suitable account type found: " + account.getType());
+            }
+
+            return Long.toString(code);
+        } catch (Exception e) {
+            Timber.e(e, "Error while generating OTP");
+        }
+        return null;
+    }
+
+    @Nullable
+    public String getFormattedCode(@NonNull Account account) {
+        String code = getCode(account);
+
+        if (code != null) {
+            code = formatCode(code, account.getDigits());
+        }
+
+        return code;
+    }
+
+    @NonNull
+    public String formatCode(String code, @IntRange(from = 1) int digits) {
+        StringBuilder stringBuilder = new StringBuilder(digits);
+        stringBuilder.append(code);
+
+        while (stringBuilder.length() < digits) {
+            stringBuilder.insert(0, "0");
+        }
+
+        if (digits > 3) {
+            switch (digits) {
+                case 4:
+                    stringBuilder.insert(2, ' ');
+                    break;
+                case 5:
+                case 6:
+                    stringBuilder.insert(3, ' ');
+                    break;
+                case 7:
+                    stringBuilder.insert(2, ' ');
+                    stringBuilder.insert(6, ' ');
+                    break;
+                case 8:
+                    stringBuilder.insert(3, ' ');
+                    stringBuilder.insert(6, ' ');
+                    break;
+
+            }
+        }
+
+        return stringBuilder.toString();
+    }
+
+    @StringDef({ALGO_SHA1, ALGO_SHA256, ALGO_SHA512})
+    @interface Algorithm {
     }
 }

@@ -5,15 +5,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.chip.Chip;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
 import me.gingerninja.authenticator.R;
@@ -29,13 +30,10 @@ public class AccountLabelListAdapter extends RecyclerView.Adapter<AccountLabelLi
 
     @Nullable
     private List<BaseAccountViewModel.LabelData> labels;
-
-    private View.OnClickListener labelRemoveClickListener = v -> onLabelRemoved((Label) v.getTag(), -1);
-    private View.OnClickListener labelAddClickListener = this::onLabelAddClicked;
-
     @Nullable
     private LabelClickListener labelClickListener;
-
+    private View.OnClickListener labelRemoveClickListener = v -> onLabelRemoved((Label) v.getTag(), -1);
+    private View.OnClickListener labelAddClickListener = this::onLabelAddClicked;
     private Disposable labelsDisposable;
 
     public AccountLabelListAdapter(@NonNull Single<List<BaseAccountViewModel.LabelData>> labels) {

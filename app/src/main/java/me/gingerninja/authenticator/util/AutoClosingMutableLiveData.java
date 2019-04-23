@@ -1,6 +1,7 @@
 package me.gingerninja.authenticator.util;
 
 import androidx.lifecycle.MutableLiveData;
+
 import timber.log.Timber;
 
 public class AutoClosingMutableLiveData<T extends AutoCloseable> extends MutableLiveData<T> {

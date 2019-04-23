@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.databinding.SetupPageThemeSelectorBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;

@@ -1,11 +1,12 @@
 package me.gingerninja.authenticator.data.db.wrapper;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Set;
 
-import androidx.annotation.NonNull;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.data.db.entity.Label;
 
@@ -47,23 +48,13 @@ public class LabelWrapper extends Label implements Comparable<LabelWrapper> {
     }
 
     @Override
-    public int getColor() {
-        return color;
-    }
-
-    @Override
-    public String getIcon() {
-        return icon;
-    }
-
-    @Override
-    public int getPosition() {
-        return position;
-    }
-
-    @Override
     public LabelWrapper setName(String name) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getColor() {
+        return color;
     }
 
     @Override
@@ -72,8 +63,18 @@ public class LabelWrapper extends Label implements Comparable<LabelWrapper> {
     }
 
     @Override
+    public String getIcon() {
+        return icon;
+    }
+
+    @Override
     public LabelWrapper setIcon(String icon) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getPosition() {
+        return position;
     }
 
     @Override

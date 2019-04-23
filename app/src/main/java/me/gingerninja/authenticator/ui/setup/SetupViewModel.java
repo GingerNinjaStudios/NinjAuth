@@ -2,11 +2,12 @@ package me.gingerninja.authenticator.ui.setup;
 
 import android.content.Context;
 
-import javax.inject.Inject;
-
 import androidx.annotation.NonNull;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.ViewModel;
+
+import javax.inject.Inject;
+
 import me.gingerninja.authenticator.R;
 
 public class SetupViewModel extends ViewModel {

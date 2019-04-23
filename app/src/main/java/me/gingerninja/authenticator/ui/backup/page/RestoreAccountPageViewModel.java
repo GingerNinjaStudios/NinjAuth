@@ -1,9 +1,10 @@
 package me.gingerninja.authenticator.ui.backup.page;
 
-import javax.inject.Inject;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
+
+import javax.inject.Inject;
+
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.requery.query.Tuple;

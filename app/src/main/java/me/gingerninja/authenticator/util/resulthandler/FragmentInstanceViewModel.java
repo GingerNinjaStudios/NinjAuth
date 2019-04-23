@@ -1,9 +1,9 @@
 package me.gingerninja.authenticator.util.resulthandler;
 
-import java.util.UUID;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
+
+import java.util.UUID;
 
 public class FragmentInstanceViewModel extends ViewModel {
     final String who = UUID.randomUUID().toString();

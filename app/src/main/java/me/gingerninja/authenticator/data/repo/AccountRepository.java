@@ -1,11 +1,12 @@
 package me.gingerninja.authenticator.data.repo;
 
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import androidx.annotation.NonNull;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;

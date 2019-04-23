@@ -8,16 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.material.snackbar.Snackbar;
-import com.takisoft.preferencex.PreferenceFragmentCompat;
-
-import javax.inject.Inject;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceScreen;
+
+import com.google.android.material.snackbar.Snackbar;
+import com.takisoft.preferencex.PreferenceFragmentCompat;
+
+import javax.inject.Inject;
+
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.databinding.SettingsFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;

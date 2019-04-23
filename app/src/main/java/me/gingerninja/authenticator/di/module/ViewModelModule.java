@@ -3,6 +3,7 @@ package me.gingerninja.authenticator.di.module;
 
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+
 import dagger.Binds;
 import dagger.Module;
 import dagger.multibindings.IntoMap;

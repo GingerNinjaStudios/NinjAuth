@@ -27,16 +27,13 @@ import me.gingerninja.authenticator.ui.home.list.AccountListItemViewModel;
 import timber.log.Timber;
 
 public class AccountListFragment extends BaseFragment<AccountListFragmentBinding> implements BottomNavigationFragment.BottomNavigationListener, AccountListItemViewModel.AccountMenuItemClickListener {
-    private static final int REQUEST_CODE_ADD = 0x1000;
-    private static final int REQUEST_CODE_EDIT = 0x1001;
-
-    private static final String BOTTOM_LABELS_TAG = "bottomLabelsFrag";
-    private static final String ADD_ACCOUNT_TAG = "newAccount";
-
     public static final String ACCOUNT_OP_ADD = "accountAdded";
     public static final String ACCOUNT_OP_UPDATE = "accountUpdated";
     public static final String ACCOUNT_OP_DELETE = "accountDeleted";
-
+    private static final int REQUEST_CODE_ADD = 0x1000;
+    private static final int REQUEST_CODE_EDIT = 0x1001;
+    private static final String BOTTOM_LABELS_TAG = "bottomLabelsFrag";
+    private static final String ADD_ACCOUNT_TAG = "newAccount";
     @Inject
     AccountListIteratorAdapter accountListAdapter;
 

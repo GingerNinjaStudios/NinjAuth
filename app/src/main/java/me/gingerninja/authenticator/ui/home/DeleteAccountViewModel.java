@@ -3,15 +3,16 @@ package me.gingerninja.authenticator.ui.home;
 import android.os.Bundle;
 import android.view.View;
 
-import java.util.Objects;
-
-import javax.inject.Inject;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import java.util.Objects;
+
+import javax.inject.Inject;
+
 import me.gingerninja.authenticator.data.repo.AccountRepository;
 import timber.log.Timber;
 

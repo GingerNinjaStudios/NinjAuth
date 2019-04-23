@@ -1,8 +1,8 @@
 package me.gingerninja.authenticator.module;
 
-import com.google.android.play.core.splitinstall.SplitInstallSessionState;
-
 import androidx.annotation.NonNull;
+
+import com.google.android.play.core.splitinstall.SplitInstallSessionState;
 
 public class ModuleInstallException extends RuntimeException {
     @NonNull

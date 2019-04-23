@@ -3,14 +3,15 @@ package me.gingerninja.authenticator.data.db.entity;
 import android.os.Parcel;
 import android.util.Base64;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
 import io.requery.Column;
 import io.requery.Entity;
 import io.requery.Generated;
@@ -44,6 +45,31 @@ abstract class AbstractLabel {
 
     @ManyToMany
     Set<Account> accounts;
+
+    public static void restoreFromParcel(@NonNull Label label, @NonNull Parcel parcel) {
+        parcel.setDataPosition(0);
+
+        label.id = parcel.readLong();
+        label.setUid(parcel.readString());
+        label.setName(parcel.readString());
+        label.setIcon(parcel.readString());
+        label.setColor(parcel.readInt());
+        label.setPosition(parcel.readInt());
+    }
+
+    @DrawableRes
+    public static int getIconResourceId(String icon) {
+        if (icon == null) {
+            return 0;
+        }
+
+        switch (icon) {
+            case "work":
+                return R.drawable.label_icon_work;
+            default:
+                return 0;
+        }
+    }
 
     @PreInsert
     void generateUID() {
@@ -91,33 +117,8 @@ abstract class AbstractLabel {
         return dest;
     }
 
-    public static void restoreFromParcel(@NonNull Label label, @NonNull Parcel parcel) {
-        parcel.setDataPosition(0);
-
-        label.id = parcel.readLong();
-        label.setUid(parcel.readString());
-        label.setName(parcel.readString());
-        label.setIcon(parcel.readString());
-        label.setColor(parcel.readInt());
-        label.setPosition(parcel.readInt());
-    }
-
     @DrawableRes
     public int getIconResourceId() {
         return getIconResourceId(icon);
-    }
-
-    @DrawableRes
-    public static int getIconResourceId(String icon) {
-        if (icon == null) {
-            return 0;
-        }
-
-        switch (icon) {
-            case "work":
-                return R.drawable.label_icon_work;
-            default:
-                return 0;
-        }
     }
 }

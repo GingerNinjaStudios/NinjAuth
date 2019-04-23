@@ -4,16 +4,17 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 
-import java.math.BigDecimal;
-
-import javax.inject.Inject;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.ObservableInt;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+
+import java.math.BigDecimal;
+
+import javax.inject.Inject;
+
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import me.gingerninja.authenticator.R;
@@ -31,18 +32,12 @@ public class AccountEditorViewModel extends BaseAccountViewModel {
 
     public static final int MODE_CREATE = 0;
     public static final int MODE_EDIT = 1;
-
-    @IntDef({MODE_CREATE, MODE_EDIT})
-    @interface Mode {
-    }
-
     public Error error = new Error();
+    @Mode
+    public int mode;
     private Disposable saveDisposable;
 
     private MutableLiveData<SingleEvent<String>> navAction = new MutableLiveData<>();
-
-    @Mode
-    public int mode;
 
     @Inject
     public AccountEditorViewModel(@NonNull AccountRepository accountRepository) {
@@ -121,6 +116,10 @@ public class AccountEditorViewModel extends BaseAccountViewModel {
     @Override
     protected Data createData() {
         return new EditableData();
+    }
+
+    @IntDef({MODE_CREATE, MODE_EDIT})
+    @interface Mode {
     }
 
     public static class Error {
