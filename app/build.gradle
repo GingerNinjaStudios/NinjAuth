@@ -38,11 +38,14 @@ dependencies {
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     api 'androidx.appcompat:appcompat:1.1.0-alpha04'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha4'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha5'
     testImplementation 'junit:junit:4.13-beta-2'
-    androidTestImplementation 'androidx.test:runner:1.2.0-alpha03'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0-alpha03'
+    androidTestImplementation 'androidx.test:runner:1.2.0-alpha04'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0-alpha04'
 
+    api 'androidx.arch.core:core-common:2.1.0-alpha02'
+    api 'androidx.arch.core:core-runtime:2.1.0-alpha02'
+    implementation 'androidx.fragment:fragment:1.1.0-alpha07'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0-alpha01'
     implementation 'androidx.drawerlayout:drawerlayout:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha04'

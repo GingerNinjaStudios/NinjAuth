@@ -26,11 +26,27 @@ import me.gingerninja.authenticator.ui.base.BaseFragment;
 import me.gingerninja.authenticator.util.SingleEvent;
 import timber.log.Timber;
 
-public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> implements OnBackPressedCallback {
+public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> {
     @Inject
     RestorePagerAdapter pagerAdapter;
 
     private CompositeDisposable disposable = new CompositeDisposable();
+
+    private boolean backCallbackAdded;
+
+    private OnBackPressedCallback backButtonCallback = new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+            ViewPager viewPager = getDataBinding().viewPager;
+            int currItem = viewPager.getCurrentItem();
+
+            if (currItem > 0) {
+                viewPager.setCurrentItem(currItem - 1, true);
+            }else{
+                setResultAndLeave(RESULT_CANCELED);
+            }
+        }
+    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,7 +54,16 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> implem
 
         FragmentActivity activity = getActivity();
         assert activity != null;
-        activity.addOnBackPressedCallback(this, this);
+        //activity.getOnBackPressedDispatcher().addCallback(this, backButtonCallback);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!backCallbackAdded) {
+            requireActivity().getOnBackPressedDispatcher().addCallback(this, backButtonCallback);
+            backCallbackAdded = true;
+        }
     }
 
     @Override
@@ -90,11 +115,13 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> implem
     }
 
     private void handleBackButton(View v) {
-        if (getDataBinding().viewPager.getCurrentItem() <= 0) {
+        requireActivity().onBackPressed();
+        /*if (getDataBinding().viewPager.getCurrentItem() <= 0) {
             setResultAndLeave(RESULT_CANCELED);
         } else {
-            handleOnBackPressed();
-        }
+            //handleOnBackPressed();
+            requireActivity().onBackPressed();
+        }*/
     }
 
     private void handleRestoreComplete() {
@@ -144,19 +171,5 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> implem
     @Override
     protected int getLayoutId() {
         return R.layout.restore_fragment;
-    }
-
-    @Override
-    public boolean handleOnBackPressed() {
-        boolean handled = false;
-
-        ViewPager viewPager = getDataBinding().viewPager;
-
-        if (viewPager.getCurrentItem() > 0) {
-            viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true);
-            handled = true;
-        }
-
-        return handled;
     }
 }

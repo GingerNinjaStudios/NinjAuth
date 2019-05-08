@@ -20,7 +20,7 @@ import me.gingerninja.authenticator.databinding.SetupFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
 import me.gingerninja.authenticator.util.AppSettings;
 
-public class SetupFragment extends BaseFragment<SetupFragmentBinding> implements OnBackPressedCallback {
+public class SetupFragment extends BaseFragment<SetupFragmentBinding> {
 
     @Inject
     SetupPagerAdapter pagerAdapter;
@@ -28,13 +28,46 @@ public class SetupFragment extends BaseFragment<SetupFragmentBinding> implements
     @Inject
     AppSettings appSettings;
 
+    private OnBackPressedCallback backButtonCallback = new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+            ViewPager viewPager = getDataBinding().viewPager;
+            int currItem = viewPager.getCurrentItem();
+
+            if (currItem > 0) {
+                viewPager.setCurrentItem(currItem - 1, true);
+            } else {
+                if (appSettings.setTemporaryTheme(null)) {
+                    requireActivity().recreate();
+                }
+                //this.setEnabled(false);
+                //requireActivity().onBackPressed();
+                getNavController().popBackStack();
+            }
+        }
+    };
+
+    private boolean backCallbackAdded;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         FragmentActivity activity = getActivity();
         assert activity != null;
-        activity.addOnBackPressedCallback(this, this);
+
+        // FIXME this is buggy - activity.getOnBackPressedDispatcher().addCallback(this, backButtonCallback);
+
+        //requireFragmentManager().executePendingTransactions();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!backCallbackAdded) {
+            requireActivity().getOnBackPressedDispatcher().addCallback(this, backButtonCallback);
+            backCallbackAdded = true;
+        }
     }
 
     @Override
@@ -50,23 +83,6 @@ public class SetupFragment extends BaseFragment<SetupFragmentBinding> implements
         binding.progressIndicator.setDotsClickable(false);
     }
 
-    @Override
-    public boolean handleOnBackPressed() {
-        boolean handled = false;
-
-        ViewPager viewPager = getDataBinding().viewPager;
-
-        if (viewPager.getCurrentItem() > 0) {
-            viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true);
-            handled = true;
-        } else {
-            appSettings.setTemporaryTheme(null);
-            getActivity().recreate();
-        }
-
-        return handled;
-    }
-
     private void handleNextButton(View v) {
         ViewPager viewPager = getDataBinding().viewPager;
 
@@ -80,13 +96,15 @@ public class SetupFragment extends BaseFragment<SetupFragmentBinding> implements
     }
 
     private void handleBackButton(View v) {
-        if (getDataBinding().viewPager.getCurrentItem() <= 0) {
+        requireActivity().onBackPressed();
+        /*if (getDataBinding().viewPager.getCurrentItem() <= 0) {
             appSettings.setTemporaryTheme(null);
             getActivity().recreate();
             getNavController().popBackStack();
         } else {
-            handleOnBackPressed();
-        }
+            //handleOnBackPressed();
+            requireActivity().onBackPressed();
+        }*/
     }
 
     @Override

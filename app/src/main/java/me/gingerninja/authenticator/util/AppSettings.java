@@ -15,6 +15,7 @@ import javax.inject.Singleton;
 
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.module.ModuleHandler;
+import timber.log.Timber;
 
 @Singleton
 public class AppSettings {
@@ -51,7 +52,17 @@ public class AppSettings {
         }
     }
 
-    public void setTemporaryTheme(@Nullable String theme) {
+    /**
+     * Sets the temporary theme to be used by the app. This is used during the initial setup
+     * process.
+     *
+     * @param theme the theme to be used
+     * @return Returns {@code true} if the change was made; false otherwise
+     */
+    public boolean setTemporaryTheme(@Nullable String theme) {
+        boolean changed = !TextUtils.equals(theme, temporaryTheme);
+        Timber.v("Setting temporary theme from %s to %s, changed: %s", temporaryTheme, theme, changed);
+
         if (theme == null) {
             temporaryTheme = null;
         } else {
@@ -64,6 +75,8 @@ public class AppSettings {
                     temporaryTheme = getString(R.string.settings_appearance_theme_dark_value);
             }
         }
+
+        return changed;
     }
 
     public boolean isFirstRunComplete() {

@@ -20,6 +20,20 @@ public class AutoClosingMutableLiveData<T extends AutoCloseable> extends Mutable
         }
     }
 
+    public boolean close() {
+        T value = getValue();
+        if (value != null) {
+            try {
+                value.close();
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
