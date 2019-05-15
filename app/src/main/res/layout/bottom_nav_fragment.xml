@@ -56,9 +56,7 @@
         android:id="@+id/navigation_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@null"
+        app:elevation="0dp"
         app:itemIconPadding="24dp"
-        app:itemIconTint="?colorControlNormal"
-        app:itemTextAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
         tools:menu="@menu/navigation_menu" />
 </LinearLayout>
