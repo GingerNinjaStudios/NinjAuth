@@ -2,6 +2,9 @@
     <string name="app_name">NinjAuth</string>
 
     <string name="splash_welcome_msg">Welcome to NinjAuth, the open-source authenticator app!\n\nPlease, continue with the setup where you can enable authentication and auto-backup.</string>
+
+    <string name="btn_next">Next</string>
+    <string name="btn_back">Back</string>
     <string name="btn_skip">Skip</string>
     <string name="btn_splash_next">Continue setup</string>
 

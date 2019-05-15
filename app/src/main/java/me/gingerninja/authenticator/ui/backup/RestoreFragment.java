@@ -75,7 +75,7 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> {
         binding.toolbar.setNavigationOnClickListener(v -> getNavController().navigateUp());
 
         // overcoming MaterialButton's inability to set the icon to the end
-        binding.btnNext.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getActivity(), R.drawable.ic_chevron_next_24dp), null);
+        //binding.btnNext.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getActivity(), R.drawable.ic_chevron_next_24dp), null);
 
         binding.btnPrev.setOnClickListener(this::handleBackButton);
         binding.btnNext.setOnClickListener(this::handleNextButton);
