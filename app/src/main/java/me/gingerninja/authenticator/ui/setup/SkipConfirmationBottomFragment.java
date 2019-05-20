@@ -15,12 +15,12 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.databinding.SkipSetupDialogFragmentBinding;
-import me.gingerninja.authenticator.ui.base.RoundedBottomSheetDialogFragment;
 
-public class SkipConfirmationBottomFragment extends RoundedBottomSheetDialogFragment {
+public class SkipConfirmationBottomFragment extends BottomSheetDialogFragment {
     public static final String FRAGMENT_MANAGER_TAG = "setup.skip.confirmation";
 
     private SkipDialogListener skipListener;
@@ -55,8 +55,6 @@ public class SkipConfirmationBottomFragment extends RoundedBottomSheetDialogFrag
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         SkipSetupDialogFragmentBinding binding = DataBindingUtil.inflate(inflater, R.layout.skip_setup_dialog_fragment, container, false);
         View root = binding.getRoot();
-
-        createRoundedView(root);
 
         binding.btnCancel.setOnClickListener(v -> dismissAllowingStateLoss());
         binding.btnSkip.setOnClickListener(this::onSkipClick);

@@ -115,7 +115,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
         }
 
         binding.appBar.setNavigationOnClickListener(v -> {
-            BottomNavigationFragment.show(R.menu.navigation_menu, R.id.nav_accounts, getChildFragmentManager());
+            BottomNavigationFragment.show(R.menu.navigation_menu, R.id.nav_accounts, R.layout.bottom_nav_header, getChildFragmentManager());
         });
         binding.appBar.inflateMenu(R.menu.account_list_menu);
         binding.appBar.setOnMenuItemClickListener(item -> {

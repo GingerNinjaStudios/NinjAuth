@@ -65,7 +65,7 @@ public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> im
         binding.labelList.setAdapter(labelListAdapter);
 
         binding.appBar.setNavigationOnClickListener(v -> {
-            BottomNavigationFragment.show(R.menu.navigation_menu, R.id.nav_labels, getChildFragmentManager());
+            BottomNavigationFragment.show(R.menu.navigation_menu, R.id.nav_labels, R.layout.bottom_nav_header, getChildFragmentManager());
         });
         binding.appBar.inflateMenu(R.menu.account_list_menu);
         binding.appBar.setOnMenuItemClickListener(item -> {

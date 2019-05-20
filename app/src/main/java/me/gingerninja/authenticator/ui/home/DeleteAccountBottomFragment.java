@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import javax.inject.Inject;
 
@@ -23,9 +24,8 @@ import dagger.android.support.AndroidSupportInjection;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.databinding.DeleteAccountFragmentBinding;
-import me.gingerninja.authenticator.ui.base.RoundedBottomSheetDialogFragment;
 
-public class DeleteAccountBottomFragment extends RoundedBottomSheetDialogFragment {
+public class DeleteAccountBottomFragment extends BottomSheetDialogFragment {
     public static final String FRAGMENT_MANAGER_TAG = "account.delete";
     static final String ARG_ACCOUNT_ID = "accountId";
     static final String ARG_ACCOUNT_TITLE = "accountTitle";
@@ -58,8 +58,6 @@ public class DeleteAccountBottomFragment extends RoundedBottomSheetDialogFragmen
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         DeleteAccountFragmentBinding binding = DataBindingUtil.inflate(inflater, R.layout.delete_account_fragment, container, false);
         View root = binding.getRoot();
-
-        createRoundedView(root);
 
         Bundle args = getArguments();
         assert args != null;

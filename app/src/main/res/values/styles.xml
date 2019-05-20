@@ -12,8 +12,15 @@
         <item name="android:textSize">32sp</item>
     </style>
 
-    <style name="BottomSheet" parent="@style/Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@android:color/transparent</item>
+    <style name="BottomSheet" parent="@style/Widget.MaterialComponents.BottomSheet.Modal">
+        <item name="shapeAppearanceOverlay">@style/BottomSheet.ShapeAppearance</item>
+        <item name="behavior_skipCollapsed">true</item>
+    </style>
+
+    <style name="BottomSheet.ShapeAppearance" parent="@style/ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerSize">8dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
     <style name="TextAppearance.FakeHint" parent="@style/TextAppearance.MaterialComponents.Caption">
