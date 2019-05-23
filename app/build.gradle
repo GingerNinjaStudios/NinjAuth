@@ -81,9 +81,9 @@ dependencies {
     implementation 'net.zetetic:android-database-sqlcipher:4.1.3'
 
     // Apache v2 - https://github.com/requery/requery
-    implementation 'io.requery:requery:1.6.0'
-    implementation 'io.requery:requery-android:1.6.0' // for android
-    annotationProcessor 'io.requery:requery-processor:1.6.0'
+    implementation 'io.requery:requery:1.6.1'
+    implementation 'io.requery:requery-android:1.6.1' // for android
+    annotationProcessor 'io.requery:requery-processor:1.6.1'
 
     // Apache v2 - https://github.com/requery/sqlite-android
     implementation 'io.requery:sqlite-android:3.28.0'

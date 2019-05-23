@@ -9,6 +9,7 @@ import dagger.Module;
 import dagger.multibindings.IntoMap;
 import me.gingerninja.authenticator.di.ViewModelKey;
 import me.gingerninja.authenticator.ui.account.camera.AddAccountFromCameraViewModel;
+import me.gingerninja.authenticator.ui.account.image.AddAccountFromImageViewModel;
 import me.gingerninja.authenticator.ui.backup.RestoreViewModel;
 import me.gingerninja.authenticator.ui.backup.page.RestoreAccountPageViewModel;
 import me.gingerninja.authenticator.ui.backup.page.RestoreLabelPageViewModel;
@@ -37,6 +38,11 @@ public abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(AddAccountFromCameraViewModel.class)
     abstract ViewModel bindAddAccountFromCameraViewModel(AddAccountFromCameraViewModel myViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(AddAccountFromImageViewModel.class)
+    abstract ViewModel bindAddAccountFromImageViewModel(AddAccountFromImageViewModel myViewModel);
 
     @Binds
     @IntoMap

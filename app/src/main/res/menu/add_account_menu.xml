@@ -2,9 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/menu_add_account_from_camera"
-        android:title="@string/account_add_scan_barcode" />
+        android:icon="@drawable/ic_camera_24dp"
+        android:title="@string/account_add_scan_barcode_from_camera" />
+
+    <item
+        android:id="@+id/menu_add_account_from_image"
+        android:icon="@drawable/ic_image_24dp"
+        android:title="@string/account_add_scan_barcode_from_image" />
 
     <item
         android:id="@+id/menu_add_account_manual"
+        android:icon="@drawable/ic_keyboard_24dp"
         android:title="@string/account_add_manual" />
 </menu>

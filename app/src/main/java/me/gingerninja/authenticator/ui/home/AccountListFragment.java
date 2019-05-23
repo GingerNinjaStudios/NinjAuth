@@ -189,6 +189,9 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
                 //getNavController().navigate(R.id.addAccountFromCameraFragment);
                 navigateForResult(REQUEST_CODE_ADD).navigate(R.id.addAccountFromCameraFragment);
                 break;
+            case R.id.menu_add_account_from_image:
+                navigateForResult(REQUEST_CODE_ADD).navigate(R.id.addAccountFromImageFragment);
+                break;
             case R.id.menu_add_account_manual:
                 //getNavController().navigate(R.id.accountEditorFragment);
                 navigateForResult(REQUEST_CODE_ADD).navigate(R.id.accountEditorFragment);

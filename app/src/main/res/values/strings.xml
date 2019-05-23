@@ -23,8 +23,18 @@
     <string name="account_list_item_edit">Edit</string>
     <string name="account_list_item_delete">Delete</string>
 
-    <string name="account_add_scan_barcode">Scan barcode</string>
+    <string name="account_add_scan_barcode_from_camera">Scan barcode with camera</string>
+    <string name="account_add_scan_barcode_from_image">Scan barcode from image</string>
     <string name="account_add_manual">Enter details</string>
+
+    <string name="browse_image">Browse image</string>
+    <string name="state_processing">Processing…</string>
+    <string name="account_from_image_error_title">Could not parse the image</string>
+    <string name="account_from_image_error_unknown_error">Unknown error</string>
+    <string name="account_from_image_error_invalid_image">Unsupported image format</string>
+    <string name="account_from_image_error_no_barcode">No barcode was found</string>
+    <string name="account_from_image_error_too_many_barcode">The image contains more than one barcode</string>
+    <string name="account_from_image_error_not_otp">The detected barcode is not usable for authentication</string>
 
     <string name="no_accounts">You have no accounts saved</string>
     <string name="no_labels_for_account">No available labels were found.</string>

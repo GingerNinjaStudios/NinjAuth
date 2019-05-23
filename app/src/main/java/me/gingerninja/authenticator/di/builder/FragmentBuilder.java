@@ -7,6 +7,7 @@ import me.gingerninja.authenticator.di.module.fragment.LabelListModule;
 import me.gingerninja.authenticator.di.module.fragment.RestoreFragmentModule;
 import me.gingerninja.authenticator.di.module.fragment.SetupFragmentModule;
 import me.gingerninja.authenticator.ui.account.camera.AddAccountFromCameraFragment;
+import me.gingerninja.authenticator.ui.account.image.AddAccountFromImageFragment;
 import me.gingerninja.authenticator.ui.backup.RestoreFragment;
 import me.gingerninja.authenticator.ui.backup.RestorePasswordDialogFragment;
 import me.gingerninja.authenticator.ui.backup.page.RestoreAccountPageFragment;
@@ -51,6 +52,9 @@ public abstract class FragmentBuilder {
 
     @ContributesAndroidInjector
     abstract AddAccountFromCameraFragment bindAddAccountFromCameraFragment();
+
+    @ContributesAndroidInjector
+    abstract AddAccountFromImageFragment bindAddAccountFromImageFragment();
 
     @ContributesAndroidInjector
     abstract AccountEditorFragment bindAccountEditorFragment();

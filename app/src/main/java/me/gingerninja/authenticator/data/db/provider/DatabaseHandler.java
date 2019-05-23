@@ -13,7 +13,7 @@ import io.requery.sql.StatementListener;
 import io.requery.sql.TableCreationMode;
 import me.gingerninja.authenticator.BuildConfig;
 import me.gingerninja.authenticator.data.db.DbConstants;
-import me.gingerninja.authenticator.data.db.Models;
+import me.gingerninja.authenticator.data.db.entity.Models;
 
 public class DatabaseHandler {
     private final Context context;
