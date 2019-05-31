@@ -2,8 +2,64 @@
 
 buildscript {
     ext {
-        kotlin_version = '1.3.21'
-        nav_version = '2.1.0-alpha04'
+        compileSdkVersion = 28
+        minSdkVersion = 21
+        targetSdkVersion = 28
+
+        kotlinVersion = '1.3.21'
+
+        junitVersion = '4.13-beta-2'
+        testRunnerVersion = '1.2.0-beta01'
+        espressoVersion = '3.2.0-beta01'
+
+        androidX = [
+                annotation           : '1.1.0-rc01', // done
+                appcompat            : '1.1.0-alpha05', // done
+                archCore             : '2.1.0-beta01',// done
+                biometric            : '1.0.0-alpha04', //done
+                cardView             : '1.0.0',
+                contstraintlayout    : '2.0.0-beta1', // done
+                coordinatorlayout    : '1.1.0-alpha01', // done
+                core                 : '1.1.0-alpha05',
+                drawerlayout         : '1.0.0', // done
+                fragment             : '1.1.0-alpha09', // done
+                lifecycle            : '2.2.0-alpha01', // done
+                navigation           : '2.1.0-alpha04', // done
+                palette              : '1.0.0', // done
+                preference           : '1.1.0-alpha05', // done
+                recyclerview         : '1.1.0-alpha05', // done
+                recyclerviewSelection: '1.1.0-alpha05', // done
+                transition           : '1.0.1',
+                vectorDrawable       : '1.1.0-alpha01',
+                viewpager2           : '1.0.0-alpha02'
+        ]
+
+        playVersion = [
+                core  : '1.6.0',
+                vision: '17.0.2'
+        ]
+
+        takisoftVersion = [
+                preferencex: '1.1.0-alpha05',
+                colorpicker: '1.0.0'
+        ]
+
+        materialComponentsVersion = '1.1.0-alpha07'
+
+        libVersions = [
+                sqlCipher                : '4.1.3',
+                requery                  : '1.6.1',
+                sqlite                   : '3.28.0',
+                dagger                   : '2.19',
+                rxAndroid                : '2.1.1',
+                rxJava                   : '2.2.8',
+                timber                   : '4.7.1',
+                dotsindicator            : '3.0.3',
+                circularProgressIndicator: '1.3.0',
+                zip4j                    : '1.3.3',
+                zxing                    : '3.3.3',
+                gson                     : '2.8.5'
+        ]
     }
 
     repositories {
@@ -12,8 +68,8 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.4.1'
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:${androidX.navigation}"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 
 
         // NOTE: Do not place your application dependencies here; they belong

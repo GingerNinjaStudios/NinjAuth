@@ -4,11 +4,11 @@ apply plugin: 'kotlin-android'
 apply plugin: 'androidx.navigation.safeargs'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "me.gingerninja.authenticator"
-        minSdkVersion 21
-        targetSdkVersion 28
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "0.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -37,86 +37,87 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    api 'androidx.appcompat:appcompat:1.1.0-alpha05'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta1'
-    testImplementation 'junit:junit:4.13-beta-2'
-    androidTestImplementation 'androidx.test:runner:1.2.0-beta01'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0-beta01'
 
-    api 'androidx.arch.core:core-common:2.1.0-beta01'
-    api 'androidx.arch.core:core-runtime:2.1.0-beta01'
-    implementation 'androidx.fragment:fragment:1.1.0-alpha09'
-    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0-alpha01'
-    implementation 'androidx.drawerlayout:drawerlayout:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha05'
-    implementation 'androidx.recyclerview:recyclerview-selection:1.1.0-alpha05'
-    implementation 'androidx.preference:preference:1.1.0-alpha05'
-    implementation 'androidx.palette:palette:1.0.0'
-    api 'androidx.annotation:annotation:1.1.0-rc01'
-    implementation 'androidx.biometric:biometric:1.0.0-alpha04'
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test:runner:$testRunnerVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+
+    api "androidx.appcompat:appcompat:${androidX.appcompat}"
+    implementation "androidx.constraintlayout:constraintlayout:${androidX.contstraintlayout}"
+    api "androidx.arch.core:core-common:${androidX.archCore}"
+    api "androidx.arch.core:core-runtime:${androidX.archCore}"
+    implementation "androidx.fragment:fragment:${androidX.fragment}"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:${androidX.coordinatorlayout}"
+    implementation "androidx.drawerlayout:drawerlayout:${androidX.drawerlayout}"
+    implementation "androidx.recyclerview:recyclerview:${androidX.recyclerview}"
+    implementation "androidx.recyclerview:recyclerview-selection:${androidX.recyclerviewSelection}"
+    implementation "androidx.preference:preference:${androidX.preference}"
+    implementation "androidx.palette:palette:${androidX.palette}"
+    api "androidx.annotation:annotation:${androidX.annotation}"
+    implementation "androidx.biometric:biometric:${androidX.biometric}"
 
     // Android Architecture
-    implementation 'androidx.lifecycle:lifecycle-runtime:2.2.0-alpha01'
-    implementation 'androidx.lifecycle:lifecycle-common-java8:2.2.0-alpha01'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha01'
-    annotationProcessor 'androidx.lifecycle:lifecycle-compiler:2.2.0-alpha01'
-    implementation "androidx.navigation:navigation-fragment:$nav_version"
-    implementation "androidx.navigation:navigation-ui:$nav_version"
+    implementation "androidx.lifecycle:lifecycle-runtime:${androidX.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-common-java8:${androidX.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-extensions:${androidX.lifecycle}"
+    annotationProcessor "androidx.lifecycle:lifecycle-compiler:${androidX.lifecycle}"
+    implementation "androidx.navigation:navigation-fragment:${androidX.navigation}"
+    implementation "androidx.navigation:navigation-ui:${androidX.navigation}"
 
-    implementation 'com.google.android.play:core:1.5.0'
+    implementation "com.google.android.play:core:${playVersion.core}"
 
     // Apache v2 - https://github.com/takisoft/preferencex-android
-    implementation 'com.takisoft.preferencex:preferencex:1.1.0-alpha05'
+    implementation "com.takisoft.preferencex:preferencex:${takisoftVersion.preferencex}"
 
     // Apache v2 - https://github.com/Gericop/ColorPicker
-    implementation 'com.takisoft.colorpicker:colorpicker:1.0.0'
+    implementation "com.takisoft.colorpicker:colorpicker:${takisoftVersion.colorpicker}"
 
     // Mobile Vision API
-    implementation 'com.google.android.gms:play-services-vision:17.0.2'
+    implementation "com.google.android.gms:play-services-vision:${playVersion.vision}"
 
     // Apache v2 - https://github.com/material-components/material-components-android
-    implementation 'com.google.android.material:material:1.1.0-alpha06'
+    implementation "com.google.android.material:material:$materialComponentsVersion"
 
     // BSD - https://www.zetetic.net/sqlcipher/sqlcipher-for-android/
-    implementation 'net.zetetic:android-database-sqlcipher:4.1.3'
+    implementation "net.zetetic:android-database-sqlcipher:${libVersions.sqlCipher}"
 
     // Apache v2 - https://github.com/requery/requery
-    implementation 'io.requery:requery:1.6.1'
-    implementation 'io.requery:requery-android:1.6.1' // for android
-    annotationProcessor 'io.requery:requery-processor:1.6.1'
+    implementation "io.requery:requery:${libVersions.requery}"
+    implementation "io.requery:requery-android:${libVersions.requery}" // for android
+    annotationProcessor "io.requery:requery-processor:${libVersions.requery}"
 
     // Apache v2 - https://github.com/requery/sqlite-android
-    implementation 'io.requery:sqlite-android:3.28.0'
+    implementation "io.requery:sqlite-android:${libVersions.sqlite}"
 
     // Apache v2 - https://github.com/google/dagger
-    implementation 'com.google.dagger:dagger:2.19'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.19'
+    implementation "com.google.dagger:dagger:${libVersions.dagger}"
+    annotationProcessor "com.google.dagger:dagger-compiler:${libVersions.dagger}"
 
-    implementation 'com.google.dagger:dagger-android-support:2.19'
-    annotationProcessor 'com.google.dagger:dagger-android-processor:2.19'
+    implementation "com.google.dagger:dagger-android-support:${libVersions.dagger}"
+    annotationProcessor "com.google.dagger:dagger-android-processor:${libVersions.dagger}"
 
     // Apache v2 - https://github.com/ReactiveX/RxAndroid
-    api 'io.reactivex.rxjava2:rxandroid:2.1.1'
-    api 'io.reactivex.rxjava2:rxjava:2.2.8'
+    api "io.reactivex.rxjava2:rxandroid:${libVersions.rxAndroid}"
+    api "io.reactivex.rxjava2:rxjava:${libVersions.rxJava}"
 
     // Apache v2 - https://github.com/JakeWharton/timber
-    api 'com.jakewharton.timber:timber:4.7.1'
+    api "com.jakewharton.timber:timber:${libVersions.timber}"
 
     // Apache v2 - https://github.com/tommybuonomo/dotsindicator
-    implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:3.0.3'
+    implementation "com.tbuonomo.andrui:viewpagerdotsindicator:${libVersions.dotsindicator}"
 
     // Apache v2 - https://github.com/antonKozyriatskyi/CircularProgressIndicator
-    implementation 'com.github.antonKozyriatskyi:CircularProgressIndicator:1.3.0'
+    implementation "com.github.antonKozyriatskyi:CircularProgressIndicator:${libVersions.circularProgressIndicator}"
 
     // Apache v2 - http://www.lingala.net/zip4j.html
-    implementation 'net.lingala.zip4j:zip4j:1.3.3'
+    implementation "net.lingala.zip4j:zip4j:${libVersions.zip4j}"
 
     // Apache v2 - https://github.com/zxing/zxing
-    implementation 'com.google.zxing:core:3.3.3'
+    implementation "com.google.zxing:core:${libVersions.zxing}"
 
     // Apache v2 - https://github.com/google/gson
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation "com.google.code.gson:gson:${libVersions.gson}"
     //compile "androidx.core:core-ktx:1.0.2"
     //compile "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0-alpha01"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
 }
