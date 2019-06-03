@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
         FragmentResultListener.registerNavController(this, navController);
 
-        if (binding.navigationView != null && binding.drawerLayout != null) {
+        if (binding.navigationView != null && drawerLayout != null) {
             //NavigationUI.setupWithNavController(binding.navigationView, navController);
             NavigationView navView = binding.navigationView;
 
@@ -97,6 +97,29 @@ public class MainActivity extends AppCompatActivity {
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                 }
             });
+
+            navView.setNavigationItemSelectedListener(item -> {
+                        switch (item.getItemId()) {
+                            case R.id.nav_accounts:
+                                if (!item.isChecked()) {
+                                    navController.navigate(R.id.accountListFragment);
+                                }
+                                break;
+                            case R.id.nav_labels:
+                                if (!item.isChecked()) {
+                                    navController.navigate(R.id.labelListFragment);
+                                }
+                                break;
+                            case R.id.nav_settings:
+                                navController.navigate(R.id.settingsFragment);
+                                break;
+                        }
+
+                        drawerLayout.closeDrawers();
+
+                        return true;
+                    }
+            );
         }
 
         timeCorrector.initExternalModule();
