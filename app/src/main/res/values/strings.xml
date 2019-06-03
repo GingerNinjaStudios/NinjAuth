@@ -23,6 +23,7 @@
     <string name="account_list_item_edit">Edit</string>
     <string name="account_list_item_delete">Delete</string>
 
+    <string name="account_add_title">Add new account</string>
     <string name="account_add_scan_barcode_from_camera">Scan barcode with camera</string>
     <string name="account_add_scan_barcode_from_image">Scan barcode from image</string>
     <string name="account_add_manual">Enter details</string>

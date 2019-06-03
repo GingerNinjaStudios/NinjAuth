@@ -163,7 +163,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
     }
 
     private void showAddNewAccountMenu() {
-        BottomNavigationFragment bottomNavFragment = BottomNavigationFragment.create(R.menu.add_account_menu, 0);
+        BottomNavigationFragment bottomNavFragment = BottomNavigationFragment.create(R.menu.add_account_menu, 0, R.layout.add_account_header);
         bottomNavFragment.show(getChildFragmentManager(), ADD_ACCOUNT_TAG);
     }
 
