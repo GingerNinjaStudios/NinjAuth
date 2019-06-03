@@ -182,7 +182,7 @@ public class Backup {
         if (password != null && password.length > 0) {
             zipParameters.setEncryptFiles(true);
             zipParameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES);
-            zipParameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_128);
+            zipParameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
             zipParameters.setPassword(password);
         }
 
