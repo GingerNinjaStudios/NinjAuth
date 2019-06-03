@@ -104,7 +104,7 @@ public class Crypto {
         features = new Features();
 
         try {
-            keyStore = KeyStore.getInstance("AndroidKeyStore");
+            keyStore = KeyStore.getInstance(KEYSTORE_PROVIDER);
             keyStore.load(null);
         } catch (KeyStoreException e) {
             e.printStackTrace();
