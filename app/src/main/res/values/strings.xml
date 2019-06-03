@@ -28,7 +28,9 @@
     <string name="account_add_manual">Enter details</string>
 
     <string name="browse_image">Browse image</string>
+    <string name="state_opening_picker">Opening picker…</string>
     <string name="state_processing">Processing…</string>
+    <string name="account_from_image_success_title">Everything\'s good</string>
     <string name="account_from_image_error_title">Could not parse the image</string>
     <string name="account_from_image_error_unknown_error">Unknown error</string>
     <string name="account_from_image_error_invalid_image">Unsupported image format</string>

@@ -11,7 +11,6 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableInt;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -50,12 +49,12 @@ public class AddAccountFromImageViewModel extends ViewModel {
 
     private MutableLiveData<SingleEvent<String>> results = new MutableLiveData<>();
 
-    public ObservableBoolean processing = new ObservableBoolean(true);
-    public ObservableBoolean success = new ObservableBoolean(false);
     public ObservableInt errorMsg = new ObservableInt(R.string.account_from_image_error_unknown_error);
 
+    public ObservableInt state = new ObservableInt(State.OPENING_PICKER);
+
     @Inject
-    public AddAccountFromImageViewModel(@NonNull Context context) {
+    AddAccountFromImageViewModel(@NonNull Context context) {
         this.context = context.getApplicationContext();
         detector = new BarcodeDetector.Builder(this.context).setBarcodeFormats(Barcode.QR_CODE).build();
     }
@@ -77,14 +76,14 @@ public class AddAccountFromImageViewModel extends ViewModel {
     }
 
     public void onBrowseClick(View v) {
+        state.set(State.OPENING_PICKER);
         results.setValue(new SingleEvent<>(RESULT_BROWSE));
     }
 
     void processResults(@NonNull Intent data) {
         disposable.clear();
         errorMsg.set(R.string.account_from_image_error_unknown_error);
-        processing.set(true);
-        success.set(false);
+        state.set(State.PROCESSING_IMAGE);
 
         disposable.add(
                 decodeBarcode(data).subscribe(this::handleDetection, this::handleError)
@@ -92,8 +91,7 @@ public class AddAccountFromImageViewModel extends ViewModel {
     }
 
     private void handleDetection(@NonNull String data) {
-        processing.set(false);
-        success.set(true);
+        state.set(State.SUCCESS);
         results.setValue(new SingleEvent<>(RESULT_OK, data));
     }
 
@@ -120,8 +118,7 @@ public class AddAccountFromImageViewModel extends ViewModel {
             errorMsg.set(R.string.account_from_image_error_invalid_image);
         }
 
-        processing.set(false);
-        success.set(false);
+        state.set(State.ERROR);
 
         results.setValue(new SingleEvent<>(RESULT_ERROR, throwable));
     }
@@ -194,5 +191,13 @@ public class AddAccountFromImageViewModel extends ViewModel {
         public int getError() {
             return error;
         }
+    }
+
+    @IntDef({State.OPENING_PICKER, State.PROCESSING_IMAGE, State.SUCCESS, State.ERROR})
+    public @interface State {
+        int OPENING_PICKER = 0;
+        int PROCESSING_IMAGE = 1;
+        int SUCCESS = 2;
+        int ERROR = 3;
     }
 }

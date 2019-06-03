@@ -10,6 +10,8 @@
             type="me.gingerninja.authenticator.ui.account.image.AddAccountFromImageViewModel" />
 
         <import type="android.view.View" />
+
+        <import type="me.gingerninja.authenticator.ui.account.image.AddAccountFromImageViewModel.State" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -20,14 +22,21 @@
         <androidx.constraintlayout.widget.Group
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="@{viewModel.processing ? View.VISIBLE : View.GONE}"
+            android:visibility="@{viewModel.state == State.PROCESSING_IMAGE || viewModel.state == State.OPENING_PICKER ? View.VISIBLE : View.GONE}"
             app:constraint_referenced_ids="progress_bar,progress_processing_tv,btn_cancel"
+            tools:visibility="gone" />
+
+        <androidx.constraintlayout.widget.Group
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{viewModel.state == State.SUCCESS ? View.VISIBLE : View.GONE}"
+            app:constraint_referenced_ids="success_img,success_title"
             tools:visibility="visible" />
 
         <androidx.constraintlayout.widget.Group
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="@{!viewModel.processing &amp;&amp; !viewModel.success ? View.VISIBLE : View.GONE}"
+            android:visibility="@{viewModel.state == State.ERROR ? View.VISIBLE : View.GONE}"
             app:constraint_referenced_ids="error_img,error_title,error_msg,btn_browse"
             tools:visibility="gone" />
 
@@ -53,12 +62,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center"
-            android:text="@string/state_processing"
+            android:text="@{viewModel.state == State.PROCESSING_IMAGE ? @string/state_processing : @string/state_opening_picker}"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
             app:layout_constraintBottom_toTopOf="@id/btn_cancel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/progress_bar" />
+            app:layout_constraintTop_toBottomOf="@+id/progress_bar"
+            tools:text="Opening picker..." />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_cancel"
@@ -72,6 +82,32 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/progress_processing_tv" />
+
+        <!-- Success -->
+
+        <ImageView
+            android:id="@+id/success_img"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            app:layout_constraintBottom_toTopOf="@+id/success_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:srcCompat="@drawable/ic_done_24dp" />
+
+        <TextView
+            android:id="@+id/success_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@string/account_from_image_success_title"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/success_img" />
 
         <!-- Error -->
 
