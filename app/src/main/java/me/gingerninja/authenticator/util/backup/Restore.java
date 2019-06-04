@@ -92,6 +92,7 @@ public class Restore {
         return Single.
                 <Restore>create(emitter -> {
                     try {
+                        repo.prepare().blockingAwait();
                         deletePrevious();
                         transferZipFile();
                         zipFile = new ZipFile(tmpFile);

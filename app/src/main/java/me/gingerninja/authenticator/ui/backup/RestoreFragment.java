@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager.widget.ViewPager;
 
@@ -42,7 +41,7 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> {
 
             if (currItem > 0) {
                 viewPager.setCurrentItem(currItem - 1, true);
-            }else{
+            } else {
                 setResultAndLeave(RESULT_CANCELED);
             }
         }
@@ -84,9 +83,13 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> {
         binding.progressIndicator.setViewPager(binding.viewPager);
         binding.progressIndicator.setDotsClickable(false);
 
+        RestoreViewModel viewModel = getViewModel(RestoreViewModel.class);
+
+        binding.setViewModel(viewModel);
+
         assert getArguments() != null;
         disposable.add(
-                getViewModel(RestoreViewModel.class)
+                viewModel
                         .startRestore(getArguments())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(this::handleRestoreEvents, this::handleRestoreError, this::handleRestoreComplete)

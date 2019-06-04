@@ -176,6 +176,7 @@
     <!-- If these are modified, BaseRestoreCheckableAdapter needs to be updated too -->
     <string name="restore_mode_insert_value" translatable="false">insert</string>
     <string name="restore_mode_update_value" translatable="false">update</string>
+    <string name="restore_processing_file">Processing ZIP file…</string>
 
     <string-array name="restore_mode_selector_entries">
         <item>@string/restore_mode_insert</item>

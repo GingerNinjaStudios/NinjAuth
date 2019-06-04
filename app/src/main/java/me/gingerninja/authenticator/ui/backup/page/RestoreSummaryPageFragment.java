@@ -34,7 +34,7 @@ public class RestoreSummaryPageFragment extends BaseFragment<RestoreSummaryPageF
 
     @Override
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, RestoreSummaryPageFragmentBinding binding) {
-
+        binding.setViewModel(pageViewModel);
     }
 
     /*private void reveal(int color) {

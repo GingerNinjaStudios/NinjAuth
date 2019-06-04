@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.ViewModel;
 
 import net.lingala.zip4j.exception.ZipException;
@@ -20,7 +21,6 @@ import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
-import me.gingerninja.authenticator.data.pojo.BackupFile;
 import me.gingerninja.authenticator.util.SingleEvent;
 import me.gingerninja.authenticator.util.backup.BackupUtils;
 import me.gingerninja.authenticator.util.backup.Restore;
@@ -45,7 +45,9 @@ public class RestoreViewModel extends ViewModel implements WorkUpdateHandler {
     private Uri uri;
 
     @NonNull
-    private BehaviorSubject<SingleEvent<BackupFile>> restoreSubject = BehaviorSubject.create();
+    private BehaviorSubject<SingleEvent> restoreSubject = BehaviorSubject.create();
+
+    public ObservableBoolean processingFile = new ObservableBoolean(true);
 
     @Inject
     RestoreViewModel(@NonNull BackupUtils backupUtils) {
@@ -60,7 +62,7 @@ public class RestoreViewModel extends ViewModel implements WorkUpdateHandler {
     }
 
     @CheckResult
-    Observable<SingleEvent<BackupFile>> startRestore(@NonNull Bundle bundle) {
+    Observable<SingleEvent> startRestore(@NonNull Bundle bundle) {
         /*if (restart && (restoreSubject.hasThrowable() || restoreSubject.hasComplete())) {
             uri = null;
             backupFile = null;
@@ -73,6 +75,7 @@ public class RestoreViewModel extends ViewModel implements WorkUpdateHandler {
         }
 
         restoreInProgress = null;
+        processingFile.set(true);
 
         RestoreFragmentArgs args = RestoreFragmentArgs.fromBundle(bundle);
         uri = args.getUri();
@@ -108,6 +111,7 @@ public class RestoreViewModel extends ViewModel implements WorkUpdateHandler {
                 restoreInProgress.readDataFile(password)
                         .subscribe(() -> {
                             restoreSubject.onNext(new SingleEvent<>(ACTION_DATA_LOADED));
+                            processingFile.set(false);
                             //restoreSubject.onComplete();
                             //restoreInProgress = null;
                         }, throwable -> {
@@ -168,6 +172,7 @@ public class RestoreViewModel extends ViewModel implements WorkUpdateHandler {
     public void handleRequest(@NonNull Completable completable) {
         requestCounter.incrementAndGet();
         completable
+                .observeOn(Schedulers.single())
                 .doOnTerminate(() -> requestCounter.decrementAndGet())
                 .subscribe();
     }
