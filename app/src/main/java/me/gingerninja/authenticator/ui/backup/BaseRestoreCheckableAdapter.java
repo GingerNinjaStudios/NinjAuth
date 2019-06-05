@@ -44,9 +44,14 @@ public abstract class BaseRestoreCheckableAdapter<T extends ViewDataBinding> ext
     public void onBindViewHolder(@NonNull BaseRestoreViewHolder<T> holder, int position) {
         Tuple item = getItem(position);
         holder.bind(item);
+
+        holder.checkbox.setOnCheckedChangeListener(null);
+        holder.spinner.setOnSpinnerChangeListener(null);
+
+        onBindViewHolder(holder, item);
+
         holder.checkbox.setOnCheckedChangeListener(this::onCheckedChanged);
         holder.spinner.setOnSpinnerChangeListener(this::onSpinnerChanged);
-        onBindViewHolder(holder, item);
     }
 
     private void onCheckedChanged(CompoundButton view, boolean isChecked) {

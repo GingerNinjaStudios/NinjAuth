@@ -1,5 +1,6 @@
 package me.gingerninja.authenticator.ui.backup;
 
+import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -12,6 +13,7 @@ import androidx.lifecycle.ViewModel;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.exception.ZipExceptionConstants;
 
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
@@ -19,6 +21,7 @@ import javax.inject.Inject;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import me.gingerninja.authenticator.util.SingleEvent;
@@ -35,6 +38,10 @@ public class RestoreViewModel extends ViewModel implements WorkUpdateHandler {
     @NonNull
     private final BackupUtils backupUtils;
     private AtomicInteger requestCounter = new AtomicInteger(0);
+    private LinkedBlockingQueue<Completable> workQueue = new LinkedBlockingQueue<>();
+
+    private Disposable workDisposable;
+
     @NonNull
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
@@ -49,14 +56,40 @@ public class RestoreViewModel extends ViewModel implements WorkUpdateHandler {
 
     public ObservableBoolean processingFile = new ObservableBoolean(true);
 
+    @SuppressLint("CheckResult")
     @Inject
     RestoreViewModel(@NonNull BackupUtils backupUtils) {
         this.backupUtils = backupUtils;
+
+        workDisposable = Observable
+                .<Completable>create(emitter -> {
+                    Completable completable;
+                    try {
+                        //noinspection InfiniteLoopStatement
+                        while (true) {
+                            emitter.onNext(workQueue.take());
+                        }
+                    } catch (InterruptedException ignored) {
+                    }
+
+                    emitter.onComplete();
+                })
+                .doOnTerminate(() -> {
+                    workQueue.clear();
+                    requestCounter.set(0);
+                })
+                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(completable -> {
+                    //noinspection ThrowableNotThrown,ResultOfMethodCallIgnored
+                    completable.doOnTerminate(() -> requestCounter.decrementAndGet()).blockingGet();
+                });
     }
 
     @Override
     protected void onCleared() {
         super.onCleared();
+        workDisposable.dispose();
         compositeDisposable.dispose();
         cancelRestore();
     }
@@ -170,10 +203,11 @@ public class RestoreViewModel extends ViewModel implements WorkUpdateHandler {
      * @param completable
      */
     public void handleRequest(@NonNull Completable completable) {
+        workQueue.add(completable);
         requestCounter.incrementAndGet();
-        completable
+        /*completable
                 .observeOn(Schedulers.single())
                 .doOnTerminate(() -> requestCounter.decrementAndGet())
-                .subscribe();
+                .subscribe();*/
     }
 }
