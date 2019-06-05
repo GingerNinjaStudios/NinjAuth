@@ -63,7 +63,6 @@ public class RestoreViewModel extends ViewModel implements WorkUpdateHandler {
 
         workDisposable = Observable
                 .<Completable>create(emitter -> {
-                    Completable completable;
                     try {
                         //noinspection InfiniteLoopStatement
                         while (true) {
