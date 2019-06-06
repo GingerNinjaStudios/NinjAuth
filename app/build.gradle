@@ -42,6 +42,7 @@ dependencies {
     androidTestImplementation "androidx.test:runner:$testRunnerVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
 
+    api "androidx.core:core:${androidX.core}"
     api "androidx.appcompat:appcompat:${androidX.appcompat}"
     implementation "androidx.constraintlayout:constraintlayout:${androidX.contstraintlayout}"
     api "androidx.arch.core:core-common:${androidX.archCore}"

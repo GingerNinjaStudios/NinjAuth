@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager.widget.ViewPager;
 
@@ -47,8 +46,6 @@ public class SetupFragment extends BaseFragment<SetupFragmentBinding> {
         }
     };
 
-    private boolean backCallbackAdded;
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,25 +53,11 @@ public class SetupFragment extends BaseFragment<SetupFragmentBinding> {
         FragmentActivity activity = getActivity();
         assert activity != null;
 
-        // FIXME this is buggy - activity.getOnBackPressedDispatcher().addCallback(this, backButtonCallback);
-
-        //requireFragmentManager().executePendingTransactions();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (!backCallbackAdded) {
-            requireActivity().getOnBackPressedDispatcher().addCallback(this, backButtonCallback);
-            backCallbackAdded = true;
-        }
+        activity.getOnBackPressedDispatcher().addCallback(this, backButtonCallback);
     }
 
     @Override
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, SetupFragmentBinding binding) {
-        // overcoming MaterialButton's inability to set the icon to the end
-        //binding.btnNext.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getActivity(), R.drawable.ic_chevron_next_24dp), null);
-
         binding.btnPrev.setOnClickListener(this::handleBackButton);
         binding.btnNext.setOnClickListener(this::handleNextButton);
 

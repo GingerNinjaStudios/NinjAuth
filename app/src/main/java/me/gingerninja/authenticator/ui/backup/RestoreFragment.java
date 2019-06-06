@@ -31,8 +31,6 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> {
 
     private CompositeDisposable disposable = new CompositeDisposable();
 
-    private boolean backCallbackAdded;
-
     private OnBackPressedCallback backButtonCallback = new OnBackPressedCallback(true) {
         @Override
         public void handleOnBackPressed() {
@@ -53,16 +51,7 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> {
 
         FragmentActivity activity = getActivity();
         assert activity != null;
-        //activity.getOnBackPressedDispatcher().addCallback(this, backButtonCallback);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (!backCallbackAdded) {
-            requireActivity().getOnBackPressedDispatcher().addCallback(this, backButtonCallback);
-            backCallbackAdded = true;
-        }
+        activity.getOnBackPressedDispatcher().addCallback(this, backButtonCallback);
     }
 
     @Override
@@ -72,9 +61,6 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> {
 
     private void subscribeToUi(RestoreFragmentBinding binding) {
         binding.toolbar.setNavigationOnClickListener(v -> getNavController().navigateUp());
-
-        // overcoming MaterialButton's inability to set the icon to the end
-        //binding.btnNext.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, AppCompatResources.getDrawable(getActivity(), R.drawable.ic_chevron_next_24dp), null);
 
         binding.btnPrev.setOnClickListener(this::handleBackButton);
         binding.btnNext.setOnClickListener(this::handleNextButton);
