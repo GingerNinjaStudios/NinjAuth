@@ -73,6 +73,8 @@
 
     <string name="account_hotp_generate_new_code_desc">Generate new code</string>
 
+    <string name="labels">Labels</string>
+
     <string name="label_new_form_title">Add label</string>
     <string name="label_edit_form_title">Edit label</string>
 
@@ -186,4 +188,17 @@
         <item>@string/restore_mode_insert_value</item>
         <item>@string/restore_mode_update_value</item>
     </string-array>
+
+    <!-- Backup -->
+    <string name="nav_backup_title">Backup</string>
+    <string name="create_backup">Pick file and save</string>
+    <string name="backup_pass_text">Password</string>
+    <string name="backup_pass_desc">If set, the ZIP file will be encrypted using this</string>
+    <string name="backup_title_text">Notes</string>
+    <string name="backup_title_desc">Optional notes for the backup</string>
+    <string name="backup_content_title">Backup content</string>
+    <string name="backup_accounts">Accounts</string>
+    <string name="backup_labels">Labels</string>
+    <string name="all_selected">All selected</string>
+
 </resources>

@@ -70,6 +70,9 @@
         <action
             android:id="@+id/settingsToRestoreFragmentAction"
             app:destination="@id/restoreFragment" />
+        <action
+            android:id="@+id/settingsToBackupFragmentAction"
+            app:destination="@id/backupFragment" />
     </fragment>
     <fragment
         android:id="@+id/labelListFragment"
@@ -171,4 +174,9 @@
             android:name="uri"
             app:argType="android.net.Uri" />
     </fragment>
+    <fragment
+        android:id="@+id/backupFragment"
+        android:name="me.gingerninja.authenticator.ui.backup.BackupFragment"
+        android:label="BackupFragment"
+        tools:layout="@layout/backup_fragment" />
 </navigation>

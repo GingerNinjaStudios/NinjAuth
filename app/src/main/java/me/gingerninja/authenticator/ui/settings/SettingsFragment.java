@@ -81,7 +81,7 @@ public class SettingsFragment extends BaseFragment<SettingsFragmentBinding> impl
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case RC_CREATE_BACKUP:
+            /*case RC_CREATE_BACKUP:
                 if (resultCode == Activity.RESULT_OK) {
                     Uri uri = backupUtils.getUriFromIntent(data);
                     backupUtils.backup(uri).subscribe(() -> {
@@ -91,7 +91,7 @@ public class SettingsFragment extends BaseFragment<SettingsFragmentBinding> impl
                         Snackbar.make(getView(), "Error: " + throwable.getMessage(), Snackbar.LENGTH_LONG).show();
                     });
                 }
-                break;
+                break;*/
             case RC_RESTORE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
 

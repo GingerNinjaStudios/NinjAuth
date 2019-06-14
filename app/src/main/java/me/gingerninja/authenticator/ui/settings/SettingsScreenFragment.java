@@ -3,6 +3,8 @@ package me.gingerninja.authenticator.ui.settings;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
@@ -55,7 +57,8 @@ public class SettingsScreenFragment extends PreferenceFragmentCompat {
 
         Preference backupPref = findPreference(getString(R.string.settings_backup_create_as_key));
         backupPref.setOnPreferenceClickListener(preference -> {
-            backupUtils.createFile(this.getParentFragment(), SettingsFragment.RC_CREATE_BACKUP, "ninjauth-backup.zip", false);
+            getNavController().navigate(R.id.backupFragment);
+            //backupUtils.createFile(this.getParentFragment(), SettingsFragment.RC_CREATE_BACKUP, "ninjauth-backup.zip", false);
             return true;
         });
 
@@ -70,5 +73,9 @@ public class SettingsScreenFragment extends PreferenceFragmentCompat {
         if (getParentFragment() instanceof OnPreferenceStartScreenCallback) {
             ((OnPreferenceStartScreenCallback) getParentFragment()).onPreferenceStartScreen(this, preferenceScreen);
         }
+    }
+
+    private NavController getNavController() {
+        return Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
     }
 }
