@@ -45,7 +45,7 @@ public class MyApplication extends Application implements HasActivityInjector, H
         if (BuildConfig.DEBUG) {
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
                     .detectLeakedSqlLiteObjects()
-                    .detectLeakedClosableObjects()
+                    //.detectLeakedClosableObjects()
                     .penaltyLog()
                     .penaltyDeath()
                     .build());
