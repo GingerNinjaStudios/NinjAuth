@@ -20,6 +20,9 @@ public interface AccountDao {
     Single<Account> get(String uid);
 
     @CheckResult
+    Observable<Account> getAll();
+
+    @CheckResult
     Observable<List<Account>> getAllAndListen();
 
     Observable<ReactiveResult<Tuple>> getAccountsAndLabelsWithListen();

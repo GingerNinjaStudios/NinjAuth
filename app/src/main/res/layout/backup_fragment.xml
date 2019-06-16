@@ -105,9 +105,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
-                    android:hint="@string/backup_title_text"
-                    app:errorText="@{viewModel.error.notes}"
-                    app:helperText="@string/backup_title_desc"
+                    android:hint="@string/backup_comment_text"
+                    app:errorText="@{viewModel.error.comment}"
+                    app:helperText="@string/backup_comment_desc"
                     app:helperTextEnabled="true"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -118,7 +118,7 @@
                         android:layout_height="wrap_content"
                         android:inputType="textCapSentences|textMultiLine"
                         android:maxLines="5"
-                        android:text="@={viewModel.data.notes}" />
+                        android:text="@={viewModel.data.comment}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <View
@@ -145,6 +145,60 @@
                     app:layout_constraintTop_toBottomOf="@id/divider" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/account_qr_selector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:background="?selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="@{viewModel::onAccountImagesClick}"
+                    android:paddingStart="16dp"
+                    android:paddingTop="16dp"
+                    android:paddingEnd="0dp"
+                    android:paddingBottom="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/content_title">
+
+                    <TextView
+                        android:id="@+id/accounts_qr_title"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:text="@string/backup_account_qr_title"
+                        android:textAppearance="?android:attr/textAppearanceListItem"
+                        app:layout_constraintEnd_toStartOf="@id/accounts_qr_chevron"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/accounts_qr_summary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:text="@string/backup_account_qr_desc"
+                        android:textAppearance="?android:attr/textAppearanceListItemSecondary"
+                        android:textColor="?android:attr/textColorSecondary"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/accounts_qr_chevron"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/accounts_qr_title" />
+
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/accounts_qr_chevron"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="@{viewModel.data.accountImages}"
+                        android:clickable="false"
+                        android:focusable="false"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/accounts_selector"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -152,10 +206,11 @@
                     android:background="?selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
+                    android:onClick="@{viewModel::onAccountsSelectorClick}"
                     android:padding="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/content_title">
+                    app:layout_constraintTop_toBottomOf="@id/account_qr_selector">
 
                     <TextView
                         android:id="@+id/accounts_title"
@@ -199,6 +254,7 @@
                     android:background="?selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
+                    android:onClick="@{viewModel::onLabelsSelectorClick}"
                     android:padding="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

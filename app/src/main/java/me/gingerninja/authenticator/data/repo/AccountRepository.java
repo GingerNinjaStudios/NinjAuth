@@ -46,6 +46,10 @@ public class AccountRepository {
         return accountDao.getAllAndListen();
     }
 
+    public Observable<Account> getAccounts() {
+        return accountDao.getAll();
+    }
+
     public Observable<ReactiveResult<Tuple>> getAllAccountAndListen2() {
         return accountDao.getAccountsAndLabelsWithListen();
         /*return accountDao.getAllAndListen()

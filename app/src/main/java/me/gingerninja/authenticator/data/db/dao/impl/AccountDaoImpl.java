@@ -63,6 +63,15 @@ public class AccountDaoImpl implements AccountDao {
                 .toSingle();
     }
 
+    @Override
+    public Observable<Account> getAll() {
+        return getStore()
+                .select(Account.class)
+                .orderBy(Account.ID.asc())
+                .get()
+                .observable();
+    }
+
     @CheckResult
     @Override
     public Observable<List<Account>> getAllAndListen() {

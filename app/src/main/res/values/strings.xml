@@ -140,10 +140,10 @@
     <string name="settings_backup_auto_title">Auto Backup</string>
     <string name="settings_backup_auto_on">Changes saved to: %s</string>
     <string name="settings_backup_auto_off">Do not create backup automatically</string>
-    <string name="settings_backup_create_title">Backup as…</string>
+    <string name="settings_backup_create_title">Backup</string>
     <string name="settings_backup_create_desc">Create a new backup file</string>
     <string name="settings_backup_restore_title">Restore</string>
-    <string name="settings_backup_restore_desc">Restore data from a file</string>
+    <string name="settings_backup_restore_desc">Restore data from file</string>
 
     <string name="settings_restore_password_dialog_title">Password required</string>
     <string name="settings_restore_password_dialog_msg">Enter the password for the ZIP file</string>
@@ -194,9 +194,11 @@
     <string name="create_backup">Pick file and save</string>
     <string name="backup_pass_text">Password</string>
     <string name="backup_pass_desc">If set, the ZIP file will be encrypted using this</string>
-    <string name="backup_title_text">Notes</string>
-    <string name="backup_title_desc">Optional notes for the backup</string>
+    <string name="backup_comment_text">Comments</string>
+    <string name="backup_comment_desc">Optional comments for the backup</string>
     <string name="backup_content_title">Backup content</string>
+    <string name="backup_account_qr_title">Account images</string>
+    <string name="backup_account_qr_desc">Export QR images of the accounts</string>
     <string name="backup_accounts">Accounts</string>
     <string name="backup_labels">Labels</string>
     <string name="all_selected">All selected</string>

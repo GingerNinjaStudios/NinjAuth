@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +12,16 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import javax.inject.Inject;
 
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.databinding.BackupFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
+import me.gingerninja.authenticator.util.backup.Backup;
 import me.gingerninja.authenticator.util.backup.BackupUtils;
+import timber.log.Timber;
 
 import static me.gingerninja.authenticator.ui.settings.SettingsFragment.RC_CREATE_BACKUP;
 
@@ -58,6 +63,27 @@ public class BackupFragment extends BaseFragment<BackupFragmentBinding> {
             case RC_CREATE_BACKUP:
                 if (resultCode == Activity.RESULT_OK) {
                     Uri uri = backupUtils.getUriFromIntent(data);
+
+                    BackupViewModel.Data vmData = getViewModel(BackupViewModel.class).data;
+                    String rawPass = vmData.pass.get();
+                    char[] pass = TextUtils.isEmpty(rawPass) ? null : rawPass.toCharArray();
+
+                    Backup.Options options = new Backup.Options.Builder()
+                            .password(pass)
+                            .withAccountImages(vmData.accountImages.get())
+                            .setComment(vmData.comment.get())
+                            .setAutoBackup(false)
+                            .build();
+
+                    backupUtils.backup(uri)
+                            .export(options)
+                            .subscribe(() -> {
+                                Snackbar.make(getView(), "Backup created successfully", Snackbar.LENGTH_LONG).show();
+                                //setResultAndLeave(RESULT_OK);
+                            }, throwable -> {
+                                Timber.e(throwable, "Cannot create backup: %s", throwable.getMessage());
+                                Snackbar.make(getView(), "Error: " + throwable.getMessage(), Snackbar.LENGTH_LONG).show();
+                            });
                     /*backupUtils.backup(uri).subscribe(() -> {
                         Snackbar.make(getView(), "Backup created successfully", Snackbar.LENGTH_LONG).show();
                     }, throwable -> {

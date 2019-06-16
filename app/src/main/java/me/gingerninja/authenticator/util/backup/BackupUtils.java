@@ -34,7 +34,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import io.reactivex.Completable;
 import io.reactivex.annotations.CheckReturnValue;
 import me.gingerninja.authenticator.data.repo.AccountRepository;
 import me.gingerninja.authenticator.data.repo.TemporaryRepository;
@@ -199,10 +198,8 @@ public class BackupUtils {
     }*/
 
     @CheckReturnValue
-    public Completable backup(@NonNull Uri uri) {
-        char[] password = "alma".toCharArray(); // TODO
-
-        return new Backup(context, accountRepo, gson, uri).export(password);
+    public Backup backup(@NonNull Uri uri) {
+        return new Backup(context, accountRepo, gson, uri);
     }
 
     @CheckReturnValue
