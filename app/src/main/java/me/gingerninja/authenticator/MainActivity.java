@@ -169,22 +169,4 @@ public class MainActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         return NavigationUI.navigateUp(navController, drawerLayout);
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            Uri uri = backupUtils.getUriFromIntent(data);
-            try {
-                if (uri != null) {
-                    backupUtils.backup(uri);
-                } else {
-                    throw new IllegalArgumentException("Uri is null");
-                }
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
 }
