@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,14 +35,10 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -58,8 +53,6 @@ import me.gingerninja.authenticator.util.Parser;
 import timber.log.Timber;
 
 public class Backup {
-    public static final int VERSION = 1;
-
     @NonNull
     private final Context context;
 
@@ -233,9 +226,6 @@ public class Backup {
                 })
                 .subscribeOn(Schedulers.newThread());
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ENGLISH);
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
         Completable accountsWork = accounts
                 .doOnSubscribe(disposable -> {
                     writer.name("accounts");
@@ -271,23 +261,21 @@ public class Backup {
                     Timber.v("Data thread SUB: %s", Thread.currentThread());
                     writer.beginObject();
 
-                    writer.name("date");
-                    writer.value(sdf.format(new Date()));
+                    BackupMeta meta = new BackupMeta.Builder()
+                            .setAutoBackup(options.isAutoBackup)
+                            .setComment(options.comment)
+                            .build();
 
-                    writer.name("version");
-                    writer.value(VERSION);
+                    writer.name("meta");
+                    gson.toJson(meta, BackupMeta.class, writer);
 
-                    writer.name("isAutoBackup");
-                    writer.value(options.isAutoBackup);
-
-                    if (!TextUtils.isEmpty(options.comment)) {
-                        writer.name("comment");
-                        writer.value(options.comment.trim());
-                    }
+                    writer.name("data");
+                    writer.beginObject();
                 })
                 .doOnTerminate(() -> {
                     Timber.v("Data thread TER: %s", Thread.currentThread());
-                    writer.endObject();
+                    writer.endObject(); // data
+                    writer.endObject(); // document
 
                     dataOSW.flush();
                     //dataBis.close();

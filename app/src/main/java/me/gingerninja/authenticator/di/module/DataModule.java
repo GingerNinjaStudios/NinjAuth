@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.Date;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -19,6 +21,7 @@ import me.gingerninja.authenticator.data.db.dao.impl.TempDaoImpl;
 import me.gingerninja.authenticator.data.db.provider.DatabaseHandler;
 import me.gingerninja.authenticator.data.db.wrapper.AccountWrapper;
 import me.gingerninja.authenticator.util.AppSettings;
+import me.gingerninja.authenticator.util.GsonDateAdapter;
 
 @Module
 public class DataModule {
@@ -50,6 +53,7 @@ public class DataModule {
     @Singleton
     public Gson provideGson() {
         return new GsonBuilder()
+                .registerTypeAdapter(Date.class, new GsonDateAdapter())
                 .excludeFieldsWithoutExposeAnnotation()
                 .create();
     }

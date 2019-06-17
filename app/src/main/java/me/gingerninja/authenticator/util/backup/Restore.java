@@ -44,6 +44,7 @@ public class Restore {
     private final File tmpFile;
 
     private ZipFile zipFile;
+    private BackupMeta meta;
 
     public Restore(Context context, TemporaryRepository repo, Gson gson, @NonNull Uri uri) {
         this.context = context;
@@ -120,6 +121,15 @@ public class Restore {
         return zipFile.isEncrypted();
     }
 
+    @NonNull
+    public BackupMeta getMeta() throws IllegalStateException {
+        if (meta == null) {
+            throw new IllegalStateException("Cannot retrieve meta until the file is restored");
+        }
+
+        return meta;
+    }
+
     public Completable readDataFile(@Nullable final char[] password) {
         checkZipFile();
 
@@ -162,8 +172,11 @@ public class Restore {
             throw new NotNinjAuthZipFile();
         } else {
             //try (Reader in = new InputStreamReader(zipFile.getInputStream(dataFileHeader), StandardCharsets.UTF_8)) {
+
+            meta = getMeta(zipFile, dataFileHeader);
+
             Reader in = new InputStreamReader(zipFile.getInputStream(dataFileHeader), StandardCharsets.UTF_8);
-            return repo.preprocessRestore(new DatabaseProcessorImpl(in));
+            return repo.preprocessRestore(new DatabaseProcessorImpl(in, meta));
 
             //readData(in);
             //return gson.fromJson(in, BackupFile.class);
@@ -172,6 +185,38 @@ public class Restore {
             //    throw new ZipException(e, ZipExceptionConstants.randomAccessFileNull);
             //}
         }
+    }
+
+    @NonNull
+    private BackupMeta getMeta(ZipFile zipFile, FileHeader fileHeader) throws ZipException, NotNinjAuthZipFile {
+        Reader in = new InputStreamReader(zipFile.getInputStream(fileHeader), StandardCharsets.UTF_8);
+        try (JsonReader jsonReader = new JsonReader(in)) {
+            JsonToken token;
+
+            while ((token = jsonReader.peek()) != JsonToken.END_DOCUMENT) {
+                switch (token) {
+                    case NAME:
+                        if ("meta".equals(jsonReader.nextName()) && jsonReader.peek() == JsonToken.BEGIN_OBJECT) {
+                            return gson.fromJson(jsonReader, BackupMeta.class);
+                        } else {
+                            jsonReader.skipValue();
+                        }
+                        break;
+                    case BEGIN_OBJECT:
+                        jsonReader.beginObject();
+                        break;
+                    case END_OBJECT:
+                        jsonReader.endObject();
+                        break;
+                    default:
+                        jsonReader.skipValue();
+                }
+            }
+        } catch (IOException e) {
+            // ignore
+            Timber.w(e, "Cannot close JsonReader");
+        }
+        throw new NotNinjAuthZipFile();
     }
 
     /*private void readData(@NonNull Reader in) throws IOException {
@@ -257,9 +302,11 @@ public class Restore {
 
     public class DatabaseProcessorImpl implements DatabaseProcessor {
         private final JsonReader jsonReader;
+        private final BackupMeta backupMeta;
 
-        private DatabaseProcessorImpl(@NonNull Reader in) {
+        private DatabaseProcessorImpl(@NonNull Reader in, @NonNull BackupMeta backupMeta) {
             jsonReader = new JsonReader(in);
+            this.backupMeta = backupMeta;
         }
 
         @Override
@@ -271,11 +318,14 @@ public class Restore {
                     case NAME:
                         String name = jsonReader.nextName();
                         switch (name) {
+                            case "data":
+                                // BEGIN_OBJECT will catch the value
+                                break;
                             case "accounts":
-                                readAccounts(restoreHandler, jsonReader);
+                                readAccounts(restoreHandler);
                                 break;
                             case "labels":
-                                readLabels(restoreHandler, jsonReader);
+                                readLabels(restoreHandler);
                                 break;
                             default:
                                 jsonReader.skipValue();
@@ -296,7 +346,7 @@ public class Restore {
             Timber.v("END of JSON");
         }
 
-        private void readAccounts(@NonNull TemporaryRepository.RestoreHandler restoreHandler, @NonNull JsonReader jsonReader) throws Exception {
+        private void readAccounts(@NonNull TemporaryRepository.RestoreHandler restoreHandler) throws Exception {
             JsonToken token = jsonReader.peek();
 
             if (token != JsonToken.BEGIN_ARRAY) {
@@ -311,7 +361,7 @@ public class Restore {
             jsonReader.endArray();
         }
 
-        private void readLabels(@NonNull TemporaryRepository.RestoreHandler restoreHandler, JsonReader jsonReader) throws Exception {
+        private void readLabels(@NonNull TemporaryRepository.RestoreHandler restoreHandler) throws Exception {
             JsonToken token = jsonReader.peek();
 
             if (token != JsonToken.BEGIN_ARRAY) {
