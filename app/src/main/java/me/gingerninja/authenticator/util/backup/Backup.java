@@ -35,9 +35,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Completable;
@@ -46,7 +44,6 @@ import io.reactivex.schedulers.Schedulers;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.data.db.entity.Label;
 import me.gingerninja.authenticator.data.pojo.BackupAccount;
-import me.gingerninja.authenticator.data.pojo.BackupFile;
 import me.gingerninja.authenticator.data.pojo.BackupLabel;
 import me.gingerninja.authenticator.data.repo.AccountRepository;
 import me.gingerninja.authenticator.util.Parser;
@@ -86,55 +83,6 @@ public class Backup {
         if (documentFile != null) {
             documentFile.delete(); // TODO check if it's true
         }*/
-    }
-
-    private void addData(List<Account> accountList, ZipFile zipFile, ZipParameters zipParameters) throws IOException, ZipException {
-        // add data file to the ZIP
-        BackupFile backupFile = new BackupFile();
-
-        List<BackupAccount> backupAccounts = Observable
-                .fromIterable(accountList)
-                .map(BackupAccount::fromEntity)
-                .toList()
-                .blockingGet();
-
-        List<BackupLabel> backupLabels = accountRepo
-                .getAllLabel()
-                .map(BackupLabel::fromEntity)
-                .toList()
-                .blockingGet();
-
-        backupFile.setAccounts(backupAccounts);
-        backupFile.setLabels(backupLabels);
-
-        ByteArrayOutputStream dataBos = new ByteArrayOutputStream();
-        OutputStreamWriter dataOSW = new OutputStreamWriter(dataBos, StandardCharsets.UTF_8);
-        gson.toJson(backupFile, dataOSW);
-        dataOSW.flush();
-        dataOSW.close();
-
-        ByteArrayInputStream dataBis = new ByteArrayInputStream(dataBos.toByteArray());
-        zipParameters.setSourceExternalStream(true);
-        zipParameters.setFileNameInZip(BackupUtils.DATA_FILE_NAME);
-        zipFile.addStream(dataBis, zipParameters);
-
-        dataBos.close();
-        dataBis.close();
-    }
-
-    private void addQrImages(List<Account> accountList, ZipFile zipFile, ZipParameters zipParameters) {
-        // add QR code images to the ZIP
-        Observable.fromIterable(accountList)
-                .blockingSubscribe(account -> {
-                    String url = Parser.createUrl(account);
-                    InputStream is = bitmapToInputStream(createQrCode(url));
-                    //ZipParameters params = new ZipParameters();
-                    zipParameters.setSourceExternalStream(true);
-                    zipParameters.setFileNameInZip(account.getPosition() + "-" + URLEncoder.encode(account.getAccountName(), "UTF-8") + ".png");
-                    zipFile.addStream(is, zipParameters);
-
-                    is.close();
-                });
     }
 
     private void transferZipFile(ZipFile zipFile) throws IOException {
@@ -300,29 +248,6 @@ public class Backup {
 
                     is.close();
                 });
-    }
-
-    private void internalExport_OLD(@Nullable char[] password) throws ZipException, IOException {
-        List<Account> accountList = accountRepo.getAllAccountAndListen().blockingFirst(Collections.emptyList());
-
-        deletePrevious();
-
-        ZipFile zipFile = new ZipFile(tmpFile);
-        // Setting parameters
-        ZipParameters zipParameters = new ZipParameters();
-        zipParameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
-        zipParameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
-
-        if (password != null && password.length > 0) {
-            zipParameters.setEncryptFiles(true);
-            zipParameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES);
-            zipParameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
-            zipParameters.setPassword(password);
-        }
-
-        addData(accountList, zipFile, zipParameters);
-        addQrImages(accountList, zipFile, zipParameters);
-        transferZipFile(zipFile);
     }
 
     @Nullable

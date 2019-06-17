@@ -19,7 +19,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.adapter.RestorePagerAdapter;
-import me.gingerninja.authenticator.data.pojo.BackupFile;
 import me.gingerninja.authenticator.databinding.RestoreFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
 import me.gingerninja.authenticator.util.SingleEvent;
@@ -126,19 +125,19 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> {
         setResultAndLeave(RESULT_OK);
     }
 
-    private void handleRestoreEvents(@NonNull SingleEvent<BackupFile> backupFileEvent) {
-        if (backupFileEvent.isHandled()) {
+    private void handleRestoreEvents(@NonNull SingleEvent event) {
+        if (event.isHandled()) {
             return;
         }
 
-        switch (backupFileEvent.getId()) {
+        switch (event.getId()) {
             case RestoreViewModel.ACTION_RESTORE_PASSWORD_NEEDED:
                 RestorePasswordDialogFragment.show(getChildFragmentManager(), false);
-                backupFileEvent.handle();
+                event.handle();
                 break;
             case RestoreViewModel.ACTION_RESTORE_WRONG_PASSWORD:
                 RestorePasswordDialogFragment.show(getChildFragmentManager(), true);
-                backupFileEvent.handle();
+                event.handle();
                 break;
             case RestoreViewModel.ACTION_DATA_LOADED:
                 // TODO

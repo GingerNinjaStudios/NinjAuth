@@ -141,7 +141,7 @@ public class RestoreViewModel extends ViewModel implements WorkUpdateHandler {
 
         compositeDisposable.add(
                 restoreInProgress.readDataFile(password)
-                        .subscribe(() -> {
+                        .subscribe((backupMeta) -> {
                             restoreSubject.onNext(new SingleEvent<>(ACTION_DATA_LOADED));
                             processingFile.set(false);
                             //restoreSubject.onComplete();

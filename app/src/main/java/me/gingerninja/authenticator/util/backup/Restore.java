@@ -31,7 +31,6 @@ import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import me.gingerninja.authenticator.data.pojo.BackupAccount;
-import me.gingerninja.authenticator.data.pojo.BackupFile;
 import me.gingerninja.authenticator.data.pojo.BackupLabel;
 import me.gingerninja.authenticator.data.repo.TemporaryRepository;
 import timber.log.Timber;
@@ -130,14 +129,14 @@ public class Restore {
         return meta;
     }
 
-    public Completable readDataFile(@Nullable final char[] password) {
+    public Single<BackupMeta> readDataFile(@Nullable final char[] password) {
         checkZipFile();
 
-        return Completable
-                .<BackupFile>create(emitter -> {
+        return Single
+                .<BackupMeta>create(emitter -> {
                     try {
-                        internalRestore(password).blockingAwait();
-                        emitter.onComplete();
+                        BackupMeta meta = internalRestore(password).blockingGet();
+                        emitter.onSuccess(meta);
                         dispose();
                     } catch (Throwable t) {
                         if (!emitter.tryOnError(t)) {
@@ -157,7 +156,7 @@ public class Restore {
     }
 
     @WorkerThread
-    private Completable internalRestore(@Nullable char[] password) throws ZipException {
+    private Single<BackupMeta> internalRestore(@Nullable char[] password) throws ZipException {
         if (zipFile.isEncrypted()) {
             if (password == null || password.length == 0) {
                 throw new ZipException("", ZipExceptionConstants.WRONG_PASSWORD);
@@ -176,7 +175,7 @@ public class Restore {
             meta = getMeta(zipFile, dataFileHeader);
 
             Reader in = new InputStreamReader(zipFile.getInputStream(dataFileHeader), StandardCharsets.UTF_8);
-            return repo.preprocessRestore(new DatabaseProcessorImpl(in, meta));
+            return repo.preprocessRestore(new DatabaseProcessorImpl(in, meta)).toSingleDefault(meta);
 
             //readData(in);
             //return gson.fromJson(in, BackupFile.class);
