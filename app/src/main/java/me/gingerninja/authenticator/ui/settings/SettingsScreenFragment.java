@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import dagger.android.support.AndroidSupportInjection;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.util.AppSettings;
+import me.gingerninja.authenticator.util.RequestCodes;
 import me.gingerninja.authenticator.util.backup.BackupUtils;
 
 public class SettingsScreenFragment extends PreferenceFragmentCompat {
@@ -63,7 +64,7 @@ public class SettingsScreenFragment extends PreferenceFragmentCompat {
         });
 
         findPreference(getString(R.string.settings_backup_restore_key)).setOnPreferenceClickListener(preference -> {
-            backupUtils.openFile(this.getParentFragment(), SettingsFragment.RC_RESTORE, false);
+            backupUtils.openFile(this.getParentFragment(), RequestCodes.RESTORE, false);
             return true;
         });
     }

@@ -24,14 +24,13 @@ import me.gingerninja.authenticator.databinding.AccountListFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
 import me.gingerninja.authenticator.ui.home.form.AccountEditorFragment;
 import me.gingerninja.authenticator.ui.home.list.AccountListItemViewModel;
+import me.gingerninja.authenticator.util.RequestCodes;
 import timber.log.Timber;
 
 public class AccountListFragment extends BaseFragment<AccountListFragmentBinding> implements BottomNavigationFragment.BottomNavigationListener, AccountListItemViewModel.AccountMenuItemClickListener {
     public static final String ACCOUNT_OP_ADD = "accountAdded";
     public static final String ACCOUNT_OP_UPDATE = "accountUpdated";
     public static final String ACCOUNT_OP_DELETE = "accountDeleted";
-    private static final int REQUEST_CODE_ADD = 0x1000;
-    private static final int REQUEST_CODE_EDIT = 0x1001;
     private static final String BOTTOM_LABELS_TAG = "bottomLabelsFrag";
     private static final String ADD_ACCOUNT_TAG = "newAccount";
     @Inject
@@ -187,14 +186,14 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
         switch (id) {
             case R.id.menu_add_account_from_camera:
                 //getNavController().navigate(R.id.addAccountFromCameraFragment);
-                navigateForResult(REQUEST_CODE_ADD).navigate(R.id.addAccountFromCameraFragment);
+                navigateForResult(RequestCodes.ACCOUNT_ADD).navigate(R.id.addAccountFromCameraFragment);
                 break;
             case R.id.menu_add_account_from_image:
-                navigateForResult(REQUEST_CODE_ADD).navigate(R.id.addAccountFromImageFragment);
+                navigateForResult(RequestCodes.ACCOUNT_ADD).navigate(R.id.addAccountFromImageFragment);
                 break;
             case R.id.menu_add_account_manual:
                 //getNavController().navigate(R.id.accountEditorFragment);
-                navigateForResult(REQUEST_CODE_ADD).navigate(R.id.accountEditorFragment);
+                navigateForResult(RequestCodes.ACCOUNT_ADD).navigate(R.id.accountEditorFragment);
                 break;
         }
     }
@@ -216,7 +215,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
             case R.id.menu_account_edit:
                 AccountListFragmentDirections.EditAccountAction action = AccountListFragmentDirections.editAccountAction().setId(account.getId());
                 //getNavController().navigate(action);
-                navigateForResult(REQUEST_CODE_EDIT).navigate(action);
+                navigateForResult(RequestCodes.ACCOUNT_EDIT).navigate(action);
                 break;
             case R.id.menu_account_delete:
                 DeleteAccountBottomFragment.show(account, getChildFragmentManager());
@@ -228,7 +227,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
     public void onFragmentResult(int requestCode, int resultCode, @Nullable Object data) {
         AccountListFragmentBinding binding = getDataBinding();
 
-        if (resultCode == RESULT_OK && (requestCode == REQUEST_CODE_EDIT || requestCode == REQUEST_CODE_ADD)) {
+        if (resultCode == RESULT_OK && (requestCode == RequestCodes.ACCOUNT_EDIT || requestCode == RequestCodes.ACCOUNT_ADD)) {
             assert data != null;
 
             Intent intent = (Intent) data;
@@ -249,7 +248,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
                         break;
                 }
             }
-        } else if (resultCode == RESULT_CANCELED && requestCode == REQUEST_CODE_ADD) {
+        } else if (resultCode == RESULT_CANCELED && requestCode == RequestCodes.ACCOUNT_ADD) {
             Snackbar.make(binding.accountList, "Canceled adding a new account", Snackbar.LENGTH_LONG)
                     .setAnchorView(binding.fab)
                     .show();
