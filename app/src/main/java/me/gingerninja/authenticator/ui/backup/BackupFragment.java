@@ -19,11 +19,10 @@ import javax.inject.Inject;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.databinding.BackupFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
+import me.gingerninja.authenticator.util.RequestCodes;
 import me.gingerninja.authenticator.util.backup.Backup;
 import me.gingerninja.authenticator.util.backup.BackupUtils;
 import timber.log.Timber;
-
-import static me.gingerninja.authenticator.ui.settings.SettingsFragment.RC_CREATE_BACKUP;
 
 public class BackupFragment extends BaseFragment<BackupFragmentBinding> {
     @Inject
@@ -60,7 +59,7 @@ public class BackupFragment extends BaseFragment<BackupFragmentBinding> {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case RC_CREATE_BACKUP:
+            case RequestCodes.BACKUP:
                 if (resultCode == Activity.RESULT_OK) {
                     Uri uri = backupUtils.getUriFromIntent(data);
 
@@ -98,6 +97,6 @@ public class BackupFragment extends BaseFragment<BackupFragmentBinding> {
     }
 
     private void pickFile() {
-        backupUtils.createFile(this, RC_CREATE_BACKUP, "ninjauth-backup.zip", false);
+        backupUtils.createFile(this, RequestCodes.BACKUP, "ninjauth-backup.zip", false);
     }
 }

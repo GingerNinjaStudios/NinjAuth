@@ -203,4 +203,13 @@
     <string name="backup_labels">Labels</string>
     <string name="all_selected">All selected</string>
 
+    <string name="error_loading_items">Could not load items</string>
+    <string name="loading_items">Loading items…</string>
+
+    <plurals name="items">
+        <item quantity="zero">No items</item>
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+
 </resources>

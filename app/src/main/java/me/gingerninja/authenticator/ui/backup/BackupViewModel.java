@@ -12,6 +12,9 @@ import androidx.lifecycle.ViewModel;
 
 import javax.inject.Inject;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import me.gingerninja.authenticator.data.repo.AccountRepository;
 import me.gingerninja.authenticator.util.SingleEvent;
 
@@ -25,12 +28,41 @@ public class BackupViewModel extends ViewModel {
 
     private MutableLiveData<SingleEvent> events = new MutableLiveData<>();
 
+    private CompositeDisposable disposable = new CompositeDisposable();
+
     @NonNull
     private AccountRepository repository;
 
     @Inject
-    public BackupViewModel(@NonNull AccountRepository repository) {
+    BackupViewModel(@NonNull AccountRepository repository) {
         this.repository = repository;
+
+        disposable.addAll(
+                this.repository
+                        .getAccounts()
+                        .count()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                value -> data.accountCount.set(value.intValue()),
+                                throwable -> data.accountCount.set(Integer.MIN_VALUE)
+                        ),
+                this.repository
+                        .getAllLabel()
+                        .count()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                value -> data.labelCount.set(value.intValue()),
+                                throwable -> data.labelCount.set(Integer.MIN_VALUE)
+                        )
+        );
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        disposable.clear();
     }
 
     public LiveData<SingleEvent> getEvents() {
@@ -54,6 +86,9 @@ public class BackupViewModel extends ViewModel {
     }
 
     public class Data {
+        public final ObservableInt accountCount = new ObservableInt(-1);
+        public final ObservableInt labelCount = new ObservableInt(-1);
+
         public final ObservableField<String> pass = new ObservableField<>();
         public final ObservableField<String> comment = new ObservableField<>();
         public final ObservableBoolean accountImages = new ObservableBoolean(true);
