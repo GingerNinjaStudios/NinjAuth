@@ -36,7 +36,7 @@ public class RestoreAccountPageFragment extends BaseFragment<RestorePageFragment
     @Override
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, RestorePageFragmentBinding binding) {
         RestoreAccountAdapter adapter = new RestoreAccountAdapter(repository, restoreViewModel);
-        pageViewModel.getAccounts().observe(this, adapter::setResults);
+        pageViewModel.getAccounts().observe(getViewLifecycleOwner(), adapter::setResults);
         binding.list.setAdapter(adapter);
     }
 

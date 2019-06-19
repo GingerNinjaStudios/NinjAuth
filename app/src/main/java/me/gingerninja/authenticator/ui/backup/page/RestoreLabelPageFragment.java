@@ -36,7 +36,7 @@ public class RestoreLabelPageFragment extends BaseFragment<RestorePageFragmentBi
     @Override
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, RestorePageFragmentBinding binding) {
         RestoreLabelAdapter adapter = new RestoreLabelAdapter(repository, restoreViewModel);
-        pageViewModel.getLabels().observe(this, adapter::setResults);
+        pageViewModel.getLabels().observe(getViewLifecycleOwner(), adapter::setResults);
         binding.list.setAdapter(adapter);
     }
 

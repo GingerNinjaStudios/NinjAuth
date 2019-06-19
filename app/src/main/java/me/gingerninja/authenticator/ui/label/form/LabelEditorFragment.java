@@ -43,7 +43,7 @@ public class LabelEditorFragment extends BaseFragment<LabelFormFragmentBinding> 
             getNavController().navigateUp();
         });
 
-        viewModel.getNavigationAction().observe(this, event -> {
+        viewModel.getNavigationAction().observe(getViewLifecycleOwner(), event -> {
             if (event.handle()) {
                 String eventId = event.getId();
                 switch (eventId) {

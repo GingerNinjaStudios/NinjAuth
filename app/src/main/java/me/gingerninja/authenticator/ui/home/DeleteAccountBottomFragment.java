@@ -68,7 +68,7 @@ public class DeleteAccountBottomFragment extends BottomSheetDialogFragment {
 
         viewModel
                 .getAction()
-                .observe(this, event -> {
+                .observe(getViewLifecycleOwner(), event -> {
                     switch (event) {
                         case DeleteAccountViewModel.ACTION_CANCEL:
                             dismiss();
