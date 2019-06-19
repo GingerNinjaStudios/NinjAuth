@@ -62,7 +62,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime:${androidX.lifecycle}"
     implementation "androidx.lifecycle:lifecycle-common-java8:${androidX.lifecycle}"
     implementation "androidx.lifecycle:lifecycle-extensions:${androidX.lifecycle}"
-    annotationProcessor "androidx.lifecycle:lifecycle-compiler:${androidX.lifecycle}"
+    //annotationProcessor "androidx.lifecycle:lifecycle-compiler:${androidX.lifecycle}"
     implementation "androidx.navigation:navigation-fragment:${androidX.navigation}"
     implementation "androidx.navigation:navigation-ui:${androidX.navigation}"
 
