@@ -1,5 +1,8 @@
 package me.gingerninja.authenticator.ui.backup;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -12,16 +15,21 @@ import androidx.lifecycle.ViewModel;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.BehaviorSubject;
 import me.gingerninja.authenticator.data.repo.AccountRepository;
 import me.gingerninja.authenticator.util.SingleEvent;
+import me.gingerninja.authenticator.util.backup.Backup;
+import me.gingerninja.authenticator.util.backup.BackupUtils;
+import timber.log.Timber;
 
 public class BackupViewModel extends ViewModel {
-    public static final String EVENT_CREATE_BACKUP = "event.createBackup";
-    public static final String EVENT_NAV_ACCOUNTS = "event.nav.accounts";
-    public static final String EVENT_NAV_LABELS = "event.nav.labels";
+    static final String EVENT_CREATE_BACKUP = "event.createBackup";
+    //public static final String EVENT_NAV_ACCOUNTS = "event.nav.accounts";
+    //public static final String EVENT_NAV_LABELS = "event.nav.labels";
 
     public Data data = new Data();
     public Error error = new Error();
@@ -33,9 +41,14 @@ public class BackupViewModel extends ViewModel {
     @NonNull
     private AccountRepository repository;
 
+    private BackupUtils backupUtils;
+
+    private BehaviorSubject<Backup.Progress> backupProgress = BehaviorSubject.createDefault(new Backup.Progress(Backup.Progress.PHASE_DATA_FILE, 0, 0));
+
     @Inject
-    BackupViewModel(@NonNull AccountRepository repository) {
+    BackupViewModel(@NonNull AccountRepository repository, @NonNull BackupUtils backupUtils) {
         this.repository = repository;
+        this.backupUtils = backupUtils;
 
         disposable.addAll(
                 this.repository
@@ -65,7 +78,7 @@ public class BackupViewModel extends ViewModel {
         disposable.clear();
     }
 
-    public LiveData<SingleEvent> getEvents() {
+    LiveData<SingleEvent> getEvents() {
         return events;
     }
 
@@ -77,13 +90,35 @@ public class BackupViewModel extends ViewModel {
         data.accountImages.set(!data.accountImages.get());
     }
 
-    public void onAccountsSelectorClick(View v) {
+    public Observable<Backup.Progress> observeProgress() {
+        return backupProgress.hide().observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public void handleBackupPickerResults(Intent intent) {
+        Uri uri = backupUtils.getUriFromIntent(intent);
+
+        String rawPass = data.pass.get();
+        char[] pass = TextUtils.isEmpty(rawPass) ? null : rawPass.toCharArray();
+
+        Backup.Options options = new Backup.Options.Builder()
+                .password(pass)
+                .withAccountImages(data.accountImages.get())
+                .setComment(data.comment.get())
+                .setAutoBackup(false)
+                .build();
+
+        backupUtils.backup(uri)
+                .export(options)
+                .subscribe(backupProgress);
+    }
+
+    /*public void onAccountsSelectorClick(View v) {
         events.setValue(new SingleEvent(EVENT_NAV_ACCOUNTS));
     }
 
     public void onLabelsSelectorClick(View v) {
         events.setValue(new SingleEvent(EVENT_NAV_LABELS));
-    }
+    }*/
 
     public class Data {
         public final ObservableInt accountCount = new ObservableInt(-1);

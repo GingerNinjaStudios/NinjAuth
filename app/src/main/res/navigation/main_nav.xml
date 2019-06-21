@@ -27,7 +27,11 @@
             app:exitAnim="@anim/nav_default_exit_anim" />
         <action
             android:id="@+id/openSettingsFromHomeAction"
-            app:destination="@id/settingsFragment" />
+            app:destination="@id/settingsFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
             android:id="@+id/openLabelListFromAccountsAction"
             app:destination="@id/labelListFragment"
@@ -69,10 +73,18 @@
         tools:layout="@layout/settings_fragment">
         <action
             android:id="@+id/settingsToRestoreFragmentAction"
-            app:destination="@id/restoreFragment" />
+            app:destination="@id/restoreFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
             android:id="@+id/settingsToBackupFragmentAction"
-            app:destination="@id/backupFragment" />
+            app:destination="@id/backupFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
     <fragment
         android:id="@+id/labelListFragment"
@@ -178,5 +190,14 @@
         android:id="@+id/backupFragment"
         android:name="me.gingerninja.authenticator.ui.backup.BackupFragment"
         android:label="BackupFragment"
-        tools:layout="@layout/backup_fragment" />
+        tools:layout="@layout/backup_fragment">
+        <action
+            android:id="@+id/openBackupDialogFragmentAction"
+            app:destination="@id/backupDialogFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/backupDialogFragment"
+        android:name="me.gingerninja.authenticator.ui.backup.BackupDialogFragment"
+        android:label="BackupDialogFragment"
+        tools:layout="@layout/backup_dialog_fragment" />
 </navigation>

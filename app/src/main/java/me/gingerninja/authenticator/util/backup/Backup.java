@@ -8,6 +8,7 @@ import android.os.ParcelFileDescriptor;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
@@ -37,9 +38,11 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
 import io.reactivex.schedulers.Schedulers;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.data.db.entity.Label;
@@ -103,11 +106,11 @@ public class Backup {
         fis.close();
     }
 
-    public Completable export(@NonNull final Options options) {
-        return Completable
-                .create(emitter -> {
+    public Observable<Progress> export(@NonNull final Options options) {
+        return Observable
+                .<Progress>create(emitter -> {
                     try {
-                        internalExport(options);
+                        internalExport(emitter, options);
                         emitter.onComplete();
                     } catch (Throwable t) {
                         emitter.tryOnError(t);
@@ -120,7 +123,7 @@ public class Backup {
                 .subscribeOn(Schedulers.io());
     }
 
-    private void internalExport(@NonNull final Options options) throws ZipException, IOException {
+    private void internalExport(ObservableEmitter<Progress> emitter, @NonNull final Options options) throws ZipException, IOException {
         deletePrevious();
 
         ZipFile zipFile = new ZipFile(tmpFile);
@@ -141,14 +144,16 @@ public class Backup {
         Observable<Account> accountObservable = accountRepo.getAccounts(); // TODO filter accounts
         Observable<Label> labelObservable = accountRepo.getAllLabel(); // TODO filter labels
 
+        emitter.onNext(new Progress(Progress.PHASE_DATA_FILE, 0, 0));
         addData(accountObservable, labelObservable, options, zipFile, zipParameters).blockingAwait();
 
         if (options.withAccountImages()) {
-            addImages(accountObservable, zipFile, zipParameters);
+            addImages(emitter, accountObservable, zipFile, zipParameters);
         }
 
         Timber.v("ZIP file complete, transfering");
 
+        emitter.onNext(new Progress(Progress.PHASE_FINALIZING_ZIP, 0, 0));
         transferZipFile(zipFile);
     }
 
@@ -235,9 +240,17 @@ public class Backup {
         return Completable.mergeArray(dataWork, zipWork);
     }
 
-    private void addImages(Observable<Account> accountObservable, ZipFile zipFile, ZipParameters params) {
+    private void addImages(ObservableEmitter<Progress> emitter, Observable<Account> accountObservable, ZipFile zipFile, ZipParameters params) {
+        int count = accountObservable.count().blockingGet().intValue();
+
+        emitter.onNext(new Progress(Progress.PHASE_ACCOUNT_IMAGES, 0, count));
+
+        AtomicInteger i = new AtomicInteger();
+
         accountObservable
                 .blockingSubscribe(account -> {
+                    emitter.onNext(new Progress(Progress.PHASE_ACCOUNT_IMAGES, i.getAndIncrement(), count));
+
                     String url = Parser.createUrl(account);
                     Bitmap bitmap = createQrCode(url);
                     InputStream is = bitmapToInputStream(bitmap);
@@ -359,6 +372,29 @@ public class Backup {
                 options.isAutoBackup = isAutoBackup;
                 return options;
             }
+        }
+    }
+
+    public static class Progress {
+        public static final String PHASE_DATA_FILE = "phase.data";
+        public static final String PHASE_ACCOUNT_IMAGES = "phase.account.images";
+        public static final String PHASE_FINALIZING_ZIP = "phase.zip.finalize";
+
+        @StringDef({PHASE_DATA_FILE, PHASE_ACCOUNT_IMAGES, PHASE_FINALIZING_ZIP})
+        @interface Phase {
+        }
+
+        @Phase
+        public final String phaseId;
+
+        public final int currentProgress;
+
+        public final int maxProgress;
+
+        public Progress(@Phase String phaseId, int currentProgress, int maxProgress) {
+            this.phaseId = phaseId;
+            this.currentProgress = currentProgress;
+            this.maxProgress = maxProgress;
         }
     }
 }
