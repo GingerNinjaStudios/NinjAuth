@@ -1,16 +1,12 @@
 package me.gingerninja.authenticator;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -107,12 +103,12 @@ public class MainActivity extends AppCompatActivity {
                         switch (item.getItemId()) {
                             case R.id.nav_accounts:
                                 if (!item.isChecked()) {
-                                    navController.navigate(R.id.accountListFragment);
+                                    navController.navigate(R.id.openAccountList);
                                 }
                                 break;
                             case R.id.nav_labels:
                                 if (!item.isChecked()) {
-                                    navController.navigate(R.id.labelListFragment);
+                                    navController.navigate(R.id.openLabelList);
                                 }
                                 break;
                             case R.id.nav_settings:

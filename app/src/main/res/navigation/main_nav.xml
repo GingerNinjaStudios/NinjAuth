@@ -200,4 +200,16 @@
         android:name="me.gingerninja.authenticator.ui.backup.BackupDialogFragment"
         android:label="BackupDialogFragment"
         tools:layout="@layout/backup_dialog_fragment" />
+    <action
+        android:id="@+id/openAccountList"
+        app:destination="@id/accountListFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@+id/accountListFragment"
+        app:popUpToInclusive="true" />
+    <action
+        android:id="@+id/openLabelList"
+        app:destination="@id/labelListFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@+id/labelListFragment"
+        app:popUpToInclusive="true" />
 </navigation>
