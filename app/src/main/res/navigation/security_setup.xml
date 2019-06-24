@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/security_setup"
+    app:startDestination="@id/passwordSetFragment">
+
+    <fragment
+        android:id="@+id/passwordSetFragment"
+        android:name="me.gingerninja.authenticator.ui.security.PasswordSetFragment"
+        android:label="PasswordSetFragment"
+        tools:layout="@layout/password_set_fragment">
+        <argument
+            android:name="type"
+            android:defaultValue="@string/settings_prot_pin_value"
+            app:argType="reference" />
+        <action
+            android:id="@+id/action_passwordSetFragment_to_fingerprintSetFragment"
+            app:destination="@id/fingerprintSetFragment"
+            app:popUpTo="@+id/passwordSetFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/fingerprintSetFragment"
+        android:label="FingerprintSetFragment">
+        <argument
+            android:name="type"
+            app:argType="reference" />
+    </fragment>
+</navigation>

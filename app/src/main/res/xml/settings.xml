@@ -11,6 +11,7 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_backup_category_title">
         <PreferenceScreen
+            android:enabled="false"
             android:key="@string/settings_backup_auto_category_key"
             android:summary="@string/settings_backup_auto_not_enabled"
             android:title="@string/settings_backup_auto_title">
@@ -34,7 +35,7 @@
             android:summary="@string/settings_backup_restore_desc"
             android:title="@string/settings_backup_restore_title" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/settings_protection_title">
+    <PreferenceCategory android:title="@string/settings_protection_title" android:enabled="false">
         <ListPreference
             android:defaultValue="@string/settings_prot_none_value"
             android:entries="@array/settings_protection_entries"
