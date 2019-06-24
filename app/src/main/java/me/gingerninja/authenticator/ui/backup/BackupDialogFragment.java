@@ -14,14 +14,13 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.databinding.BackupDialogFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseDialogFragment;
-import timber.log.Timber;
 
 public class BackupDialogFragment extends BaseDialogFragment<BackupDialogFragmentBinding> {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         BackupViewModel backupViewModel = ViewModelProviders.of(requireParentFragment(), viewModelFactory).get(BackupViewModel.class);
-        BackupDialogViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(BackupDialogViewModel.class);
+        BackupDialogViewModel viewModel = getViewModel(BackupDialogViewModel.class);
         viewModel.setupWithParentViewModel(backupViewModel);
 
         viewModel.getEvents().observe(this, event -> {
@@ -46,7 +45,6 @@ public class BackupDialogFragment extends BaseDialogFragment<BackupDialogFragmen
 
     @Override
     protected void onCreateDialog(@NonNull MaterialAlertDialogBuilder builder) {
-        builder.setTitle(R.string.backup_dialog_title);
         builder.setCancelable(false);
         setCancelable(false);
     }

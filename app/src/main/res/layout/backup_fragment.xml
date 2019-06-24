@@ -94,6 +94,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:enabled="@{viewModel.inputsEnabled}"
                         android:inputType="textPassword"
                         android:text="@={viewModel.data.pass}" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -116,8 +117,8 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:enabled="@{viewModel.inputsEnabled}"
                         android:inputType="textCapSentences|textMultiLine"
-                        android:maxLines="5"
                         android:text="@={viewModel.data.comment}" />
                 </com.google.android.material.textfield.TextInputLayout>
 

@@ -202,12 +202,13 @@
     <string name="backup_accounts">Accounts</string>
     <string name="backup_labels">Labels</string>
 
-    <string name="backup_dialog_title">Backup</string>
+    <string name="backup_dialog_title">Backup in progress</string>
+    <string name="backup_error_dialog_title">Backup error</string>
     <string name="backup_progress_msg_data">Creating data file…</string>
     <string name="backup_progress_msg_account_images">Generating account image %1$d of %2$d…</string>
     <string name="backup_progress_msg_finalizing">Finalizing ZIP file…</string>
-
     <string name="backup_complete">Backup complete</string>
+    <string name="backup_error_generic">Could not create the backup file</string>
 
     <string name="all_selected">All selected</string>
 

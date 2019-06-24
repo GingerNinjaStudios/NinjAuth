@@ -57,29 +57,6 @@ public class BackupFragment extends BaseFragment<BackupFragmentBinding> {
                 if (resultCode == Activity.RESULT_OK) {
                     getViewModel(BackupViewModel.class).handleBackupPickerResults(data);
                     new BackupDialogFragment().show(getChildFragmentManager(), "backupDialogFragment");
-                    //getNavController().navigate(R.id.openBackupDialogFragmentAction);
-                    /*Uri uri = backupUtils.getUriFromIntent(data);
-
-                    BackupViewModel.Data vmData = getViewModel(BackupViewModel.class).data;
-                    String rawPass = vmData.pass.get();
-                    char[] pass = TextUtils.isEmpty(rawPass) ? null : rawPass.toCharArray();
-
-                    Backup.Options options = new Backup.Options.Builder()
-                            .password(pass)
-                            .withAccountImages(vmData.accountImages.get())
-                            .setComment(vmData.comment.get())
-                            .setAutoBackup(false)
-                            .build();
-
-                    backupUtils.backup(uri)
-                            .export(options)
-                            .subscribe(() -> {
-                                Snackbar.make(getView(), "Backup created successfully", Snackbar.LENGTH_LONG).show();
-                                //setResultAndLeave(RESULT_OK);
-                            }, throwable -> {
-                                Timber.e(throwable, "Cannot create backup: %s", throwable.getMessage());
-                                Snackbar.make(getView(), "Error: " + throwable.getMessage(), Snackbar.LENGTH_LONG).show();
-                            });*/
                 }
                 break;
             default:

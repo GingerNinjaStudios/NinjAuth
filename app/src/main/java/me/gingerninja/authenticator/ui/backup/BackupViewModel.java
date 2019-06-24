@@ -24,7 +24,6 @@ import me.gingerninja.authenticator.data.repo.AccountRepository;
 import me.gingerninja.authenticator.util.SingleEvent;
 import me.gingerninja.authenticator.util.backup.Backup;
 import me.gingerninja.authenticator.util.backup.BackupUtils;
-import timber.log.Timber;
 
 public class BackupViewModel extends ViewModel {
     static final String EVENT_CREATE_BACKUP = "event.createBackup";
@@ -33,6 +32,7 @@ public class BackupViewModel extends ViewModel {
 
     public Data data = new Data();
     public Error error = new Error();
+    public ObservableBoolean inputsEnabled = new ObservableBoolean(true);
 
     private MutableLiveData<SingleEvent> events = new MutableLiveData<>();
 
@@ -43,7 +43,7 @@ public class BackupViewModel extends ViewModel {
 
     private BackupUtils backupUtils;
 
-    private BehaviorSubject<Backup.Progress> backupProgress = BehaviorSubject.createDefault(new Backup.Progress(Backup.Progress.PHASE_DATA_FILE, 0, 0));
+    private BehaviorSubject<Backup.Progress> backupProgress;
 
     @Inject
     BackupViewModel(@NonNull AccountRepository repository, @NonNull BackupUtils backupUtils) {
@@ -95,6 +95,12 @@ public class BackupViewModel extends ViewModel {
     }
 
     public void handleBackupPickerResults(Intent intent) {
+        if (backupProgress != null) {
+            backupProgress.onComplete();
+        }
+
+        backupProgress = BehaviorSubject.createDefault(new Backup.Progress(Backup.Progress.PHASE_DATA_FILE, 0, 0));
+
         Uri uri = backupUtils.getUriFromIntent(intent);
 
         String rawPass = data.pass.get();
@@ -107,8 +113,11 @@ public class BackupViewModel extends ViewModel {
                 .setAutoBackup(false)
                 .build();
 
+        inputsEnabled.set(false);
+
         backupUtils.backup(uri)
                 .export(options)
+                .doOnError(throwable -> inputsEnabled.set(true))
                 .subscribe(backupProgress);
     }
 

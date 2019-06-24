@@ -32,6 +32,7 @@ public class BackupDialogViewModel extends ViewModel {
     public ObservableInt maxProgress = new ObservableInt(0);
     public ObservableBoolean indeterminate = new ObservableBoolean(true);
     public ObservableField<String> progressMessage = new ObservableField<>();
+    public ObservableField<String> errorMessage = new ObservableField<>();
 
     @NonNull
     private Context context;
@@ -77,20 +78,24 @@ public class BackupDialogViewModel extends ViewModel {
     }
 
     private void handleBackupError(Throwable throwable) {
+        errorMessage.set(context.getString(R.string.backup_error_generic));
         state.set(STATE_ERROR);
-        // TODO
     }
 
     private void handleBackupComplete() {
         state.set(STATE_COMPLETE);
     }
 
-    public LiveData<SingleEvent> getEvents() {
+    LiveData<SingleEvent> getEvents() {
         return events;
     }
 
     public void onSuccessOkClick(View v) {
         events.setValue(new SingleEvent(EVENT_DISMISS_SUCCESS));
+    }
+
+    public void onErrorOkClick(View v) {
+        events.setValue(new SingleEvent(EVENT_DISMISS_ERROR));
     }
 
     void setupWithParentViewModel(BackupViewModel backupViewModel) {
