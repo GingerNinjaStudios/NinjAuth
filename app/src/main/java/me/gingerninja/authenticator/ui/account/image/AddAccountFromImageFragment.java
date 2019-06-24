@@ -31,22 +31,22 @@ public class AddAccountFromImageFragment extends BaseFragment<AccountFromImageFr
         getViewModel(AddAccountFromImageViewModel.class)
                 .getResults()
                 .observe(this, event -> {
-                    event.handle();
-
-                    switch (event.getId()) {
-                        case AddAccountFromImageViewModel.RESULT_OK:
-                            AddAccountFromImageFragmentDirections.CreateNewAccountFromImageAction action = AddAccountFromImageFragmentDirections.createNewAccountFromImageAction().setUrl(event.getContent());
-                            navigateForResultTransfer().navigate(action);
-                            break;
-                        case AddAccountFromImageViewModel.RESULT_CANCEL:
-                            setResultAndLeave(RESULT_CANCELED);
-                            break;
-                        case AddAccountFromImageViewModel.RESULT_ERROR:
-                            // DO NOTHING ?
-                            break;
-                        case AddAccountFromImageViewModel.RESULT_BROWSE:
-                            scanFromImage();
-                            break;
+                    if (event.handle()) {
+                        switch (event.getId()) {
+                            case AddAccountFromImageViewModel.RESULT_OK:
+                                AddAccountFromImageFragmentDirections.CreateNewAccountFromImageAction action = AddAccountFromImageFragmentDirections.createNewAccountFromImageAction().setUrl(event.getContent());
+                                navigateForResultTransfer().navigate(action);
+                                break;
+                            case AddAccountFromImageViewModel.RESULT_CANCEL:
+                                setResultAndLeave(RESULT_CANCELED);
+                                break;
+                            case AddAccountFromImageViewModel.RESULT_ERROR:
+                                // DO NOTHING ?
+                                break;
+                            case AddAccountFromImageViewModel.RESULT_BROWSE:
+                                scanFromImage();
+                                break;
+                        }
                     }
                 });
     }

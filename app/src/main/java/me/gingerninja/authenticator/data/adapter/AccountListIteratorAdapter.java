@@ -52,6 +52,7 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
     private int moveFrom = -1, moveTo = -1;
 
     public AccountListIteratorAdapter(@NonNull AccountWrapper.Factory accountWrapperFactory, @NonNull CodeGenerator codeGenerator, @NonNull AccountRepository accountRepository) {
+        setHasStableIds(true);
         this.accountWrapperFactory = accountWrapperFactory;
         this.codeGenerator = codeGenerator;
         this.accountRepository = accountRepository;
