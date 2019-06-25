@@ -21,6 +21,7 @@ import me.gingerninja.authenticator.ui.home.form.AccountEditorFragment;
 import me.gingerninja.authenticator.ui.home.form.LabelSelectorDialogFragment;
 import me.gingerninja.authenticator.ui.label.LabelsBottomFragment;
 import me.gingerninja.authenticator.ui.label.form.LabelEditorFragment;
+import me.gingerninja.authenticator.ui.security.BiometricsSetFragment;
 import me.gingerninja.authenticator.ui.security.PasswordSetFragment;
 import me.gingerninja.authenticator.ui.settings.SettingsFragment;
 import me.gingerninja.authenticator.ui.settings.SettingsScreenFragment;
@@ -103,4 +104,7 @@ public abstract class FragmentBuilder {
 
     @ContributesAndroidInjector
     abstract PasswordSetFragment bindPasswordSetFragment();
+
+    @ContributesAndroidInjector
+    abstract BiometricsSetFragment bindBiometricsSetFragment();
 }

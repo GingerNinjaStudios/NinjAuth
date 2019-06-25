@@ -9,6 +9,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.navigation.NavDirections;
 
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.databinding.PasswordSetFragmentBinding;
@@ -54,7 +55,8 @@ public class PasswordSetFragment extends BaseFragment<PasswordSetFragmentBinding
     private void handleEvents(@NonNull SingleEvent event) {
         if (event.handle()) {
             if (PasswordSetViewModel.EVENT_NEXT.equals(event.getId())) {
-                // TODO navigate
+                NavDirections action = PasswordSetFragmentDirections.passwordToBiometricsAction();
+                getNavController().navigate(action);
             }
         }
     }

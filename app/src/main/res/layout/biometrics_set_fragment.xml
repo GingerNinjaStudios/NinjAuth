@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
         <variable
             name="viewModel"
-            type="me.gingerninja.authenticator.ui.security.PasswordSetViewModel" />
+            type="me.gingerninja.authenticator.ui.security.BiometricsSetViewModel" />
 
         <import type="android.text.InputType" />
     </data>
@@ -42,7 +41,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@string/security_title"
+                    android:text="@string/security_biometrics_page_title"
                     android:textColor="?colorOnSurface"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -63,15 +62,16 @@
 
                 <ImageView
                     android:id="@+id/lock_img"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="24dp"
                     android:tint="?colorPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_lock_24dp" />
+                    app:srcCompat="@drawable/biometrics_anim" />
 
                 <TextView
                     android:id="@+id/title"
@@ -80,12 +80,11 @@
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="24dp"
                     android:layout_marginEnd="24dp"
-                    android:text="@{viewModel.tvTitle}"
+                    android:text="@string/security_biometrics_title"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/lock_img"
-                    tools:text="@string/security_first_password_title" />
+                    app:layout_constraintTop_toBottomOf="@id/lock_img" />
 
                 <TextView
                     android:id="@+id/subtitle"
@@ -94,55 +93,40 @@
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="24dp"
-                    android:text="@{viewModel.tvMessage}"
+                    android:lineSpacingMultiplier="1.1"
+                    android:text="@string/security_biometrics_message"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/title"
-                    tools:text="@string/security_first_password_message_password" />
+                    app:layout_constraintTop_toBottomOf="@id/title" />
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/password_layout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="0dp"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_auth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="24dp"
+                    android:onClick="@{viewModel::onAuthClick}"
+                    android:text="@string/btn_authenticate"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/subtitle" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_skip"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="24dp"
-                    app:helperText="@{viewModel.tvHelper}"
+                    android:onClick="@{viewModel::onSkipClick}"
+                    android:text="@string/btn_skip"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/subtitle"
-                    app:passwordToggleEnabled="true"
-                    tools:helperText="@string/security_password_helper">
+                    app:layout_constraintTop_toBottomOf="@+id/btn_auth" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/password"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:enabled="@{viewModel.inputEnabled}"
-                        android:focusable="@{viewModel.inputEnabled}"
-                        android:imeOptions="actionDone"
-                        android:inputType="@{viewModel.usePin ? (InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD) : (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)}"
-                        android:text="@={viewModel.password}"
-                        android:textAlignment="center"
-                        app:onEditorActionListener="@{viewModel::onEditorDoneAction}"
-                        app:selectAll="@{viewModel.hasError}" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.button.MaterialButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="24dp"
-                    android:layout_marginBottom="16dp"
-                    android:enabled="@{viewModel.password.length() >= 4 &amp;&amp; viewModel.inputEnabled}"
-                    android:onClick="@{viewModel::onNextClick}"
-                    android:text="@{viewModel.isConfirmStage ? @string/btn_confirm : @string/btn_next}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/password_layout"
-                    app:layout_constraintVertical_bias="1.0"
-                    tools:text="@string/btn_next" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

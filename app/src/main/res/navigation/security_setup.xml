@@ -15,16 +15,18 @@
             android:defaultValue="@string/settings_prot_pin_value"
             app:argType="reference" />
         <action
-            android:id="@+id/action_passwordSetFragment_to_fingerprintSetFragment"
-            app:destination="@id/fingerprintSetFragment"
+            android:id="@+id/passwordToBiometricsAction"
+            app:destination="@id/biometricsSetFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
             app:popUpTo="@+id/passwordSetFragment"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment
-        android:id="@+id/fingerprintSetFragment"
-        android:label="FingerprintSetFragment">
-        <argument
-            android:name="type"
-            app:argType="reference" />
-    </fragment>
+        android:id="@+id/biometricsSetFragment"
+        android:name="me.gingerninja.authenticator.ui.security.BiometricsSetFragment"
+        android:label="BiometricsSetFragment"
+        tools:layout="@layout/biometrics_set_fragment"/>
 </navigation>
