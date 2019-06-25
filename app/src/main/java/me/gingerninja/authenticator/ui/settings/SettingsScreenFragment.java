@@ -51,7 +51,7 @@ public class SettingsScreenFragment extends PreferenceFragmentCompat {
             String oldValue = ((ListPreference) preference).getValue();
             String newValue = (String) newValueObj;
             if (!newValue.equals(oldValue)) {
-                getActivity().recreate();
+                requireActivity().recreate();
             }
             return true;
         });
@@ -64,7 +64,12 @@ public class SettingsScreenFragment extends PreferenceFragmentCompat {
         });
 
         findPreference(getString(R.string.settings_backup_restore_key)).setOnPreferenceClickListener(preference -> {
-            backupUtils.openFile(this.getParentFragment(), RequestCodes.RESTORE, false);
+            backupUtils.openFile(requireParentFragment(), RequestCodes.RESTORE, false);
+            return true;
+        });
+
+        findPreference(getString(R.string.settings_protection_key)).setOnPreferenceClickListener(preference -> {
+            getNavController().navigate(R.id.action_settingsFragment_to_security_setup);
             return true;
         });
     }
@@ -77,6 +82,6 @@ public class SettingsScreenFragment extends PreferenceFragmentCompat {
     }
 
     private NavController getNavController() {
-        return Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+        return Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
     }
 }

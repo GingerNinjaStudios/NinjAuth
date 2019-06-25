@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory android:title="@string/settings_appearance_category_title">
         <ListPreference
             android:defaultValue="@string/settings_appearance_theme_default_value"
             android:entries="@array/settings_appearance_theme_entries"
             android:entryValues="@array/settings_appearance_theme_values"
             android:key="@string/settings_appearance_theme_key"
-            android:summary="%s"
-            android:title="@string/settings_appearance_theme_title" />
+            android:title="@string/settings_appearance_theme_title"
+            app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_backup_category_title">
         <PreferenceScreen
@@ -20,8 +21,8 @@
                 android:summaryOff="@string/settings_backup_auto_off"
                 android:title="@string/settings_backup_auto_title" />
             <EditTextPreference
-                android:key="@string/settings_backup_auto_password_key"
                 android:inputType="textPassword"
+                android:key="@string/settings_backup_auto_password_key"
                 android:title="Password" />
         </PreferenceScreen>
         <Preference
@@ -35,13 +36,18 @@
             android:summary="@string/settings_backup_restore_desc"
             android:title="@string/settings_backup_restore_title" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/settings_protection_title" android:enabled="false">
-        <ListPreference
+    <PreferenceCategory android:title="@string/settings_protection_title">
+        <Preference
+            android:defaultValue="@string/settings_prot_none_value"
+            android:key="@string/settings_protection_key"
+            android:summary="@string/settings_prot_none"
+            android:title="@string/settings_protection_title" />
+        <!--<ListPreference
             android:defaultValue="@string/settings_prot_none_value"
             android:entries="@array/settings_protection_entries"
             android:entryValues="@array/settings_protection_values"
             android:key="@string/settings_protection_key"
             android:summary="%s"
-            android:title="@string/settings_protection_title" />
+            android:title="@string/settings_protection_title" />-->
     </PreferenceCategory>
 </PreferenceScreen>

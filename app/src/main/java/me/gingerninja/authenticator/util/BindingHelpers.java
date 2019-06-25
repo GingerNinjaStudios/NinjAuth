@@ -1,7 +1,9 @@
 package me.gingerninja.authenticator.util;
 
 import android.content.res.ColorStateList;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -117,5 +119,17 @@ public class BindingHelpers {
     @BindingAdapter("srcCompatRes")
     public static void setCompatImageViewDrawable(ImageView imageView, @DrawableRes int resId) {
         imageView.setImageResource(resId);
+    }
+
+    @BindingAdapter("onEditorActionListener")
+    public static void setOnEditorActionListener(TextView view, TextView.OnEditorActionListener listener) {
+        view.setOnEditorActionListener(listener);
+    }
+
+    @BindingAdapter("selectAll")
+    public static void setOnEditorActionListener(EditText view, boolean selectAll) {
+        if (selectAll) {
+            view.selectAll();
+        }
     }
 }

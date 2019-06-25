@@ -3,6 +3,7 @@
 
     <string name="splash_welcome_msg">Welcome to NinjAuth, the open-source authenticator app!\n\nPlease, continue with the setup where you can enable authentication and auto-backup.</string>
 
+    <string name="misc_empty" translatable="false" />
     <string name="btn_confirm">Confirm</string>
     <string name="btn_next">Next</string>
     <string name="btn_back">Back</string>
@@ -224,6 +225,8 @@
     <string name="security_first_password_message_confirm_pin">Re-enter your PIN</string>
     <string name="security_password_helper">Must be at least 4 characters</string>
     <string name="security_pin_helper">PIN must be at least 4 digits</string>
+    <string name="security_first_error_password_match">Passwords don\'t match</string>
+    <string name="security_first_error_pin_match">PINs don\'t match</string>
 
     <plurals name="items">
         <item quantity="zero">No items</item>

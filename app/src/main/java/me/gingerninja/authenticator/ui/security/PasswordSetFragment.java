@@ -1,9 +1,11 @@
 package me.gingerninja.authenticator.ui.security;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,6 +35,20 @@ public class PasswordSetFragment extends BaseFragment<PasswordSetFragmentBinding
         PasswordSetViewModel viewModel = getViewModel(PasswordSetViewModel.class);
         viewModel.getEvents().observe(getViewLifecycleOwner(), this::handleEvents);
         binding.setViewModel(viewModel);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (savedInstanceState == null) {
+
+            getDataBinding().password.requestFocus();
+            InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(getDataBinding().password, InputMethodManager.SHOW_IMPLICIT);
+            }
+        }
     }
 
     private void handleEvents(@NonNull SingleEvent event) {

@@ -85,6 +85,9 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_settingsFragment_to_security_setup"
+            app:destination="@id/security_setup" />
     </fragment>
     <fragment
         android:id="@+id/labelListFragment"
@@ -212,4 +215,5 @@
         app:launchSingleTop="true"
         app:popUpTo="@+id/labelListFragment"
         app:popUpToInclusive="true" />
+    <include app:graph="@navigation/security_setup" />
 </navigation>

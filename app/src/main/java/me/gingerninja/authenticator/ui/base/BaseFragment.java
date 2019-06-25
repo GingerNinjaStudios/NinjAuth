@@ -1,9 +1,12 @@
 package me.gingerninja.authenticator.ui.base;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -44,6 +47,17 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends DaggerFrag
     }
 
     protected abstract void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, T viewDataBinding);
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            IBinder token = requireActivity().findViewById(android.R.id.content).getWindowToken();
+            imm.hideSoftInputFromWindow(token, 0);
+        }
+    }
 
     @SuppressWarnings("unchecked")
     protected T getDataBinding() {
