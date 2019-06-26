@@ -133,11 +133,6 @@
     </string-array>
 
     <!-- Settings -->
-    <string name="settings_appearance_category_title">Appearance</string>
-    <string name="settings_appearance_theme_title">Theme</string>
-    <string name="settings_appearance_theme_light">Light</string>
-    <string name="settings_appearance_theme_dark">Dark</string>
-
     <string name="settings_backup_category_title">Backup</string>
     <string name="settings_backup_auto_not_enabled">Automatic backup is not enabled</string>
     <string name="settings_backup_auto_title">Auto Backup</string>
@@ -154,8 +149,6 @@
 
     <string name="password">Password</string>
 
-    <string name="settings_security_title">Security</string>
-    <string name="settings_app_lock_title">App lock</string>
     <string name="settings_prot_none">None</string>
     <string name="settings_prot_pin">PIN</string>
     <string name="settings_prot_password">Password</string>

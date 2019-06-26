@@ -44,7 +44,7 @@ public class SettingsScreenFragment extends PreferenceFragmentCompat {
     }
 
     private void setupMainPreferences() {
-        Preference themePref = findPreference(getString(R.string.settings_appearance_theme_key));
+        Preference themePref = findPreference(getString(R.string.settings_main_theme_key));
         themePref.setOnPreferenceChangeListener((preference, newValueObj) -> {
             appSettings.setTemporaryTheme(null);
 

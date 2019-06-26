@@ -21,7 +21,7 @@ public class SettingsFragment extends BaseSettingsFragment {
 
     @Override
     protected void onPreferencesCreated(@Nullable Bundle savedInstanceState, String rootKey) {
-        Preference themePref = findPreference(getString(R.string.settings_appearance_theme_key));
+        Preference themePref = findPreference(getString(R.string.settings_main_theme_key));
 
         if (themePref != null) {
             themePref.setOnPreferenceChangeListener((preference, newValueObj) -> {

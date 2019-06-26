@@ -12,10 +12,18 @@
         tools:layout="@layout/base_settings_fragment">
         <action
             android:id="@+id/openSecuritySettingsAction"
-            app:destination="@id/securitySettingsFragment" />
+            app:destination="@id/securitySettingsFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
             android:id="@+id/openBackupRestoreSettingsAction"
-            app:destination="@id/backupRestoreSettingsFragment" />
+            app:destination="@id/backupRestoreSettingsFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
 
     <fragment
@@ -46,7 +54,11 @@
         tools:layout="@layout/base_settings_fragment">
         <action
             android:id="@+id/openSecuritySetupAction"
-            app:destination="@id/security_setup">
+            app:destination="@id/security_setup"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim">
             <argument
                 android:name="source"
                 app:argType="reference" />

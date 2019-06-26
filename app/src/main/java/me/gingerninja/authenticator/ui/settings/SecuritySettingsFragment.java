@@ -23,7 +23,7 @@ public class SecuritySettingsFragment extends BaseSettingsFragment {
 
     @Override
     protected String getTitle() {
-        return getString(R.string.settings_security_title);
+        return getString(R.string.settings_main_security_title);
     }
 
     @Override

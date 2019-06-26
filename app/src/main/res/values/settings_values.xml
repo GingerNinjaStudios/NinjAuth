@@ -1,10 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Settings -->
-    <string name="settings_appearance_theme_key" translatable="false">settings_appearance_theme</string>
-    <string name="settings_main_backup_key" translatable="false">settings_main_backup</string>
-    <string name="settings_main_security_key" translatable="false">settings_main_security</string>
+    <string name="settings_main_theme_key" translatable="false">settings_appearance_theme</string>
+    <string name="settings_main_theme_title">Theme</string>
+    <string name="settings_main_theme_val_light">Light</string>
+    <string name="settings_main_theme_val_dark">Dark</string>
 
+    <string name="settings_main_backup_key" translatable="false">settings_main_backup</string>
+    <string name="settings_main_backup_title">Backup &amp; Restore</string>
+    <string name="settings_main_backup_summary">Auto-Backup, Export, Import</string>
+
+    <string name="settings_main_security_key" translatable="false">settings_main_security</string>
+    <string name="settings_main_security_title">Security</string>
+    <string name="settings_main_security_summary">App lock, Biometrics, Privacy</string>
+
+    <string name="settings_main_modules_key" translatable="false">settings_main_modules</string>
+    <string name="settings_main_modules_title">Modules</string>
+    <string name="settings_main_modules_summary">Time Corrector</string>
+
+    <string name="settings_main_info_key" translatable="false">settings_main_info</string>
+    <string name="settings_main_info_title">About</string>
+    <string name="settings_main_info_summary">Licenses, Version</string>
+
+    <!-- Settings / Security -->
+    <string name="settings_security_cat_app_security_title">App security</string>
+    <string name="settings_security_app_lock_title">App lock</string>
+
+    <string name="settings_security_bio_title">Biometrics</string>
+    <string name="settings_security_bio_summary_on">Biometrics authentication is enabled</string>
+    <string name="settings_security_bio_summary_off">Biometrics authentication is not enabled</string>
+
+    <string name="settings_security_cat_privacy_title">Privacy</string>
+
+    <string name="settings_security_hide_recent_key" translatable="false">settings_security_hide_recent</string>
+    <string name="settings_security_hide_recent_title">Hide from app switcher</string>
+    <string name="settings_security_hide_recent_summary_on">Hidden in recents</string>
+    <string name="settings_security_hide_recent_summary_off">Screen shown in recents</string>
+
+    <!-- Misc -->
     <string name="settings_first_run_complete" translatable="false">settings_first_run_complete</string>
 
     <string name="settings_backup_auto_category_key" translatable="false">settings_backup_category_key</string>
@@ -18,8 +51,8 @@
     <string name="settings_appearance_theme_default_value" translatable="false">dark</string>
 
     <string-array name="settings_appearance_theme_entries">
-        <item>@string/settings_appearance_theme_dark</item>
-        <item>@string/settings_appearance_theme_light</item>
+        <item>@string/settings_main_theme_val_dark</item>
+        <item>@string/settings_main_theme_val_light</item>
     </string-array>
     <string-array name="settings_appearance_theme_values">
         <item>@string/settings_appearance_theme_dark_value</item>

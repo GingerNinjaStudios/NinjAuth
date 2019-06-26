@@ -41,7 +41,7 @@ public class AppSettings {
 
     @StyleRes
     public int getTheme() {
-        String themeValue = temporaryTheme != null ? temporaryTheme : sharedPrefs.getString(getString(R.string.settings_appearance_theme_key), getString(R.string.settings_appearance_theme_dark_value));
+        String themeValue = temporaryTheme != null ? temporaryTheme : sharedPrefs.getString(getString(R.string.settings_main_theme_key), getString(R.string.settings_appearance_theme_dark_value));
 
         switch (themeValue) {
             case "light":

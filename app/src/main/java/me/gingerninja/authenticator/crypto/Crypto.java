@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
@@ -98,7 +99,7 @@ public class Crypto {
             keyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         }
 
-        String sharedPrefsProtKey = context.getString(R.string.settings_protection_key);
+        String sharedPrefsProtKey = context.getString(R.string.settings_main_security_key); // TODO change this
         protectionMode = sharedPrefs.getString(sharedPrefsProtKey, null);
 
         features = new Features();
@@ -460,7 +461,7 @@ public class Crypto {
     private SecretKey generateBiometricKeyApi23() throws NoSuchProviderException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         KeyGenParameterSpec.Builder specBuilder = new KeyGenParameterSpec.Builder(KEY_ALIAS_BIOMETRIC, KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
                 .setUserAuthenticationRequired(true)
-                .setKeySize(128)
+                .setKeySize(256)
                 .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
                 .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE);
 
@@ -563,39 +564,27 @@ public class Crypto {
         public static final int BIO_OK = 0;
         public static final int BIO_DEVICE_NOT_SECURE = 1;
         public static final int BIO_NO_FINGERPRINTS = 2;
-        public static final int BIO_NOT_AVAILABLE = 3;
+        public static final int BIO_NO_HARDWARE = 3;
+        public static final int BIO_UNAVAILABLE_NOW = 4;
 
         public boolean hasBiometrics() {
             return getBiometricsResults() == BIO_OK;
         }
 
         @SuppressWarnings("deprecation")
-        public int getBiometricsResults() {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                return BIO_NOT_AVAILABLE;
+        private int getBiometricsResults() {
+            FingerprintManagerCompat fingerprintManager = FingerprintManagerCompat.from(context);
+            if (!context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
+                return BIO_NO_HARDWARE;
             } else if (!isDeviceSecure()) {
                 return BIO_DEVICE_NOT_SECURE;
-            } else if (!FingerprintManagerCompat.from(context).hasEnrolledFingerprints()) {
+            } else if (!fingerprintManager.isHardwareDetected()) {
+                return BIO_UNAVAILABLE_NOW;
+            } else if (!fingerprintManager.hasEnrolledFingerprints()) {
                 return BIO_NO_FINGERPRINTS;
-            } else {
-                return BIO_OK;
             }
-        }
 
-        public String[] getFeatureValues() {
-            if (hasBiometrics()) {
-                return context.getResources().getStringArray(R.array.settings_protection_values);
-            } else {
-                return context.getResources().getStringArray(R.array.settings_protection_values_no_bio);
-            }
-        }
-
-        public String[] getFeatureEntries() {
-            if (hasBiometrics()) {
-                return context.getResources().getStringArray(R.array.settings_protection_entries);
-            } else {
-                return context.getResources().getStringArray(R.array.settings_protection_entries_no_bio);
-            }
+            return BIO_OK;
         }
     }
 }
