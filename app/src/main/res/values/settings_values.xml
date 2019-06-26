@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="settings_first_run_complete">settings_first_run_complete</string>
+    <!-- Settings -->
+    <string name="settings_appearance_theme_key" translatable="false">settings_appearance_theme</string>
+    <string name="settings_main_backup_key" translatable="false">settings_main_backup</string>
+    <string name="settings_main_security_key" translatable="false">settings_main_security</string>
 
-    <string name="settings_appearance_theme_key">settings_appearance_theme</string>
+    <string name="settings_first_run_complete" translatable="false">settings_first_run_complete</string>
 
     <string name="settings_backup_auto_category_key" translatable="false">settings_backup_category_key</string>
     <string name="settings_backup_auto_enabled_key" translatable="false">settings_backup_auto_enabled</string>
@@ -26,13 +29,15 @@
     <string name="settings_backup_uri_key">settings_backup_uri</string>
 
     <!-- Protection -->
-    <string name="settings_protection_key">settings_protection_type</string>
 
     <string name="settings_prot_none_value" translatable="false">none</string>
     <string name="settings_prot_pin_value" translatable="false">pin</string>
     <string name="settings_prot_password_value" translatable="false">password</string>
     <string name="settings_prot_bio_pin_value" translatable="false">bio_pin</string>
     <string name="settings_prot_bio_password_value" translatable="false">bio_password</string>
+
+    <string name="settings_security_lock_key">settings_security_lock_type</string>
+    <string name="settings_security_bio_key">settings_security_bio_enabled</string>
 
     <string-array name="settings_protection_entries">
         <item>@string/settings_prot_none</item>

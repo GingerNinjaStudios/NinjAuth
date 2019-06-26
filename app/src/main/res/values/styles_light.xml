@@ -22,6 +22,7 @@
         <item name="popupMenuStyle">@style/Widget.MaterialComponents.PopupMenu.Overflow</item>
         <item name="bottomSheetDialogTheme">@style/BaseBottomSheetDialog.Light</item>
         <item name="actionChipStyle">@style/Widget.MaterialComponents.Chip.Action.Light</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.Custom</item>
     </style>
 
     <style name="AppTheme.Light" parent="@style/Base.AppTheme.Light" />

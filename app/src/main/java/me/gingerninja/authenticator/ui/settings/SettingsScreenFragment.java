@@ -68,10 +68,10 @@ public class SettingsScreenFragment extends PreferenceFragmentCompat {
             return true;
         });
 
-        findPreference(getString(R.string.settings_protection_key)).setOnPreferenceClickListener(preference -> {
+        /*findPreference(getString(R.string.settings_protection_key)).setOnPreferenceClickListener(preference -> {
             getNavController().navigate(R.id.action_settingsFragment_to_security_setup);
             return true;
-        });
+        });*/
     }
 
     @Override

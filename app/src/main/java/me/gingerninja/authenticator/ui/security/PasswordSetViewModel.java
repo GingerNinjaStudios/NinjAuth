@@ -21,7 +21,7 @@ import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.util.SingleEvent;
 
 public class PasswordSetViewModel extends ViewModel {
-    public static final String EVENT_NEXT = "event.next";
+    static final String EVENT_NEXT = "event.next";
 
     public ObservableBoolean isConfirmStage = new ObservableBoolean(false);
     public ObservableBoolean hasError = new ObservableBoolean(false);
@@ -40,18 +40,16 @@ public class PasswordSetViewModel extends ViewModel {
     private MutableLiveData<SingleEvent> events = new MutableLiveData<>();
 
     @Inject
-    public PasswordSetViewModel() {
+    PasswordSetViewModel() {
     }
 
-    @NonNull
-    public PasswordSetViewModel setUsePin(boolean usePin) {
+    void setUsePin(boolean usePin) {
         this.usePin = usePin;
         updateUi();
-        return this;
     }
 
     @NonNull
-    public LiveData<SingleEvent> getEvents() {
+    LiveData<SingleEvent> getEvents() {
         return events;
     }
 
@@ -61,7 +59,6 @@ public class PasswordSetViewModel extends ViewModel {
                 inputEnabled.set(false);
                 events.setValue(new SingleEvent(EVENT_NEXT));
             } else {
-                // TODO passwords don't match
                 hasError.set(true);
                 updateUi();
             }
@@ -74,11 +71,15 @@ public class PasswordSetViewModel extends ViewModel {
     }
 
     public boolean onEditorDoneAction(TextView view, int actionId, KeyEvent event) {
-        if (actionId == EditorInfo.IME_ACTION_DONE && password.get().length() >= 4) {
+        boolean enter = event != null && event.getAction() == KeyEvent.ACTION_DOWN &&
+                (event.getKeyCode() == KeyEvent.KEYCODE_ENTER || event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER);
+
+        //noinspection ConstantConditions
+        if ((actionId == EditorInfo.IME_ACTION_DONE || enter) &&
+                password.get().length() >= 4) {
             onNextClick(view);
-            return true;
         }
-        return false;
+        return true;
     }
 
     private void updateUi() {

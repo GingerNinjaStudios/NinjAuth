@@ -22,16 +22,16 @@ import me.gingerninja.authenticator.ui.home.form.LabelSelectorDialogFragment;
 import me.gingerninja.authenticator.ui.label.LabelsBottomFragment;
 import me.gingerninja.authenticator.ui.label.form.LabelEditorFragment;
 import me.gingerninja.authenticator.ui.security.BiometricsSetFragment;
+import me.gingerninja.authenticator.ui.security.LockTypeSelectorFragment;
+import me.gingerninja.authenticator.ui.security.PasswordCheckFragment;
 import me.gingerninja.authenticator.ui.security.PasswordSetFragment;
-import me.gingerninja.authenticator.ui.settings.SettingsFragment;
-import me.gingerninja.authenticator.ui.settings.SettingsScreenFragment;
 import me.gingerninja.authenticator.ui.setup.SetupFragment;
 import me.gingerninja.authenticator.ui.setup.SplashFragment;
 import me.gingerninja.authenticator.ui.setup.page.BackupSetupPageFragment;
 import me.gingerninja.authenticator.ui.setup.page.ProtectionSelectorPageFragment;
 import me.gingerninja.authenticator.ui.setup.page.ThemeSelectorPageFragment;
 
-@Module
+@Module(includes = {SettingsFragmentBuilder.class})
 public abstract class FragmentBuilder {
     /*@ContributesAndroidInjector
     abstract BaseFragment bindBaseFragment();*/
@@ -67,12 +67,6 @@ public abstract class FragmentBuilder {
     abstract DeleteAccountBottomFragment bindDeleteAccountBottomFragment();
 
     @ContributesAndroidInjector
-    abstract SettingsFragment bindSettingsFragment();
-
-    @ContributesAndroidInjector
-    abstract SettingsScreenFragment bindSettingsScreenFragment();
-
-    @ContributesAndroidInjector
     abstract BackupFragment bindBackupFragment();
 
     @ContributesAndroidInjector
@@ -101,6 +95,12 @@ public abstract class FragmentBuilder {
 
     @ContributesAndroidInjector
     abstract LabelSelectorDialogFragment bindLabelSelectorDialogFragment();
+
+    @ContributesAndroidInjector
+    abstract PasswordCheckFragment bindPasswordCheckFragment();
+
+    @ContributesAndroidInjector
+    abstract LockTypeSelectorFragment bindLockTypeSelectorFragment();
 
     @ContributesAndroidInjector
     abstract PasswordSetFragment bindPasswordSetFragment();

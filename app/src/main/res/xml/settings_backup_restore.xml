@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/settings_backup_category_title">
+        <PreferenceScreen
+            android:enabled="false"
+            android:key="@string/settings_backup_auto_category_key"
+            android:summary="@string/settings_backup_auto_not_enabled"
+            android:title="@string/settings_backup_auto_title">
+            <SwitchPreference
+                android:key="@string/settings_backup_auto_enabled_key"
+                android:summaryOff="@string/settings_backup_auto_off"
+                android:title="@string/settings_backup_auto_title" />
+            <EditTextPreference
+                android:inputType="textPassword"
+                android:key="@string/settings_backup_auto_password_key"
+                android:title="Password" />
+        </PreferenceScreen>
+        <Preference
+            android:key="@string/settings_backup_create_as_key"
+            android:persistent="false"
+            android:summary="@string/settings_backup_create_desc"
+            android:title="@string/settings_backup_create_title" />
+        <Preference
+            android:key="@string/settings_backup_restore_key"
+            android:persistent="false"
+            android:summary="@string/settings_backup_restore_desc"
+            android:title="@string/settings_backup_restore_title" />
+    </PreferenceCategory>
+</PreferenceScreen>

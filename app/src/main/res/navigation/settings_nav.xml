@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settings_nav"
+    app:startDestination="@id/settingsFragment">
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="me.gingerninja.authenticator.ui.settings.SettingsFragment"
+        android:label="SettingsFragment"
+        tools:layout="@layout/base_settings_fragment">
+        <action
+            android:id="@+id/openSecuritySettingsAction"
+            app:destination="@id/securitySettingsFragment" />
+        <action
+            android:id="@+id/openBackupRestoreSettingsAction"
+            app:destination="@id/backupRestoreSettingsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/backupRestoreSettingsFragment"
+        android:name="me.gingerninja.authenticator.ui.settings.BackupRestoreSettingsFragment"
+        android:label="BackupRestoreSettingsFragment"
+        tools:layout="@layout/base_settings_fragment">
+        <action
+            android:id="@+id/settingsToRestoreFragmentAction"
+            app:destination="@id/restoreFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/settingsToBackupFragmentAction"
+            app:destination="@id/backupFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/securitySettingsFragment"
+        android:name="me.gingerninja.authenticator.ui.settings.SecuritySettingsFragment"
+        android:label="SecuritySettingsFragment"
+        tools:layout="@layout/base_settings_fragment">
+        <action
+            android:id="@+id/openSecuritySetupAction"
+            app:destination="@id/security_setup">
+            <argument
+                android:name="source"
+                app:argType="reference" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/restoreFragment"
+        android:name="me.gingerninja.authenticator.ui.backup.RestoreFragment"
+        android:label="RestoreFragment"
+        tools:layout="@layout/restore_fragment">
+        <argument
+            android:name="uri"
+            app:argType="android.net.Uri" />
+    </fragment>
+    <fragment
+        android:id="@+id/backupFragment"
+        android:name="me.gingerninja.authenticator.ui.backup.BackupFragment"
+        android:label="BackupFragment"
+        tools:layout="@layout/backup_fragment">
+        <action
+            android:id="@+id/openBackupDialogFragmentAction"
+            app:destination="@id/backupDialogFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/backupDialogFragment"
+        android:name="me.gingerninja.authenticator.ui.backup.BackupDialogFragment"
+        android:label="BackupDialogFragment"
+        tools:layout="@layout/backup_dialog_fragment" />
+    <include app:graph="@navigation/security_setup" />
+</navigation>

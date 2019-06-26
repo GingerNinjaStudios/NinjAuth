@@ -26,4 +26,13 @@
     <style name="TextAppearance.FakeHint" parent="@style/TextAppearance.MaterialComponents.Caption">
         <item name="android:textColor">@color/mtrl_indicator_text_color</item>
     </style>
+
+    <style name="PreferenceThemeOverlay.Custom" parent="PreferenceThemeOverlay">
+        <item name="preferenceFragmentCompatStyle">@style/MyPreferenceFragment</item>
+        <item name="preferenceFragmentStyle">@style/MyPreferenceFragment</item>
+    </style>
+
+    <style name="MyPreferenceFragment" parent="PreferenceFragment.Material">
+        <item name="android:layout">@layout/base_settings_fragment</item>
+    </style>
 </resources>

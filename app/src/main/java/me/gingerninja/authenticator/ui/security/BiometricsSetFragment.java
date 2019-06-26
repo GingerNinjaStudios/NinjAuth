@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.biometric.BiometricPrompt;
@@ -20,9 +21,22 @@ import me.gingerninja.authenticator.util.SingleEvent;
 import timber.log.Timber;
 
 public class BiometricsSetFragment extends BaseFragment<BiometricsSetFragmentBinding> {
+    private final OnBackPressedCallback backButtonCallback = new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+            exit();
+        }
+    };
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, backButtonCallback);
+    }
+
     @Override
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, BiometricsSetFragmentBinding binding) {
-        binding.toolbar.setNavigationOnClickListener(view -> getNavController().navigateUp());
+        binding.toolbar.setNavigationOnClickListener(view -> exit());
 
         BiometricsSetViewModel viewModel = getViewModel(BiometricsSetViewModel.class);
         viewModel.getEvents().observe(getViewLifecycleOwner(), this::handleEvents);
@@ -43,7 +57,7 @@ public class BiometricsSetFragment extends BaseFragment<BiometricsSetFragmentBin
     private void handleEvents(@NonNull SingleEvent event) {
         if (event.handle()) {
             switch (event.getId()) {
-                case BiometricsSetViewModel.EVENT_AUTH:
+                case BiometricsSetViewModel.EVENT_ENABLE:
                     BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
                             .setTitle("Authentication")
                             .setNegativeButtonText(getString(android.R.string.cancel))
@@ -72,10 +86,14 @@ public class BiometricsSetFragment extends BaseFragment<BiometricsSetFragmentBin
                     prompt.authenticate(promptInfo);
                     break;
                 case BiometricsSetViewModel.EVENT_SKIP:
-                    getNavController().navigateUp();
+                    exit();
                     break;
             }
         }
+    }
+
+    private void exit() {
+        getNavController().navigate(BiometricsSetFragmentDirections.exitBiometricsSetFragmentAction());
     }
 
     @Override

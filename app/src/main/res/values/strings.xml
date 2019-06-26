@@ -154,7 +154,8 @@
 
     <string name="password">Password</string>
 
-    <string name="settings_protection_title">Protection</string>
+    <string name="settings_security_title">Security</string>
+    <string name="settings_app_lock_title">App lock</string>
     <string name="settings_prot_none">None</string>
     <string name="settings_prot_pin">PIN</string>
     <string name="settings_prot_password">Password</string>
@@ -219,6 +220,8 @@
     <string name="loading_items">Loading items…</string>
 
     <string name="security_title">Security</string>
+    <string name="security_lock_type_title">App lock type</string>
+    <string name="security_lock_type_current">Current app lock</string>
     <string name="security_first_password_title">Set application lock</string>
     <string name="security_first_password_message_password">For improved security, set password</string>
     <string name="security_first_password_message_confirm_password">Re-enter your password</string>
@@ -231,7 +234,14 @@
 
     <string name="security_biometrics_page_title">Biometrics</string>
     <string name="security_biometrics_title">Use biometrics for easier access</string>
+    <string name="security_biometrics_enabled_title">Biometrics authentication is enabled</string>
     <string name="security_biometrics_message">You can use the biometric capabilities of your device, such as fingerprints, to authenticate yourself when using the app. This allows faster access to your data, however, biometrics is inherently less secure than a strong password or PIN.</string>
+    <string name="security_biometrics_enable_btn">Enable biometrics</string>
+    <string name="security_biometrics_disable_btn">Disable biometrics</string>
+
+    <string name="auth_title">Authentication</string>
+    <string name="auth_wrong_pin">Wrong PIN</string>
+    <string name="auth_wrong_password">Wrong password</string>
 
     <plurals name="items">
         <item quantity="zero">No items</item>

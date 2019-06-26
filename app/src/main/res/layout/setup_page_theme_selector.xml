@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="viewModel"
             type="me.gingerninja.authenticator.ui.setup.SetupViewModel" />
@@ -24,10 +25,11 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="24dp"
+                android:tint="?colorPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_palette_128dp" />
+                app:srcCompat="@drawable/ic_palette_24dp" />
 
             <TextView
                 android:id="@+id/title"

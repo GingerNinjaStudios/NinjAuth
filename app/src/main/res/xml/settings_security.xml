@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="App security">
+        <Preference
+            android:defaultValue="@string/settings_prot_none_value"
+            android:key="@string/settings_security_lock_key"
+            android:summary="@string/settings_prot_none"
+            android:title="@string/settings_app_lock_title" />
+        <Preference
+            android:defaultValue="false"
+            android:key="@string/settings_security_bio_key"
+            android:summary="Biometrics authentication is not enabled"
+            android:title="Biometrics" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Privacy">
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="settings_security_hide_recent"
+            android:summaryOff="The screen might be visible in the recents"
+            android:summaryOn="The screen is hidden"
+            android:title="Hide from app switcher" />
+    </PreferenceCategory>
+</PreferenceScreen>
