@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorPrimaryLight">#63a4ff</color>
+    <color name="colorPrimary">#1976d2</color>
+    <color name="colorPrimaryDark">#004ba0</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="colorSecondary">#3f51b5</color>
+    <color name="colorOnSecondary">#ffffff</color>
+
+    <color name="colorLabelTextLight">#ffffff</color>
+    <color name="colorLabelTextDark">#000000</color>
+
+    <color name="dotsIndicatorLight">#331976D2</color>
+    <color name="dotsIndicatorDark">#4D63A4FF</color>
 </resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:key="@string/settings_prot_none_value"
+        android:persistent="false"
+        android:title="@string/settings_prot_none" />
+    <Preference
+        android:key="@string/settings_prot_bio_pin_value"
+        android:persistent="false"
+        android:title="@string/settings_prot_bio_pin" />
+    <Preference
+        android:key="@string/settings_prot_bio_password_value"
+        android:persistent="false"
+        android:title="@string/settings_prot_bio_password" />
+</PreferenceScreen>

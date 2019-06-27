@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/settings_security_cat_app_security_title">
+        <Preference
+            android:defaultValue="@string/settings_prot_none_value"
+            android:key="@string/settings_security_lock_key"
+            android:summary="@string/settings_prot_none"
+            android:title="@string/settings_security_app_lock_title" />
+        <Preference
+            android:key="@string/settings_security_bio_key"
+            android:summary="@string/settings_security_bio_summary_off"
+            android:title="@string/settings_security_bio_title" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_security_cat_privacy_title">
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="@string/settings_security_hide_recent_key"
+            android:summaryOff="@string/settings_security_hide_recent_summary_off"
+            android:summaryOn="@string/settings_security_hide_recent_summary_on"
+            android:title="@string/settings_security_hide_recent_title" />
+    </PreferenceCategory>
+</PreferenceScreen>

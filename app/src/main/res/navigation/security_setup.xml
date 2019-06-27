@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/security_setup"
+    app:startDestination="@id/passwordCheckFragment">
+
+    <fragment
+        android:id="@+id/passwordSetFragment"
+        android:name="me.gingerninja.authenticator.ui.security.PasswordSetFragment"
+        android:label="PasswordSetFragment"
+        tools:layout="@layout/password_set_fragment">
+        <argument
+            android:name="type"
+            app:argType="reference" />
+        <action
+            android:id="@+id/passwordSetupToBiometricsAction"
+            app:destination="@+id/biometricsSetFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/exitPasswordSetFragmentAction"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@id/passwordCheckFragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="pass"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/biometricsSetFragment"
+        android:name="me.gingerninja.authenticator.ui.security.BiometricsSetFragment"
+        android:label="BiometricsSetFragment"
+        tools:layout="@layout/biometrics_set_fragment">
+        <action
+            android:id="@+id/exitBiometricsSetFragmentAction"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@id/passwordCheckFragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="pass"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/passwordCheckFragment"
+        android:name="me.gingerninja.authenticator.ui.security.PasswordCheckFragment"
+        android:label="PasswordCheckFragment"
+        tools:layout="@layout/password_check_fragment">
+        <action
+            android:id="@+id/openLockTypeSelectorAction"
+            app:destination="@id/lockTypeSelectorFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:launchSingleTop="true"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/passwordCheckToBiometricsSetupAction"
+            app:destination="@id/biometricsSetFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <argument
+            android:name="source"
+            app:argType="reference" />
+    </fragment>
+    <fragment
+        android:id="@+id/lockTypeSelectorFragment"
+        android:name="me.gingerninja.authenticator.ui.security.LockTypeSelectorFragment"
+        android:label="LockTypeSelectorFragment">
+        <action
+            android:id="@+id/openPasswordSetFragmentAction"
+            app:destination="@id/passwordSetFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <argument
+            android:name="source"
+            app:argType="reference" />
+        <action
+            android:id="@+id/exitLockTypeSelectorFragment"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@id/passwordCheckFragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="pass"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+</navigation>

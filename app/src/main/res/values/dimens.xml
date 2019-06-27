@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="account_list_card_elevation_normal">2dp</dimen>
+    <dimen name="account_list_card_elevation_dragging">8dp</dimen>
+    <dimen name="bottom_sheet_corner_radius">8dp</dimen>
+    <dimen name="bottom_sheet_top_padding">8dp</dimen>
+    <dimen name="list_bottom_padding_fab">88dp</dimen>
+    <dimen name="chip_icon_size">18dp</dimen>
+    <dimen name="chip_icon_start_padding">4dp</dimen>
+</resources>

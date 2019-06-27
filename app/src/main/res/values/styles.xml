@@ -1,11 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+    <style name="Widget.Form.TextInputLayout" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:layout_marginEnd">4dp</item>
     </style>
 
+    <style name="Widget.Account.Code" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textSize">32sp</item>
+    </style>
+
+    <style name="BottomSheet" parent="@style/Widget.MaterialComponents.BottomSheet.Modal">
+        <item name="shapeAppearanceOverlay">@style/BottomSheet.ShapeAppearance</item>
+        <item name="behavior_skipCollapsed">true</item>
+    </style>
+
+    <style name="BottomSheet.ShapeAppearance" parent="@style/ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerSize">8dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
+    <style name="TextAppearance.FakeHint" parent="@style/TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">@color/mtrl_indicator_text_color</item>
+    </style>
+
+    <style name="PreferenceThemeOverlay.Custom" parent="PreferenceThemeOverlay">
+        <item name="preferenceFragmentCompatStyle">@style/MyPreferenceFragment</item>
+        <item name="preferenceFragmentStyle">@style/MyPreferenceFragment</item>
+    </style>
+
+    <style name="MyPreferenceFragment" parent="PreferenceFragment.Material">
+        <item name="android:layout">@layout/base_settings_fragment</item>
+    </style>
 </resources>

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav"
+    app:startDestination="@id/splashFragment">
+
+    <fragment
+        android:id="@+id/accountListFragment"
+        android:name="me.gingerninja.authenticator.ui.home.AccountListFragment"
+        android:label="AccountListFragment"
+        tools:layout="@layout/account_list_fragment">
+        <argument
+            android:name="accountName"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="accountOperation"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_accountListFragment_to_addAccountFromCameraFragment"
+            app:destination="@id/addAccountFromCameraFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/openSettingsFromHomeAction"
+            app:destination="@id/settings_nav"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/openLabelListFromAccountsAction"
+            app:destination="@id/labelListFragment"
+            app:popUpTo="@+id/labelListFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/editAccountAction"
+            app:destination="@id/accountEditorFragment" />
+        <action
+            android:id="@+id/action_accountListFragment_to_addAccountFromImageFragment"
+            app:destination="@id/addAccountFromImageFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/leaveAccountList"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/addAccountFromCameraFragment"
+        android:name="me.gingerninja.authenticator.ui.account.camera.AddAccountFromCameraFragment"
+        android:label="AddAccountFromCameraFragment"
+        tools:layout="@layout/account_from_camera_fragment">
+        <action
+            android:id="@+id/createNewAccountFromCameraAction"
+            app:destination="@id/accountEditorFragment"
+            app:popUpTo="@+id/accountListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addAccountFromImageFragment"
+        android:name="me.gingerninja.authenticator.ui.account.image.AddAccountFromImageFragment"
+        android:label="AddAccountFromImageFragment"
+        tools:layout="@layout/account_from_image_fragment">
+        <action
+            android:id="@+id/createNewAccountFromImageAction"
+            app:destination="@id/accountEditorFragment"
+            app:popUpTo="@+id/accountListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/labelListFragment"
+        android:name="me.gingerninja.authenticator.ui.label.LabelsBottomFragment"
+        android:label="LabelsBottomFragment"
+        tools:layout="@layout/labels_fragment">
+        <action
+            android:id="@+id/openAccountListFromLabelsAction"
+            app:destination="@id/accountListFragment"
+            app:popUpTo="@+id/accountListFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/editLabelAction"
+            app:destination="@id/labelEditorFragment" />
+        <argument
+            android:name="labelName"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="operation"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/openSettingsFromLabelsAction"
+            app:destination="@id/settings_nav"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/labelEditorFragment"
+        android:name="me.gingerninja.authenticator.ui.label.form.LabelEditorFragment"
+        android:label="LabelEditorFragment"
+        tools:layout="@layout/label_form_fragment">
+        <argument
+            android:name="id"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <action
+            android:id="@+id/saveLabelAction"
+            app:destination="@id/labelListFragment"
+            app:popUpTo="@+id/labelListFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountEditorFragment"
+        android:name="me.gingerninja.authenticator.ui.home.form.AccountEditorFragment"
+        android:label="AccountEditorFragment"
+        tools:layout="@layout/account_form_fragment">
+        <argument
+            android:name="url"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="id"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <action
+            android:id="@+id/saveAccountAction"
+            app:destination="@id/accountListFragment"
+            app:popUpTo="@+id/accountListFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="me.gingerninja.authenticator.ui.setup.SplashFragment"
+        android:label="SplashFragment"
+        tools:layout="@layout/splash_fragment">
+        <action
+            android:id="@+id/skipSetupToAccountListAction"
+            app:destination="@id/accountListFragment"
+            app:popUpTo="@+id/splashFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/startSetupAction"
+            app:destination="@id/setupFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/openStartupPasswordCheckFragmentAction"
+            app:destination="@id/startupPasswordCheckFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/splashFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/setupFragment"
+        android:name="me.gingerninja.authenticator.ui.setup.SetupFragment"
+        android:label="SetupFragment"
+        tools:layout="@layout/setup_fragment">
+        <action
+            android:id="@+id/finishSetupAction"
+            app:destination="@id/accountListFragment" />
+        <action
+            android:id="@+id/action_setupFragment_to_security_setup"
+            app:destination="@id/security_setup" />
+    </fragment>
+    <action
+        android:id="@+id/openAccountList"
+        app:destination="@id/accountListFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@+id/accountListFragment"
+        app:popUpToInclusive="true" />
+    <action
+        android:id="@+id/openLabelList"
+        app:destination="@id/labelListFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@+id/labelListFragment"
+        app:popUpToInclusive="true" />
+    <include app:graph="@navigation/security_setup" />
+    <include app:graph="@navigation/settings_nav" />
+    <fragment
+        android:id="@+id/startupPasswordCheckFragment"
+        android:name="me.gingerninja.authenticator.ui.security.StartupPasswordCheckFragment"
+        android:label="StartupPasswordCheckFragment"
+        tools:layout="@layout/startup_password_check_fragment">
+        <action
+            android:id="@+id/loginCompleteAction"
+            app:destination="@id/accountListFragment"
+            app:popUpTo="@+id/splashFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/leaveLoginScreen"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+</navigation>
