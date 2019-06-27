@@ -101,6 +101,10 @@ public class AccountRepository {
         return labelDao.getAllAndListen();
     }
 
+    public Completable deleteLabel(long labelId) {
+        return getLabel(labelId).flatMapCompletable(labelDao::delete);
+    }
+
     public Completable deleteLabel(Label label) {
         return labelDao.delete(label);
     }

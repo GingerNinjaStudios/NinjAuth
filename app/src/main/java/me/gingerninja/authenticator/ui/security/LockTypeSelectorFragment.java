@@ -46,6 +46,17 @@ public class LockTypeSelectorFragment extends BaseSettingsFragment implements Lo
         source = args.getSource();*/
 
         requireActivity().getOnBackPressedDispatcher().addCallback(this, backButtonCallback);
+
+        LockTypeSelectorViewModel viewModel = getViewModel(LockTypeSelectorViewModel.class);
+        viewModel.getEvents().observe(this, event -> {
+            if(event.handle()){
+                switch(event.getId()){
+                    case LockTypeSelectorViewModel.EVENT_LOCK_REMOVED:
+                        exit();
+                        break;
+                }
+            }
+        });
     }
 
     @Override
@@ -123,7 +134,7 @@ public class LockTypeSelectorFragment extends BaseSettingsFragment implements Lo
         getViewModel(LockTypeSelectorViewModel.class).removeLock(pass.toCharArray());
     }
 
-    private static class LockTypeRemoveConfirmDialog extends DialogFragment {
+    public static class LockTypeRemoveConfirmDialog extends DialogFragment {
         private LockTypeConfirmationListener listener;
 
         @Override

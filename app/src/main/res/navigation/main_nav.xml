@@ -45,6 +45,10 @@
             app:destination="@id/addAccountFromImageFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/leaveAccountList"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/addAccountFromCameraFragment"
@@ -150,8 +154,14 @@
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
-            android:id="@+id/action_splashFragment_to_startupPasswordCheckFragment"
-            app:destination="@id/startupPasswordCheckFragment" />
+            android:id="@+id/openStartupPasswordCheckFragmentAction"
+            app:destination="@id/startupPasswordCheckFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/splashFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/setupFragment"
@@ -160,9 +170,7 @@
         tools:layout="@layout/setup_fragment">
         <action
             android:id="@+id/finishSetupAction"
-            app:destination="@id/accountListFragment"
-            app:popUpTo="@+id/splashFragment"
-            app:popUpToInclusive="true" />
+            app:destination="@id/accountListFragment" />
         <action
             android:id="@+id/action_setupFragment_to_security_setup"
             app:destination="@id/security_setup" />
@@ -187,7 +195,13 @@
         android:label="StartupPasswordCheckFragment"
         tools:layout="@layout/startup_password_check_fragment">
         <action
-            android:id="@+id/action_startupPasswordCheckFragment_to_accountListFragment"
-            app:destination="@id/accountListFragment" />
+            android:id="@+id/loginCompleteAction"
+            app:destination="@id/accountListFragment"
+            app:popUpTo="@+id/splashFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/leaveLoginScreen"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>

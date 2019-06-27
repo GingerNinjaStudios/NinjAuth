@@ -67,7 +67,7 @@ public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> im
         binding.appBar.setNavigationOnClickListener(v -> {
             BottomNavigationFragment.show(R.menu.navigation_menu, R.id.nav_labels, R.layout.bottom_nav_header, getChildFragmentManager());
         });
-        binding.appBar.inflateMenu(R.menu.account_list_menu);
+        // TODO binding.appBar.inflateMenu(R.menu.account_list_menu);
         binding.appBar.setOnMenuItemClickListener(item -> {
             return true;
         });
@@ -113,7 +113,7 @@ public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> im
                 navigateForResult(RequestCodes.LABEL_EDIT).navigate(action);
                 break;
             case R.id.menu_account_delete:
-                //DeleteAccountBottomFragment.show(account, getChildFragmentManager());
+                DeleteLabelBottomFragment.show(label, getChildFragmentManager());
                 break;
         }
     }

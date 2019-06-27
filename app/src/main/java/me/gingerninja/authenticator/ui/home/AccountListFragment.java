@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
@@ -33,6 +34,14 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
     public static final String ACCOUNT_OP_DELETE = "accountDeleted";
     private static final String BOTTOM_LABELS_TAG = "bottomLabelsFrag";
     private static final String ADD_ACCOUNT_TAG = "newAccount";
+
+    private final OnBackPressedCallback backButtonCallback = new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+            exit();
+        }
+    };
+
     @Inject
     AccountListIteratorAdapter accountListAdapter;
 
@@ -57,6 +66,8 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
                         }
                     }
                 });
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, backButtonCallback);
     }
 
     @Override
@@ -116,7 +127,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
         binding.appBar.setNavigationOnClickListener(v -> {
             BottomNavigationFragment.show(R.menu.navigation_menu, R.id.nav_accounts, R.layout.bottom_nav_header, getChildFragmentManager());
         });
-        binding.appBar.inflateMenu(R.menu.account_list_menu);
+        // TODO binding.appBar.inflateMenu(R.menu.account_list_menu);
         binding.appBar.setOnMenuItemClickListener(item -> {
             return true;
         });
@@ -253,5 +264,10 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
                     .setAnchorView(binding.fab)
                     .show();
         }
+    }
+
+    private void exit() {
+        //getNavController().navigate(AccountListFragmentDirections.leaveAccountList());
+        requireActivity().finishAffinity();
     }
 }

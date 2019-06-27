@@ -24,21 +24,29 @@ public class StartupPasswordCheckFragment extends BaseFragment<StartupPasswordCh
         }
     };
 
+    private boolean leaving;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         StartupPasswordCheckViewModel viewModel = getViewModel(StartupPasswordCheckViewModel.class);
 
-        /*if (!viewModel.hasLock()) {
-            getNavController().navigate(PasswordCheckFragmentDirections.openLockTypeSelectorAction(source, null));
+        if (!viewModel.hasLock()) {
+            leaving = true;
+            viewModel.openUnlockedDatabase();
+            getNavController().navigate(StartupPasswordCheckFragmentDirections.loginCompleteAction());
         } else {
             requireActivity().getOnBackPressedDispatcher().addCallback(this, backButtonCallback);
-        }*/
+        }
     }
 
     @Override
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, StartupPasswordCheckFragmentBinding binding) {
+        if (leaving) {
+            return;
+        }
+
         StartupPasswordCheckViewModel viewModel = getViewModel(StartupPasswordCheckViewModel.class);
         binding.toolbar.setNavigationOnClickListener(view -> exit());
 
@@ -49,6 +57,10 @@ public class StartupPasswordCheckFragment extends BaseFragment<StartupPasswordCh
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        if (leaving) {
+            return;
+        }
 
         if (savedInstanceState == null) {
             getDataBinding().password.requestFocus();
@@ -63,7 +75,7 @@ public class StartupPasswordCheckFragment extends BaseFragment<StartupPasswordCh
         StartupPasswordCheckViewModel viewModel = getViewModel(StartupPasswordCheckViewModel.class);
 
         if (viewModel.inputEnabled.get()) {
-            getNavController().navigateUp();
+            getNavController().navigate(StartupPasswordCheckFragmentDirections.leaveLoginScreen());
         }
     }
 
@@ -72,6 +84,7 @@ public class StartupPasswordCheckFragment extends BaseFragment<StartupPasswordCh
         if (event.handle()) {
             switch (event.getId()) {
                 case StartupPasswordCheckViewModel.EVENT_CONFIRM:
+                    getNavController().navigate(StartupPasswordCheckFragmentDirections.loginCompleteAction());
                     /*if (viewModel.hasLock() && source == R.string.settings_security_bio_key) {
                         getNavController().navigate(PasswordCheckFragmentDirections.passwordCheckToBiometricsSetupAction(viewModel.password.get()));
                     } else {

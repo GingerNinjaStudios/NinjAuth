@@ -19,12 +19,14 @@ import me.gingerninja.authenticator.ui.home.AccountListFragment;
 import me.gingerninja.authenticator.ui.home.DeleteAccountBottomFragment;
 import me.gingerninja.authenticator.ui.home.form.AccountEditorFragment;
 import me.gingerninja.authenticator.ui.home.form.LabelSelectorDialogFragment;
+import me.gingerninja.authenticator.ui.label.DeleteLabelBottomFragment;
 import me.gingerninja.authenticator.ui.label.LabelsBottomFragment;
 import me.gingerninja.authenticator.ui.label.form.LabelEditorFragment;
 import me.gingerninja.authenticator.ui.security.BiometricsSetFragment;
 import me.gingerninja.authenticator.ui.security.LockTypeSelectorFragment;
 import me.gingerninja.authenticator.ui.security.PasswordCheckFragment;
 import me.gingerninja.authenticator.ui.security.PasswordSetFragment;
+import me.gingerninja.authenticator.ui.security.StartupPasswordCheckFragment;
 import me.gingerninja.authenticator.ui.setup.SetupFragment;
 import me.gingerninja.authenticator.ui.setup.SplashFragment;
 import me.gingerninja.authenticator.ui.setup.page.BackupSetupPageFragment;
@@ -38,6 +40,9 @@ public abstract class FragmentBuilder {
 
     @ContributesAndroidInjector
     abstract SplashFragment bindSplashFragment();
+
+    @ContributesAndroidInjector
+    abstract StartupPasswordCheckFragment bindStartupPasswordCheckFragment();
 
     @ContributesAndroidInjector(modules = SetupFragmentModule.class)
     abstract SetupFragment bindSetupFragment();
@@ -89,6 +94,9 @@ public abstract class FragmentBuilder {
 
     @ContributesAndroidInjector(modules = LabelListModule.class)
     abstract LabelsBottomFragment bindLabelsBottomFragment();
+
+    @ContributesAndroidInjector
+    abstract DeleteLabelBottomFragment bindDeleteLabelBottomFragment();
 
     @ContributesAndroidInjector
     abstract LabelEditorFragment bindLabelEditorFragment();

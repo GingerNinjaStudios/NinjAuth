@@ -226,6 +226,7 @@ public class Crypto {
         // TODO
     }
 
+    @SuppressLint("ApplySharedPref")
     public Completable remove(@NonNull char[] password) {
         return Completable
                 .fromCallable(() -> {
@@ -244,8 +245,20 @@ public class Crypto {
                         masterUnwrapped = unwrapKey(key, passwordCipher);
                         Cipher masterDecryptCipher = getCipher(Cipher.DECRYPT_MODE, masterUnwrapped, encryptedDbPass);
                         char[] dbPass = decryptToChars(masterDecryptCipher, encryptedDbPass);
+
                         dbHandler.openDatabase(new String(dbPass)); // FIXME needs char array
                         dbHandler.changePassword("fakepass".toCharArray());
+
+                        // TODO remove bio key from AndroidKeyStore
+
+                        sharedPrefs
+                                .edit()
+                                .remove(KEY_DB_PASS)
+                                .remove(KEY_MASTER_PASS)
+                                .remove(KEY_MASTER_BIO)
+                                .putString(lockTypeKey, PROTECTION_MODE_NONE)
+                                .putBoolean(bioEnabledKey, false)
+                                .commit();
 
                         Arrays.fill(dbPass, (char) 0);
 
@@ -267,7 +280,8 @@ public class Crypto {
                             }
                         }
                     }
-                });
+                })
+                .subscribeOn(Schedulers.computation());
     }
 
     public Completable authenticate(@NonNull char[] password, boolean openDatabase) {
@@ -703,7 +717,7 @@ public class Crypto {
 
     private SecretKey generatePasswordKey(char[] password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        PBEKeySpec spec = new PBEKeySpec(password, salt, 100000, 256); //iterationCount: 65536
+        PBEKeySpec spec = new PBEKeySpec(password, salt, 65536, 256); //iterationCount: 65536
         SecretKey tmp = factory.generateSecret(spec);
         SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
 

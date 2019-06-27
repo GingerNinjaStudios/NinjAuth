@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 break;
                             case R.id.nav_settings:
-                                navController.navigate(R.id.settingsFragment);
+                                navController.navigate(R.id.openSettingsFragment);
                                 break;
                         }
 

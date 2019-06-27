@@ -21,6 +21,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.crypto.Crypto;
+import me.gingerninja.authenticator.data.db.provider.DatabaseHandler;
 import me.gingerninja.authenticator.util.SingleEvent;
 
 public class StartupPasswordCheckViewModel extends ViewModel {
@@ -38,14 +39,17 @@ public class StartupPasswordCheckViewModel extends ViewModel {
 
     private MutableLiveData<SingleEvent> events = new MutableLiveData<>();
 
+    DatabaseHandler dbHandler;
+
     @NonNull
     private final Crypto crypto;
 
     private CompositeDisposable disposable = new CompositeDisposable();
 
     @Inject
-    StartupPasswordCheckViewModel(@NonNull Crypto crypto) {
+    StartupPasswordCheckViewModel(@NonNull Crypto crypto, DatabaseHandler dbHandler) {
         this.crypto = crypto;
+        this.dbHandler = dbHandler;
         String lockType = crypto.getLockType();
         setUsePin(Crypto.PROTECTION_MODE_PIN.equals(lockType) || Crypto.PROTECTION_MODE_BIO_PIN.equals(lockType));
     }
@@ -58,6 +62,10 @@ public class StartupPasswordCheckViewModel extends ViewModel {
 
     boolean hasLock() {
         return crypto.hasLock();
+    }
+
+    void openUnlockedDatabase() {
+        dbHandler.openDatabase("fakepass");
     }
 
     private void setUsePin(boolean usePin) {

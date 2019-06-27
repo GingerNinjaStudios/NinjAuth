@@ -8,7 +8,7 @@
 
     <string name="settings_main_backup_key" translatable="false">settings_main_backup</string>
     <string name="settings_main_backup_title">Backup &amp; Restore</string>
-    <string name="settings_main_backup_summary">Auto-Backup, Export, Import</string>
+    <string name="settings_main_backup_summary">Export, Import</string>
 
     <string name="settings_main_security_key" translatable="false">settings_main_security</string>
     <string name="settings_main_security_title">Security</string>
