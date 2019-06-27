@@ -9,8 +9,8 @@ android {
         applicationId "me.gingerninja.authenticator"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "0.0.2"
+        versionCode 3
+        versionName "0.8.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
@@ -97,6 +97,9 @@ dependencies {
 
     implementation "com.google.dagger:dagger-android-support:${libVersions.dagger}"
     annotationProcessor "com.google.dagger:dagger-android-processor:${libVersions.dagger}"
+
+    // Apache v2 - https://github.com/PSDev/LicensesDialog
+    implementation "de.psdev.licensesdialog:licensesdialog:${libVersions.licensesdialog}"
 
     // Apache v2 - https://github.com/ReactiveX/RxAndroid
     api "io.reactivex.rxjava2:rxandroid:${libVersions.rxAndroid}"

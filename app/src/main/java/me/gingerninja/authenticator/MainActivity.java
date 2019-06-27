@@ -79,14 +79,15 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (destination.getId()) {
                     case R.id.accountListFragment:
-                        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED); // FIXME LOCK_MODE_UNLOCKED
                         navView.setCheckedItem(R.id.nav_accounts);
                         break;
                     case R.id.labelListFragment:
-                        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED); // FIXME LOCK_MODE_UNLOCKED
                         navView.setCheckedItem(R.id.nav_labels);
                         break;
                     case R.id.addAccountFromCameraFragment:
+                        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
                         setRequestedOrientation(requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED);
                         break;
                     default:

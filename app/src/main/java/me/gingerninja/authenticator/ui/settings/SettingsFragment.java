@@ -47,6 +47,9 @@ public class SettingsFragment extends BaseSettingsFragment {
         } else if (getString(R.string.settings_main_security_key).equals(key)) {
             getNavController().navigate(SettingsFragmentDirections.openSecuritySettingsAction());
             return true;
+        } else if (getString(R.string.settings_main_info_key).equals(key)) {
+            getNavController().navigate(SettingsFragmentDirections.openInfoSettingsAction());
+            return true;
         }
 
         return super.onPreferenceTreeClick(preference);
