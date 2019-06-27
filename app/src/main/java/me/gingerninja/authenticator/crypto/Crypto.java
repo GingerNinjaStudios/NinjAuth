@@ -1,5 +1,6 @@
 package me.gingerninja.authenticator.crypto;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.KeyguardManager;
 import android.content.Context;
@@ -14,10 +15,12 @@ import android.util.Base64;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Size;
 import androidx.annotation.StringDef;
 import androidx.biometric.BiometricConstants;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import java.io.IOException;
@@ -52,6 +55,7 @@ import javax.inject.Singleton;
 import javax.security.auth.DestroyFailedException;
 
 import io.reactivex.Completable;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -70,10 +74,18 @@ public class Crypto {
     public static final String PROTECTION_MODE_BIO_PASSWORD = "bio_password";
     public static final int AUTH_MODE_PASSWORD = 0;
     public static final int AUTH_MODE_BIOMETRIC = 1;
+
     private static final String KEYSTORE_PROVIDER = "AndroidKeyStore";
-    private static final String KEY_ALIAS_BIOMETRIC = "biometric";
+    private static final String KEY_ALIAS_PROTECTED = "NAProtected";
+    private static final String KEY_ALIAS_BIOMETRIC = "NABiometric";
     private static final String KEY_MASTER_PASS = "key_pass";
     private static final String KEY_MASTER_BIO = "key_bio";
+    private static final String KEY_DB_PASS = "db_pass";
+    private static final int SHARED_PREF_LOCK_TYPE_ID = R.string.settings_security_lock_key;
+    private static final int SHARED_PREF_BIO_ENABLED_ID = R.string.settings_security_bio_key;
+
+    private final String lockTypeKey, bioEnabledKey;
+
     @NonNull
     private final Context context;
     private final KeyguardManager keyguardManager;
@@ -93,13 +105,16 @@ public class Crypto {
         this.dbHandler = dbHandler;
         this.sharedPrefs = sharedPrefs;
 
+        lockTypeKey = context.getString(SHARED_PREF_LOCK_TYPE_ID);
+        bioEnabledKey = context.getString(SHARED_PREF_BIO_ENABLED_ID);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             keyguardManager = context.getSystemService(KeyguardManager.class);
         } else {
             keyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         }
 
-        String sharedPrefsProtKey = context.getString(R.string.settings_main_security_key); // TODO change this
+        String sharedPrefsProtKey = context.getString(R.string.settings_main_security_key); // TODO change this to SHARED_PREF_LOCK_TYPE_ID or SHARED_PREF_BIO_ENABLED_ID
         protectionMode = sharedPrefs.getString(sharedPrefsProtKey, null);
 
         features = new Features();
@@ -117,6 +132,246 @@ public class Crypto {
             e.printStackTrace();
         }
     }
+
+    public boolean hasLock() {
+        return !context.getString(R.string.settings_prot_none_value).equals(getLockType());
+    }
+
+    @ProtectionMode
+    public String getLockType() {
+        return sharedPrefs.getString(lockTypeKey, context.getString(R.string.settings_prot_none_value));
+    }
+
+    public boolean isBioEnabled() {
+        return sharedPrefs.getBoolean(bioEnabledKey, false);
+    }
+
+    @SuppressLint("ApplySharedPref")
+    public Completable create(@NonNull char[] password, boolean usePin) {
+        return Completable
+                .fromCallable(() -> {
+                            SecretKey master = null, passwordKey = null;
+                            try {
+                                master = generateMasterKey();
+                                byte[] salt = new byte[16];
+                                secureRandom.nextBytes(salt);
+
+                                Cipher masterCipher = getCipher(Cipher.ENCRYPT_MODE, master, false);
+
+                                passwordKey = generatePasswordKey(password, salt);
+                                Cipher passwordCipher = getCipher(Cipher.WRAP_MODE, passwordKey, false);
+                                String passwordWrappedKey = Base64.encodeToString(salt, Base64.NO_PADDING | Base64.NO_WRAP) + '.' + wrapKeyAndEncode(master, passwordCipher);
+
+                                char[] dbPass = generateDbPass();
+                                String encryptedDbPass = encrypt(masterCipher, dbPass);
+
+
+                               /* // --- TESTING ---
+                                String part = passwordWrappedKey.split("\\.")[1];
+                                Cipher passwordUnwrapCipher = getCipher(Cipher.UNWRAP_MODE, passwordKey, part);
+                                SecretKey masterUnwrapped = unwrapKey(part, passwordUnwrapCipher);
+                                Cipher masterDecryptCipher = getCipher(Cipher.DECRYPT_MODE, masterUnwrapped, encryptedDbPass);
+                                char[] decrypted = decryptToChars(masterDecryptCipher, encryptedDbPass);
+
+                                Timber.v("#1 pass: %s", Arrays.toString(dbPass));
+                                Timber.v("#2 encrypted pass: %s", encryptedDbPass);
+                                Timber.v("#3 pass: %s", Arrays.toString(decrypted));*/
+
+                                boolean saved = sharedPrefs
+                                        .edit()
+                                        .putString(KEY_DB_PASS, encryptedDbPass)
+                                        .putString(KEY_MASTER_PASS, passwordWrappedKey)
+                                        .putString(lockTypeKey, usePin ? PROTECTION_MODE_PIN : PROTECTION_MODE_PASSWORD)
+                                        .commit();
+                                if (saved) {
+                                    if (dbHandler.isOpen()) {
+                                        dbHandler.changePassword(dbPass);
+                                    } else {
+                                        dbHandler.openDatabase(new String(dbPass)); // FIXME should use the char array
+                                    }
+                                } else {
+                                    throw new CannotSaveKeyException();
+                                }
+
+                                Arrays.fill(dbPass, (char) 0);
+                            } finally {
+                                try {
+                                    if (master != null && !master.isDestroyed()) {
+                                        master.destroy();
+                                    }
+                                } catch (DestroyFailedException e) {
+                                    Timber.e(e, "Cannot destroy master key: %s", e.getMessage());
+                                }
+
+                                try {
+                                    if (passwordKey != null && !passwordKey.isDestroyed()) {
+                                        passwordKey.destroy();
+                                    }
+                                } catch (DestroyFailedException e) {
+                                    Timber.e(e, "Cannot destroy password key: %s", e.getMessage());
+                                }
+                            }
+
+                            return true;
+                        }
+                )
+                .subscribeOn(Schedulers.computation());
+    }
+
+    public void create(@NonNull Fragment fragment) {
+        create(fragment.requireActivity());
+    }
+
+    public void create(@NonNull FragmentActivity activity) {
+        // TODO
+    }
+
+    public Completable remove(@NonNull char[] password) {
+        return Completable
+                .fromCallable(() -> {
+                    SecretKey passwordKey = null, masterUnwrapped = null;
+                    try {
+                        byte[] salt, key;
+
+                        byte[][] parts = getMasterParts();
+                        salt = parts[0];
+                        key = parts[1];
+
+
+                        passwordKey = generatePasswordKey(password, salt);
+                        Cipher passwordCipher = getCipher(Cipher.UNWRAP_MODE, passwordKey, key);
+                        String encryptedDbPass = sharedPrefs.getString(KEY_DB_PASS, null);
+                        masterUnwrapped = unwrapKey(key, passwordCipher);
+                        Cipher masterDecryptCipher = getCipher(Cipher.DECRYPT_MODE, masterUnwrapped, encryptedDbPass);
+                        char[] dbPass = decryptToChars(masterDecryptCipher, encryptedDbPass);
+                        dbHandler.openDatabase(new String(dbPass)); // FIXME needs char array
+                        dbHandler.changePassword("fakepass".toCharArray());
+
+                        Arrays.fill(dbPass, (char) 0);
+
+                        return true;
+                    } finally {
+                        if (passwordKey != null && !passwordKey.isDestroyed()) {
+                            try {
+                                passwordKey.destroy();
+                            } catch (DestroyFailedException e) {
+                                Timber.e(e, "Cannot destroy password key: %s", e.getMessage());
+                            }
+                        }
+
+                        if (masterUnwrapped != null && !masterUnwrapped.isDestroyed()) {
+                            try {
+                                masterUnwrapped.destroy();
+                            } catch (DestroyFailedException e) {
+                                Timber.e(e, "Cannot destroy master key: %s", e.getMessage());
+                            }
+                        }
+                    }
+                });
+    }
+
+    public Completable authenticate(@NonNull char[] password, boolean openDatabase) {
+        byte[] salt, key;
+        try {
+            byte[][] parts = getMasterParts();
+            salt = parts[0];
+            key = parts[1];
+        } catch (Throwable t) {
+            return Completable.error(t);
+        }
+
+        /*String wrapped = sharedPrefs.getString(KEY_MASTER_PASS, null);
+        if (wrapped == null || wrapped.indexOf('.') < 0) {
+            return Completable.error(new IllegalStateException("No password key found"));
+        }
+
+        String[] parts = wrapped.split("\\.");
+
+        if (parts.length != 2) {
+            return Completable.error(new IllegalStateException("Invalid password key found"));
+        }
+
+        byte[] salt = Base64.decode(parts[0], Base64.NO_PADDING | Base64.NO_WRAP);*/
+
+        return Completable
+                .fromCallable(() -> {
+                    SecretKey passwordKey = null, masterUnwrapped = null;
+                    try {
+                        passwordKey = generatePasswordKey(password, salt);
+                        Cipher passwordCipher = getCipher(Cipher.UNWRAP_MODE, passwordKey, key);
+
+                        if (openDatabase) {
+                            String encryptedDbPass = sharedPrefs.getString(KEY_DB_PASS, null);
+                            masterUnwrapped = unwrapKey(key, passwordCipher);
+                            Cipher masterDecryptCipher = getCipher(Cipher.DECRYPT_MODE, masterUnwrapped, encryptedDbPass);
+                            char[] dbPass = decryptToChars(masterDecryptCipher, encryptedDbPass);
+
+                            dbHandler.openDatabase(new String(dbPass));
+
+                            Arrays.fill(dbPass, '\0');
+                        }
+                    } finally {
+                        if (passwordKey != null && !passwordKey.isDestroyed()) {
+                            try {
+                                passwordKey.destroy();
+                            } catch (DestroyFailedException e) {
+                                Timber.e(e, "Cannot destroy password key: %s", e.getMessage());
+                            }
+                        }
+                        if (masterUnwrapped != null && !masterUnwrapped.isDestroyed()) {
+                            try {
+                                masterUnwrapped.destroy();
+                            } catch (DestroyFailedException e) {
+                                Timber.e(e, "Cannot destroy master key: %s", e.getMessage());
+                            }
+                        }
+                    }
+
+                    return true;
+                })
+                .subscribeOn(Schedulers.computation());
+    }
+
+    public Maybe authenticate(@NonNull FragmentActivity activity) {
+        return null;
+    }
+
+    private char[] generateDbPass() {
+        byte[] bytes = new byte[24];
+        secureRandom.nextBytes(bytes);
+
+        CharBuffer charBuffer = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(bytes));
+        char[] data = Arrays.copyOf(charBuffer.array(), charBuffer.limit());
+
+        Arrays.fill(bytes, (byte) 0);
+
+        return data;
+    }
+
+    @Size(2)
+    private byte[][] getMasterParts() {
+        String wrapped = sharedPrefs.getString(KEY_MASTER_PASS, null);
+        if (wrapped == null || wrapped.indexOf('.') < 0) {
+            throw new IllegalStateException("No password key found");
+        }
+
+        String[] parts = wrapped.split("\\.");
+
+        if (parts.length != 2) {
+            throw new IllegalStateException("Invalid password key found");
+        }
+
+        byte[] salt = Base64.decode(parts[0], Base64.NO_PADDING | Base64.NO_WRAP);
+        byte[] key = Base64.decode(parts[1], Base64.NO_PADDING | Base64.NO_WRAP);
+
+        return new byte[][]{salt, key};
+    }
+
+    // --------------------------------------
+    // --------------------------------------
+    // --------------------------------------
+    // --------------------------------------
+    // --------------------------------------
 
     public Features getFeatures() {
         return features;
@@ -165,9 +420,9 @@ public class Crypto {
         }
     }
 
-    public void authenticate(@NonNull FragmentActivity activity) {
+    /*public void authenticate(@NonNull FragmentActivity activity) {
         authenticate(activity, AUTH_MODE_BIOMETRIC);
-    }
+    }*/
 
     // TODO how to store auto-backup password securely in memory
     /*
@@ -427,10 +682,10 @@ public class Crypto {
     private Cipher getCipher(@CipherPurposeRead int purpose, Key secretKey, byte[] data) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
         int ivLength = data[0];
         byte[] iv = new byte[ivLength];
-        System.arraycopy(data, 0, iv, 0, ivLength);
+        System.arraycopy(data, 1, iv, 0, ivLength);
 
-        byte[] encrypted = new byte[data.length - iv.length - 1];
-        System.arraycopy(data, 1 + ivLength, encrypted, 0, encrypted.length);
+        //byte[] encrypted = new byte[data.length - iv.length - 1];
+        //System.arraycopy(data, 1 + ivLength, encrypted, 0, encrypted.length);
 
         final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         GCMParameterSpec parameterSpec = new GCMParameterSpec(128, iv); //128 bit auth tag length
@@ -441,13 +696,13 @@ public class Crypto {
 
     private SecretKey generateMasterKey() {
         // creating AES
-        byte[] key = new byte[16];
+        byte[] key = new byte[32];
         secureRandom.nextBytes(key);
         return new SecretKeySpec(key, "AES");
     }
 
     private SecretKey generatePasswordKey(char[] password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256"); // TODO PBKDF2WithHmacSHA1 on pre-26
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         PBEKeySpec spec = new PBEKeySpec(password, salt, 100000, 256); //iterationCount: 65536
         SecretKey tmp = factory.generateSecret(spec);
         SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
@@ -567,12 +822,12 @@ public class Crypto {
         public static final int BIO_NO_HARDWARE = 3;
         public static final int BIO_UNAVAILABLE_NOW = 4;
 
-        public boolean hasBiometrics() {
-            return getBiometricsResults() == BIO_OK;
+        public boolean isBiometricsSupported() {
+            return getBiometricsResults() != BIO_NO_HARDWARE;
         }
 
         @SuppressWarnings("deprecation")
-        private int getBiometricsResults() {
+        public int getBiometricsResults() {
             FingerprintManagerCompat fingerprintManager = FingerprintManagerCompat.from(context);
             if (!context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
                 return BIO_NO_HARDWARE;

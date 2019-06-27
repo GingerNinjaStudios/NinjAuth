@@ -55,7 +55,7 @@ public class PasswordSetFragment extends BaseFragment<PasswordSetFragmentBinding
             getDataBinding().password.requestFocus();
             InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             if (imm != null) {
-                imm.showSoftInput(getDataBinding().password, InputMethodManager.SHOW_IMPLICIT);
+                imm.showSoftInput(getDataBinding().password, 0);
             }
         }
     }
@@ -69,7 +69,7 @@ public class PasswordSetFragment extends BaseFragment<PasswordSetFragmentBinding
                 if (type == R.string.settings_prot_pin_value) {
                     action = PasswordSetFragmentDirections.exitPasswordSetFragmentAction();
                 } else {
-                    action = PasswordSetFragmentDirections.passwordSetupToBiometricsAction();
+                    action = PasswordSetFragmentDirections.passwordSetupToBiometricsAction(getViewModel(PasswordSetViewModel.class).password.get());
                 }
                 getNavController().navigate(action);
             }

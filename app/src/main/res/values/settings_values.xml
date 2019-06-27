@@ -29,6 +29,7 @@
     <string name="settings_security_bio_title">Biometrics</string>
     <string name="settings_security_bio_summary_on">Biometrics authentication is enabled</string>
     <string name="settings_security_bio_summary_off">Biometrics authentication is not enabled</string>
+    <string name="settings_security_bio_unsupported">Not supported on your device</string>
 
     <string name="settings_security_cat_privacy_title">Privacy</string>
 

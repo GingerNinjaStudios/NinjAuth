@@ -149,6 +149,9 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_splashFragment_to_startupPasswordCheckFragment"
+            app:destination="@id/startupPasswordCheckFragment" />
     </fragment>
     <fragment
         android:id="@+id/setupFragment"
@@ -178,4 +181,13 @@
         app:popUpToInclusive="true" />
     <include app:graph="@navigation/security_setup" />
     <include app:graph="@navigation/settings_nav" />
+    <fragment
+        android:id="@+id/startupPasswordCheckFragment"
+        android:name="me.gingerninja.authenticator.ui.security.StartupPasswordCheckFragment"
+        android:label="StartupPasswordCheckFragment"
+        tools:layout="@layout/startup_password_check_fragment">
+        <action
+            android:id="@+id/action_startupPasswordCheckFragment_to_accountListFragment"
+            app:destination="@id/accountListFragment" />
+    </fragment>
 </navigation>

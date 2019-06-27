@@ -215,6 +215,10 @@
     <string name="security_title">Security</string>
     <string name="security_lock_type_title">App lock type</string>
     <string name="security_lock_type_current">Current app lock</string>
+    <string name="security_lock_type_confirm_dialog_title">Remove app lock?</string>
+    <string name="security_lock_type_confirm_dialog_message">Removing the app lock results in anyone who has access to your device being able to access the data, such as accounts and labels.</string>
+    <string name="security_lock_type_confirm_dialog_confirm">Remove lock</string>
+
     <string name="security_first_password_title">Set application lock</string>
     <string name="security_first_password_message_password">For improved security, set password</string>
     <string name="security_first_password_message_confirm_password">Re-enter your password</string>

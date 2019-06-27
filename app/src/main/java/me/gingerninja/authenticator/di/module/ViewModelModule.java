@@ -22,6 +22,7 @@ import me.gingerninja.authenticator.ui.home.form.AccountEditorViewModel;
 import me.gingerninja.authenticator.ui.label.LabelsViewModel;
 import me.gingerninja.authenticator.ui.label.form.LabelEditorViewModel;
 import me.gingerninja.authenticator.ui.security.BiometricsSetViewModel;
+import me.gingerninja.authenticator.ui.security.LockTypeSelectorViewModel;
 import me.gingerninja.authenticator.ui.security.PasswordCheckViewModel;
 import me.gingerninja.authenticator.ui.security.PasswordSetViewModel;
 import me.gingerninja.authenticator.ui.setup.SetupViewModel;
@@ -103,6 +104,11 @@ public abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(PasswordCheckViewModel.class)
     abstract ViewModel bindPasswordCheckViewModel(PasswordCheckViewModel viewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LockTypeSelectorViewModel.class)
+    abstract ViewModel bindLockTypeSelectorViewModel(LockTypeSelectorViewModel viewModel);
 
     @Binds
     @IntoMap

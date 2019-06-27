@@ -17,8 +17,12 @@ import androidx.lifecycle.ViewModel;
 
 import javax.inject.Inject;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import me.gingerninja.authenticator.R;
+import me.gingerninja.authenticator.crypto.Crypto;
 import me.gingerninja.authenticator.util.SingleEvent;
+import timber.log.Timber;
 
 public class PasswordSetViewModel extends ViewModel {
     static final String EVENT_NEXT = "event.next";
@@ -39,8 +43,20 @@ public class PasswordSetViewModel extends ViewModel {
 
     private MutableLiveData<SingleEvent> events = new MutableLiveData<>();
 
+    private CompositeDisposable disposable = new CompositeDisposable();
+
+    @NonNull
+    private final Crypto crypto;
+
     @Inject
-    PasswordSetViewModel() {
+    PasswordSetViewModel(@NonNull Crypto crypto) {
+        this.crypto = crypto;
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        disposable.dispose();
     }
 
     void setUsePin(boolean usePin) {
@@ -57,7 +73,7 @@ public class PasswordSetViewModel extends ViewModel {
         if (isConfirmStage.get()) {
             if (TextUtils.equals(setPassword, password.get())) {
                 inputEnabled.set(false);
-                events.setValue(new SingleEvent(EVENT_NEXT));
+                doCrypto();
             } else {
                 hasError.set(true);
                 updateUi();
@@ -68,6 +84,22 @@ public class PasswordSetViewModel extends ViewModel {
             isConfirmStage.set(true);
             updateUi();
         }
+    }
+
+    private void doCrypto() {
+        disposable.clear();
+        disposable.add(
+                crypto
+                        .create(setPassword.toCharArray(), usePin)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                () -> events.setValue(new SingleEvent(EVENT_NEXT)),
+                                throwable -> {
+                                    Timber.e(throwable, "Could not create password crypto: %s", throwable.getMessage());
+                                    inputEnabled.set(true);
+                                    // TODO error handling
+                                })
+        );
     }
 
     public boolean onEditorDoneAction(TextView view, int actionId, KeyEvent event) {

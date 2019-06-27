@@ -23,7 +23,7 @@ import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.crypto.Crypto;
 import me.gingerninja.authenticator.util.SingleEvent;
 
-public class PasswordCheckViewModel extends ViewModel {
+public class StartupPasswordCheckViewModel extends ViewModel {
     static final String EVENT_CONFIRM = "event.confirm";
     static final String EVENT_BIO_AUTH = "event.bio";
 
@@ -44,7 +44,7 @@ public class PasswordCheckViewModel extends ViewModel {
     private CompositeDisposable disposable = new CompositeDisposable();
 
     @Inject
-    PasswordCheckViewModel(@NonNull Crypto crypto) {
+    StartupPasswordCheckViewModel(@NonNull Crypto crypto) {
         this.crypto = crypto;
         String lockType = crypto.getLockType();
         setUsePin(Crypto.PROTECTION_MODE_PIN.equals(lockType) || Crypto.PROTECTION_MODE_BIO_PIN.equals(lockType));

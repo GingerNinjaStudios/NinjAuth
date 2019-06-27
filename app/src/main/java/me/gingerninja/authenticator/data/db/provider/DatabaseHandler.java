@@ -75,10 +75,21 @@ public class DatabaseHandler {
         this.entityStore = store;
     }
 
-    public void changePassword(String newPassword) {
+    public void changePassword(char[] newPassword) {
         if (databaseSource != null) {
             databaseSource.getWritableDatabase().changePassword(newPassword);
         }
+    }
+
+    public void close() {
+        if (databaseSource != null) {
+            databaseSource.close();
+            databaseSource = null;
+        }
+    }
+
+    public boolean isOpen() {
+        return databaseSource != null;
     }
 
     public ReactiveEntityStore<Persistable> getEntityStore() {

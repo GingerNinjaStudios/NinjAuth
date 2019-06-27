@@ -14,10 +14,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.XmlRes;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.takisoft.preferencex.PreferenceFragmentCompat;
+
+import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 import me.gingerninja.authenticator.R;
@@ -25,6 +30,9 @@ import me.gingerninja.authenticator.util.AppSettings;
 import me.gingerninja.authenticator.util.resulthandler.FragmentResultListener;
 
 public abstract class BaseSettingsFragment extends PreferenceFragmentCompat implements FragmentResultListener {
+    @Inject
+    protected ViewModelProvider.Factory viewModelFactory;
+
     @Override
     public void onAttach(@NonNull Context context) {
         AndroidSupportInjection.inject(this);
@@ -66,6 +74,11 @@ public abstract class BaseSettingsFragment extends PreferenceFragmentCompat impl
             IBinder token = requireActivity().findViewById(android.R.id.content).getWindowToken();
             imm.hideSoftInputFromWindow(token, 0);
         }
+    }
+
+    @NonNull
+    protected <U extends ViewModel> U getViewModel(@NonNull Class<U> modelClass) {
+        return ViewModelProviders.of(this, viewModelFactory).get(modelClass);
     }
 
     public NavController getNavController() {
