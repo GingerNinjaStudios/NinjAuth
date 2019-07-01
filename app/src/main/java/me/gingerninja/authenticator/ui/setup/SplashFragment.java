@@ -36,7 +36,7 @@ public class SplashFragment extends BaseFragment<SplashFragmentBinding> implemen
         if (isFirstTime) {
             //binding.btnSkipSetup.setOnClickListener(v -> SkipConfirmationBottomFragment.show(getChildFragmentManager()));
             binding.btnSkipSetup.setOnClickListener(v -> onSkipSetup());
-            binding.btnNext.setOnClickListener(v -> getNavController().navigate(R.id.startSetupAction));
+            binding.btnNext.setOnClickListener(v -> getNavController().navigate(SplashFragmentDirections.startSetupAction()));
 
             //binding.motionLayout.rebuildScene();
 
@@ -49,14 +49,19 @@ public class SplashFragment extends BaseFragment<SplashFragmentBinding> implemen
                 binding.motionLayout.transitionToState(R.id.end);
             }
         } else {
-            getNavController().navigate(R.id.skipSetupToAccountListAction);
-            // FIXME -- getNavController().navigate(SplashFragmentDirections.openStartupPasswordCheckFragmentAction());
+            //getNavController().navigate(R.id.skipSetupToAccountListAction);
+            getNavController().navigate(SplashFragmentDirections.openStartupPasswordCheckFragmentAction());
             /*if (crypto.hasLock()) {
                 getNavController().navigate(SplashFragmentDirections.openStartupPasswordCheckFragmentAction());
             } else {
                 getNavController().navigate(R.id.skipSetupToAccountListAction);
             }*/
         }
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
@@ -78,6 +83,6 @@ public class SplashFragment extends BaseFragment<SplashFragmentBinding> implemen
     public void onSkipSetup() {
         appSettings.setFirstRunComplete();
         // FIXME -- getNavController().navigate(SplashFragmentDirections.openStartupPasswordCheckFragmentAction());
-        getNavController().navigate(R.id.skipSetupToAccountListAction);
+        getNavController().navigate(SplashFragmentDirections.skipSetupToAccountListAction());
     }
 }

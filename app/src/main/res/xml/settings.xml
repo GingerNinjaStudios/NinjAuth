@@ -15,10 +15,9 @@
         android:summary="@string/settings_main_backup_summary"
         android:title="@string/settings_main_backup_title" />
     <Preference
-        android:enabled="false"
         android:icon="@drawable/ic_lock_24dp"
         android:key="@string/settings_main_security_key"
-        android:summary="Disabled due to instability; will be re-enabled in the next release"
+        android:summary="@string/settings_main_security_summary"
         android:title="@string/settings_main_security_title" />
     <Preference
         app:isPreferenceVisible="false"

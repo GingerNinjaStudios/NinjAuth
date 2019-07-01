@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -17,38 +16,10 @@ import me.gingerninja.authenticator.ui.base.BaseFragment;
 import me.gingerninja.authenticator.util.SingleEvent;
 
 public class StartupPasswordCheckFragment extends BaseFragment<StartupPasswordCheckFragmentBinding> {
-    private final OnBackPressedCallback backButtonCallback = new OnBackPressedCallback(true) {
-        @Override
-        public void handleOnBackPressed() {
-            exit();
-        }
-    };
-
-    private boolean leaving;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        StartupPasswordCheckViewModel viewModel = getViewModel(StartupPasswordCheckViewModel.class);
-
-        if (!viewModel.hasLock()) {
-            leaving = true;
-            viewModel.openUnlockedDatabase();
-            getNavController().navigate(StartupPasswordCheckFragmentDirections.loginCompleteAction());
-        } else {
-            requireActivity().getOnBackPressedDispatcher().addCallback(this, backButtonCallback);
-        }
-    }
 
     @Override
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, StartupPasswordCheckFragmentBinding binding) {
-        if (leaving) {
-            return;
-        }
-
         StartupPasswordCheckViewModel viewModel = getViewModel(StartupPasswordCheckViewModel.class);
-        binding.toolbar.setNavigationOnClickListener(view -> exit());
 
         viewModel.getEvents().observe(getViewLifecycleOwner(), this::handleEvents);
         binding.setViewModel(viewModel);
@@ -58,24 +29,20 @@ public class StartupPasswordCheckFragment extends BaseFragment<StartupPasswordCh
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (leaving) {
-            return;
-        }
-
-        if (savedInstanceState == null) {
-            getDataBinding().password.requestFocus();
-            InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (imm != null) {
-                imm.showSoftInput(getDataBinding().password, 0);
-            }
-        }
-    }
-
-    private void exit() {
         StartupPasswordCheckViewModel viewModel = getViewModel(StartupPasswordCheckViewModel.class);
 
-        if (viewModel.inputEnabled.get()) {
-            getNavController().navigate(StartupPasswordCheckFragmentDirections.leaveLoginScreen());
+        if (!viewModel.hasLock()) {
+            viewModel.openUnlockedDatabase();
+            getNavController().navigate(StartupPasswordCheckFragmentDirections.loginCompleteAction());
+        } else {
+            if (savedInstanceState == null) {
+                getDataBinding().password.clearFocus();
+                getDataBinding().password.requestFocus();
+                InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.showSoftInput(getDataBinding().password, InputMethodManager.SHOW_IMPLICIT);
+                }
+            }
         }
     }
 

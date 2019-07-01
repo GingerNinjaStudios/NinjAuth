@@ -33,9 +33,9 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends DaggerFrag
     protected T dataBinding;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onAttach(Context context) {
+        super.onAttach(context);
         AndroidSupportInjection.inject(this);
-        super.onCreate(savedInstanceState);
     }
 
     @Nullable
@@ -49,8 +49,8 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends DaggerFrag
     protected abstract void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, T viewDataBinding);
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
 
         InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
@@ -65,7 +65,7 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends DaggerFrag
     }
 
     public NavController getNavController() {
-        return Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+        return Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
     }
 
     @NonNull

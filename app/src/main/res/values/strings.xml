@@ -236,7 +236,7 @@
     <string name="security_biometrics_page_title">Biometrics</string>
     <string name="security_biometrics_title">Use biometrics for easier access</string>
     <string name="security_biometrics_enabled_title">Biometrics authentication is enabled</string>
-    <string name="security_biometrics_message">You can use the biometric capabilities of your device, such as fingerprints, to authenticate yourself when using the app. This allows faster access to your data, however, biometrics is inherently less secure than a strong password or PIN.</string>
+    <string name="security_biometrics_message">You can use the biometric capabilities of your device, such as fingerprints, to authenticate yourself when using the app. This allows faster access to your data, however, biometrics might be inherently less secure than a strong password or PIN.</string>
     <string name="security_biometrics_enable_btn">Enable biometrics</string>
     <string name="security_biometrics_disable_btn">Disable biometrics</string>
 

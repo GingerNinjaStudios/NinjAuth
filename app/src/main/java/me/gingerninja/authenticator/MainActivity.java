@@ -19,12 +19,9 @@ import com.google.android.material.navigation.NavigationView;
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
-import me.gingerninja.authenticator.crypto.Crypto;
-import me.gingerninja.authenticator.data.db.provider.DatabaseHandler;
 import me.gingerninja.authenticator.databinding.ActivityMainBinding;
 import me.gingerninja.authenticator.module.timecorrector.TimeCorrector;
 import me.gingerninja.authenticator.util.AppSettings;
-import me.gingerninja.authenticator.util.backup.BackupUtils;
 import me.gingerninja.authenticator.util.resulthandler.FragmentResultListener;
 import timber.log.Timber;
 
@@ -35,17 +32,7 @@ public class MainActivity extends AppCompatActivity {
     @Inject
     TimeCorrector timeCorrector;
 
-    @Inject
-    DatabaseHandler temporaryDbHandler;
-
-    @Inject
-    BackupUtils backupUtils;
-
-    @Inject
-    Crypto crypto;
-
     private NavController navController;
-
     private DrawerLayout drawerLayout;
 
     @Override
@@ -58,8 +45,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setTheme(appSettings.getTheme());
-
-        temporaryDbHandler.openDatabase("fakepass");
 
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         drawerLayout = binding.drawerLayout;
@@ -125,21 +110,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         timeCorrector.initExternalModule();
-
-        //crypto.authenticate(this);
-        /*crypto.test(this)
-                .subscribe(() -> {
-                    Timber.v("Crypto test done");
-                });*/
-
-        /*Account account = Parser.parseUrl("otpauth://totp/ACME%20Co:john@example.com?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ&issuer=ACME%20Co&algorithm=SHA1&digits=6&period=30");
-        TimeCorrector timeCorrector = new TimeCorrector();
-        CodeGenerator codeGenerator = new CodeGenerator(timeCorrector);
-
-        Log.d("MainAcitvity", "account: " + account);
-        Log.d("MainAcitvity", "code: " + codeGenerator.formatCode(codeGenerator.getCode(account), account.getDigits()));*/
-
-        //backupUtils.createFile(this, 1, "ninjauth-backup.zip");
     }
 
     @SuppressLint("InlinedApi")
