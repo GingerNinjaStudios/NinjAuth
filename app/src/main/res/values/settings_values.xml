@@ -34,9 +34,9 @@
     <string name="settings_security_cat_privacy_title">Privacy</string>
 
     <string name="settings_security_hide_recent_key" translatable="false">settings_security_hide_recent</string>
-    <string name="settings_security_hide_recent_title">Hide from app switcher</string>
-    <string name="settings_security_hide_recent_summary_on">Hidden in recents</string>
-    <string name="settings_security_hide_recent_summary_off">Screen shown in recents</string>
+    <string name="settings_security_hide_recent_title">Secure screen</string>
+    <string name="settings_security_hide_recent_summary_on">Screenshots and recordings are disabled</string>
+    <string name="settings_security_hide_recent_summary_off">Screen shown in recents, screenshots and recordings</string>
 
     <!-- Misc -->
     <string name="settings_first_run_complete" translatable="false">settings_first_run_complete</string>

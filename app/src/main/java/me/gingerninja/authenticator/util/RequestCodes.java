@@ -14,4 +14,7 @@ public class RequestCodes {
     public static final int BACKUP_LABEL_SELECTOR = 0x3012;
 
     public static final int RESTORE = 0x3020;
+
+    public static final int SECURITY_ENROLL = 0x5000;
+    public static final int SECURITY_CONFIRM_DEVICE_CREDENTIAL = 0x5001;
 }

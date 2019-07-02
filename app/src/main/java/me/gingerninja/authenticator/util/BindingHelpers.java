@@ -19,6 +19,11 @@ import antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator;
 import me.gingerninja.authenticator.R;
 
 public class BindingHelpers {
+    @BindingAdapter("text")
+    public static void setText(TextView textView, int textRes) {
+        textView.setText(textRes == 0 ? null : textView.getContext().getString(textRes));
+    }
+
     @BindingAdapter("errorText")
     public static void setErrorText(TextInputLayout view, int errorTextRes) {
         if (errorTextRes == 0) {

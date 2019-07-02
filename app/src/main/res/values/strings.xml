@@ -243,6 +243,14 @@
     <string name="security_biometrics_prompt_negative_btn">Use password</string>
     <string name="security_use_biometrics">Use biometrics</string>
 
+    <string name="biometric_error_key_invalidated">The biometric authentication is unavailable because you might have changed or removed the device\'s lock screen which resulted in the key being removed for security reasons.</string>
+    <string name="biometric_error_temporary_lock">You have made too many login attempts. Please, try again later or use the password login.</string>
+    <string name="biometric_error_permanent_lock">You have made too many login attempts. You must re-unlock your device using its lock screen.</string>
+    <string name="biometric_error_no_biometrics">You need to enroll some biometrics before using this function.</string>
+    <string name="biometric_error_unknown">Biometric authentication error. Please, try again later or use the password login.</string>
+    <string name="biometric_error_no_biometrics_btn">Open settings</string>
+    <string name="biometric_error_permanent_lock_btn">Unlock the device</string>
+
     <string name="auth_title">Authentication</string>
     <string name="auth_wrong_pin">Wrong PIN</string>
     <string name="auth_wrong_password">Wrong password</string>

@@ -35,4 +35,8 @@
     <style name="MyPreferenceFragment" parent="PreferenceFragment.Material">
         <item name="android:layout">@layout/base_settings_fragment</item>
     </style>
+
+    <style name="TextAppearance.ErrorText" parent="@style/TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">?colorError</item>
+    </style>
 </resources>

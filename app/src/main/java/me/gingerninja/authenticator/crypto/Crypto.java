@@ -38,7 +38,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
-import java.security.UnrecoverableEntryException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
@@ -151,7 +150,7 @@ public class Crypto {
     }
 
     public boolean isBioEnabled() {
-        return sharedPrefs.getBoolean(bioEnabledKey, true);
+        return sharedPrefs.getBoolean(bioEnabledKey, false);
     }
 
     @SuppressLint("ApplySharedPref")
@@ -330,14 +329,48 @@ public class Crypto {
     @SuppressLint("CheckResult")
     @TargetApi(Build.VERSION_CODES.M)
     @WorkerThread
-    private Completable createBio(@NonNull FragmentActivity activity, @NonNull char[] password) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, NoSuchPaddingException, UnrecoverableEntryException, KeyStoreException {
+    private Completable createBio(@NonNull FragmentActivity activity, @NonNull char[] password) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, NoSuchPaddingException, KeyStoreException {
         CompletableSubject subject = CompletableSubject.create();
 
-        final SecretKey biometricKey = getOrCreateBiometricKey();
-        final Cipher biometricCipher = getCipher(Cipher.WRAP_MODE, biometricKey, true);
+        SecretKey biometricKey;
+        Cipher biometricCipher;
+
+        try {
+            biometricKey = generateBiometricKey();
+            biometricCipher = getCipher(Cipher.WRAP_MODE, biometricKey, true);
+        } catch (InvalidAlgorithmParameterException e2) {
+            int bioResults = getFeatures().getBiometricsResults();
+            if (bioResults == Features.BIO_NO_FINGERPRINTS || bioResults == Features.BIO_DEVICE_NOT_SECURE) {
+                throw new BiometricException(BiometricConstants.ERROR_NO_BIOMETRICS, e2.getMessage());
+            } else {
+                throw new BiometricException(BiometricException.ERROR_KEY_INVALIDATED, e2.getMessage());
+            }
+        } catch (KeyPermanentlyInvalidatedException e) {
+            Timber.e(e, "Cannot use bio key");
+            removeBio().blockingAwait();
+            throw new BiometricException(BiometricException.ERROR_KEY_INVALIDATED, e.getMessage());
+            /*// retrying
+            try {
+                biometricKey = generateBiometricKey();
+                biometricCipher = getCipher(Cipher.WRAP_MODE, biometricKey, true);
+            } catch (InvalidAlgorithmParameterException e2) {
+                int bioResults = getFeatures().getBiometricsResults();
+                if (bioResults == Features.BIO_NO_FINGERPRINTS || bioResults == Features.BIO_DEVICE_NOT_SECURE) {
+                    throw new BiometricException(BiometricConstants.ERROR_NO_BIOMETRICS, e2.getMessage());
+                } else {
+                    throw new BiometricException(BiometricException.ERROR_KEY_INVALIDATED, e2.getMessage());
+                }
+            } catch (KeyPermanentlyInvalidatedException e2) {
+                Timber.e(e2, "Cannot use bio key 2");
+                removeBio().blockingAwait();
+                throw new BiometricException(BiometricException.ERROR_KEY_INVALIDATED, e2.getMessage());
+            }*/
+        }
+
+        final SecretKey biometricKeyFin = biometricKey;
 
         authenticateBiometric(activity, biometricCipher, R.string.security_biometrics_prompt_title, android.R.string.cancel)
-                .doAfterTerminate(() -> destroyKey(biometricKey))
+                .doAfterTerminate(() -> destroyKey(biometricKeyFin))
                 .flatMapCompletable(cryptoObject -> {
                     SecretKey master = null;
                     byte[] key = null;
@@ -1115,8 +1148,9 @@ public class Crypto {
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    private void deleteBiometricKey() throws KeyStoreException {
+    private void deleteBiometricKey() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
         keyStore.deleteEntry(KEY_ALIAS_BIOMETRIC);
+        keyStore.load(null);
     }
 
     @NonNull

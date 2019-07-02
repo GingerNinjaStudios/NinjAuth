@@ -40,6 +40,7 @@ public class StartupPasswordCheckViewModel extends ViewModel {
 
     public boolean usePin = false;
     public ObservableBoolean enableBioAuth = new ObservableBoolean(false);
+    public ObservableInt bioErrorText = new ObservableInt(0);
 
     private MutableLiveData<SingleEvent> events = new MutableLiveData<>();
 
@@ -108,6 +109,8 @@ public class StartupPasswordCheckViewModel extends ViewModel {
 
     void bioAuthentication(Fragment fragment) {
         if (enableBioAuth.get()) {
+            bioErrorText.set(0);
+            inputEnabled.set(false);
             disposable.clear();
             disposable.add(
                     crypto.authenticate(fragment)
@@ -120,11 +123,35 @@ public class StartupPasswordCheckViewModel extends ViewModel {
                                             int errCode = ((BiometricException) throwable).getErrorCode();
                                             switch (errCode) {
                                                 case BiometricException.ERROR_KEY_INVALIDATED:
+                                                    enableBioAuth.set(false);
+                                                    bioErrorText.set(R.string.biometric_error_key_invalidated);
+                                                    break;
+                                                case BiometricConstants.ERROR_LOCKOUT:
+                                                    enableBioAuth.set(true);
+                                                    bioErrorText.set(R.string.biometric_error_temporary_lock);
+                                                    break;
+                                                case BiometricConstants.ERROR_LOCKOUT_PERMANENT:
+                                                    enableBioAuth.set(true);
+                                                    bioErrorText.set(R.string.biometric_error_permanent_lock);
+                                                    break;
                                                 case BiometricConstants.ERROR_NO_BIOMETRICS:
                                                     enableBioAuth.set(false);
-                                                    // TODO show error message
+                                                    bioErrorText.set(R.string.biometric_error_no_biometrics);
                                                     break;
+                                                case BiometricConstants.ERROR_TIMEOUT:
+                                                case BiometricConstants.ERROR_NEGATIVE_BUTTON:
+                                                case BiometricConstants.ERROR_CANCELED:
+                                                case BiometricConstants.ERROR_USER_CANCELED:
+                                                    enableBioAuth.set(true);
+                                                    bioErrorText.set(0);
+                                                    break;
+                                                default:
+                                                    enableBioAuth.set(true);
+                                                    bioErrorText.set(R.string.biometric_error_unknown);
                                             }
+                                        } else {
+                                            enableBioAuth.set(true);
+                                            bioErrorText.set(R.string.biometric_error_unknown);
                                         }
                                         Timber.e(throwable, "Bio error");
                                         inputEnabled.set(true);
