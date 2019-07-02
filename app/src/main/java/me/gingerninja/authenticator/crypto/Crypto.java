@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -17,6 +18,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Size;
 import androidx.annotation.StringDef;
+import androidx.annotation.StringRes;
+import androidx.annotation.WorkerThread;
 import androidx.biometric.BiometricConstants;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
@@ -35,6 +38,8 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
+import java.security.UnrecoverableEntryException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
@@ -56,9 +61,9 @@ import javax.security.auth.DestroyFailedException;
 import javax.security.auth.Destroyable;
 
 import io.reactivex.Completable;
-import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.CompletableSubject;
 import io.reactivex.subjects.SingleSubject;
@@ -146,7 +151,7 @@ public class Crypto {
     }
 
     public boolean isBioEnabled() {
-        return sharedPrefs.getBoolean(bioEnabledKey, false);
+        return sharedPrefs.getBoolean(bioEnabledKey, true);
     }
 
     @SuppressLint("ApplySharedPref")
@@ -309,12 +314,68 @@ public class Crypto {
                 .subscribeOn(Schedulers.computation());
     }
 
-    public void create(@NonNull Fragment fragment) {
-        create(fragment.requireActivity());
+    public Completable create(@NonNull Fragment fragment, @NonNull char[] password) {
+        return create(fragment.requireActivity(), password);
     }
 
-    public void create(@NonNull FragmentActivity activity) {
-        // TODO
+    public Completable create(@NonNull FragmentActivity activity, @NonNull char[] password) {
+        return Completable
+                .fromCallable(() -> {
+                    createBio(activity, password).blockingAwait();
+                    return true;
+                })
+                .subscribeOn(Schedulers.computation());
+    }
+
+    @SuppressLint("CheckResult")
+    @TargetApi(Build.VERSION_CODES.M)
+    @WorkerThread
+    private Completable createBio(@NonNull FragmentActivity activity, @NonNull char[] password) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, NoSuchPaddingException, UnrecoverableEntryException, KeyStoreException {
+        CompletableSubject subject = CompletableSubject.create();
+
+        final SecretKey biometricKey = getOrCreateBiometricKey();
+        final Cipher biometricCipher = getCipher(Cipher.WRAP_MODE, biometricKey, true);
+
+        authenticateBiometric(activity, biometricCipher, R.string.security_biometrics_prompt_title, android.R.string.cancel)
+                .doAfterTerminate(() -> destroyKey(biometricKey))
+                .flatMapCompletable(cryptoObject -> {
+                    SecretKey master = null;
+                    byte[] key = null;
+                    char[] dbPass = null;
+
+                    try {
+                        cryptoPasswordHandler.authenticate(password);
+                        String encryptedDbPass = sharedPrefs.getString(KEY_DB_PASS, null);
+                        key = cryptoPasswordHandler.getMasterKeyHandler().get();
+                        master = new SecretKeySpec(key, "AES");
+                        Cipher masterDecryptCipher = getCipher(Cipher.DECRYPT_MODE, master, encryptedDbPass);
+                        dbPass = decryptToChars(masterDecryptCipher, encryptedDbPass);
+                        dbHandler.openDatabase(new String(dbPass));
+
+                        String biometricWrappedKey = wrapKeyAndEncode(master, cryptoObject.getCipher());
+
+                        if (sharedPrefs.edit().putString(KEY_MASTER_BIO, biometricWrappedKey).putBoolean(bioEnabledKey, true).commit()) {
+                            return Completable.complete();
+                        } else {
+                            return Completable.error(new IllegalStateException("Could not save bio master key"));
+                        }
+                    } finally {
+                        cryptoPasswordHandler.close();
+
+                        if (key != null) {
+                            Arrays.fill(key, (byte) 0);
+                        }
+
+                        if (dbPass != null) {
+                            Arrays.fill(dbPass, (char) 0);
+                        }
+
+                        destroyKey(master);
+                    }
+                })
+                .subscribe(subject);
+
+        return subject.hide();
     }
 
     @SuppressLint("ApplySharedPref")
@@ -364,6 +425,27 @@ public class Crypto {
                     }
                 })
                 .subscribeOn(Schedulers.computation());
+    }
+
+    public Completable removeBio() {
+        return Completable
+                .fromCallable(() -> {
+                    boolean saved = sharedPrefs
+                            .edit()
+                            .remove(KEY_MASTER_BIO)
+                            .putBoolean(bioEnabledKey, false)
+                            .commit();
+
+                    if (saved) {
+                        Timber.v("Removing biometrics key");
+                        deleteBiometricKey();
+
+                        return true;
+                    } else {
+                        throw new CannotSaveKeyException();
+                    }
+                })
+                .subscribeOn(Schedulers.io());
     }
 
     @SuppressLint("ApplySharedPref")
@@ -522,8 +604,107 @@ public class Crypto {
                 .subscribeOn(Schedulers.computation());
     }
 
-    public Maybe authenticate(@NonNull FragmentActivity activity) {
-        return null;
+    @TargetApi(Build.VERSION_CODES.M)
+    public Completable authenticate(@NonNull Fragment fragment) {
+        return authenticate(fragment.requireActivity());
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    public Completable authenticate(@NonNull FragmentActivity activity) {
+        return Completable
+                .fromCallable(() -> {
+                    String masterWrapped = sharedPrefs.getString(KEY_MASTER_BIO, null);
+
+                    SecretKey biometricKey;
+
+                    Cipher rawBioCipher;
+                    try {
+                        biometricKey = getBiometricKey();
+                        rawBioCipher = getCipher(Cipher.UNWRAP_MODE, biometricKey, masterWrapped);
+                    } catch (UnrecoverableKeyException | KeyPermanentlyInvalidatedException e) {
+                        removeBio().blockingAwait();
+                        throw new BiometricException(BiometricException.ERROR_KEY_INVALIDATED, e.getMessage());
+                    }
+
+                    SecretKey master = null;
+                    byte[] key = null;
+                    char[] dbPass = null;
+
+                    try {
+                        String encryptedDbPass = sharedPrefs.getString(KEY_DB_PASS, null);
+
+                        BiometricPrompt.CryptoObject cryptoObject = authenticateBiometric(activity, rawBioCipher, R.string.security_biometrics_prompt_title, R.string.security_biometrics_prompt_negative_btn).blockingGet();
+                        Cipher biometricCipher = cryptoObject.getCipher();
+                        master = unwrapKey(masterWrapped, biometricCipher);
+
+                        Cipher masterDecryptCipher = getCipher(Cipher.DECRYPT_MODE, master, encryptedDbPass);
+                        dbPass = decryptToChars(masterDecryptCipher, encryptedDbPass);
+                        dbHandler.openDatabase(new String(dbPass));
+                    } finally {
+                        cryptoPasswordHandler.close();
+
+                        if (key != null) {
+                            Arrays.fill(key, (byte) 0);
+                        }
+
+                        if (dbPass != null) {
+                            Arrays.fill(dbPass, (char) 0);
+                        }
+
+                        destroyKey(biometricKey);
+                        destroyKey(master);
+                    }
+                    return true;
+                })
+                .subscribeOn(Schedulers.computation());
+    }
+
+    private Single<BiometricPrompt.CryptoObject> authenticateBiometric(@NonNull FragmentActivity activity, @NonNull Cipher cipher, @StringRes int title, @StringRes int negativeBtn) {
+        SingleSubject<BiometricPrompt.CryptoObject> subject = SingleSubject.create();
+
+        BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                .setTitle(context.getString(title))
+                .setNegativeButtonText(context.getString(negativeBtn))
+                .build();
+
+        BiometricPrompt.CryptoObject cryptoObject = new BiometricPrompt.CryptoObject(cipher);
+
+        BiometricPrompt prompt = new BiometricPrompt(activity, Executors.newSingleThreadExecutor(), new BiometricPrompt.AuthenticationCallback() {
+            @Override
+            public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+                Timber.d("[AUTH] error: %d, str: %s", errorCode, errString);
+                subject.onError(new BiometricException(errorCode, errString));
+            }
+
+            @Override
+            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+                Timber.d("[AUTH] success: %s", result);
+
+                //noinspection ConstantConditions
+                subject.onSuccess(result.getCryptoObject());
+            }
+
+            @Override
+            public void onAuthenticationFailed() {
+                Timber.d("[AUTH] failed");
+                //subject.onError(new AuthenticationFailedException());
+            }
+        });
+
+        Disposable disposable = Single.just(prompt)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(biometricPrompt -> biometricPrompt.authenticate(promptInfo, cryptoObject));
+
+
+        return subject
+                .doOnDispose(() -> {
+                    prompt.cancelAuthentication();
+
+                    if (!disposable.isDisposed()) {
+                        disposable.dispose();
+                    }
+                })
+                .hide();
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -638,7 +819,7 @@ public class Crypto {
     public void authenticate(@NonNull FragmentActivity activity, @AuthMode int mode) {
         switch (mode) {
             case AUTH_MODE_BIOMETRIC:
-                authenticateBiometric(activity, null); // TODO
+                authenticateBiometric_OLD(activity, null); // TODO
                 break;
             case AUTH_MODE_PASSWORD:
                 authenticatePassword(activity);
@@ -650,7 +831,7 @@ public class Crypto {
         // TODO
     }
 
-    private Single<BiometricPrompt.CryptoObject> authenticateBiometric(@NonNull FragmentActivity activity, @NonNull Cipher cipher) {
+    private Single<BiometricPrompt.CryptoObject> authenticateBiometric_OLD(@NonNull FragmentActivity activity, @NonNull Cipher cipher) {
         SingleSubject<BiometricPrompt.CryptoObject> subject = SingleSubject.create();
 
         BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
@@ -724,10 +905,10 @@ public class Crypto {
         sharedPrefs.edit().putString(KEY_MASTER_PASS, passwordWrappedKey).apply();
 
         if (useBiometrics && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            SecretKey biometricKey = generateBiometricKeyApi23();
+            SecretKey biometricKey = generateBiometricKey();
             Cipher biometricCipher = getCipher(Cipher.WRAP_MODE, biometricKey, true);
 
-            authenticateBiometric(fragmentActivity, biometricCipher)
+            authenticateBiometric_OLD(fragmentActivity, biometricCipher)
                     .doAfterTerminate(() -> {
                         try {
                             biometricKey.destroy();
@@ -910,8 +1091,37 @@ public class Crypto {
         return secret;
     }
 
+    @NonNull
     @TargetApi(Build.VERSION_CODES.M)
-    private SecretKey generateBiometricKeyApi23() throws NoSuchProviderException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+    private SecretKey getOrCreateBiometricKey() throws NoSuchAlgorithmException, KeyStoreException, NoSuchProviderException, InvalidAlgorithmParameterException {
+        SecretKey key = null;
+        try {
+            key = getBiometricKey();
+        } catch (UnrecoverableKeyException e) {
+            removeBio().blockingAwait();
+        }
+
+        if (key == null) {
+            key = generateBiometricKey();
+        }
+
+        return key;
+    }
+
+    @Nullable
+    @TargetApi(Build.VERSION_CODES.M)
+    private SecretKey getBiometricKey() throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
+        return (SecretKey) keyStore.getKey(KEY_ALIAS_BIOMETRIC, null);
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private void deleteBiometricKey() throws KeyStoreException {
+        keyStore.deleteEntry(KEY_ALIAS_BIOMETRIC);
+    }
+
+    @NonNull
+    @TargetApi(Build.VERSION_CODES.M)
+    private SecretKey generateBiometricKey() throws NoSuchProviderException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         KeyGenParameterSpec.Builder specBuilder = new KeyGenParameterSpec.Builder(KEY_ALIAS_BIOMETRIC, KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
                 .setUserAuthenticationRequired(true)
                 .setKeySize(256)

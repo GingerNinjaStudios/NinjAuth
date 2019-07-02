@@ -3,6 +3,8 @@ package me.gingerninja.authenticator.ui.settings;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Window;
+import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
@@ -19,12 +21,14 @@ public class SecuritySettingsFragment extends BaseSettingsFragment {
     @Override
     protected void onPreferencesCreated(@Nullable Bundle savedInstanceState, String rootKey) {
         final Crypto.Features features = crypto.getFeatures();
-        if (!features.isBiometricsSupported()) {
-            Preference bioPreference = findPreference(getString(R.string.settings_security_bio_key));
+        Preference bioPreference = findPreference(getString(R.string.settings_security_bio_key));
 
-            if (bioPreference != null) {
+        if (bioPreference != null) {
+            if (!features.isBiometricsSupported()) {
                 bioPreference.setEnabled(false);
                 bioPreference.setSummary(R.string.settings_security_bio_unsupported);
+            } else {
+                bioPreference.setSummaryProvider(new BiometricsSummary());
             }
         }
 
@@ -33,6 +37,19 @@ public class SecuritySettingsFragment extends BaseSettingsFragment {
         if (lockPreference != null) {
             lockPreference.setSummaryProvider(new LockTypeSummary());
         }
+
+        //noinspection ConstantConditions
+        findPreference(getString(R.string.settings_security_hide_recent_key))
+                .setOnPreferenceChangeListener((preference, newValue) -> {
+                    boolean hide = (boolean) newValue;
+                    Window window = requireActivity().getWindow();
+                    if (hide) {
+                        window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+                    } else {
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+                    }
+                    return true;
+                });
     }
 
     @Override
@@ -79,6 +96,21 @@ public class SecuritySettingsFragment extends BaseSettingsFragment {
             }
 
             return getString(R.string.settings_prot_none);
+        }
+    }
+
+    private class BiometricsSummary implements Preference.SummaryProvider {
+
+        @Override
+        public CharSequence provideSummary(Preference preference) {
+            SharedPreferences sharedPreferences = preference.getSharedPreferences();
+            boolean bioEnabled = sharedPreferences.getBoolean(getString(R.string.settings_security_bio_key), false);
+
+            if (bioEnabled) {
+                return getString(R.string.settings_security_bio_summary_on);
+            } else {
+                return getString(R.string.settings_security_bio_summary_off);
+            }
         }
     }
 }

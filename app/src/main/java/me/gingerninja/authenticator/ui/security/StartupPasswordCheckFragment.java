@@ -36,11 +36,15 @@ public class StartupPasswordCheckFragment extends BaseFragment<StartupPasswordCh
             getNavController().navigate(StartupPasswordCheckFragmentDirections.loginCompleteAction());
         } else {
             if (savedInstanceState == null) {
-                getDataBinding().password.clearFocus();
-                getDataBinding().password.requestFocus();
-                InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                if (imm != null) {
-                    imm.showSoftInput(getDataBinding().password, InputMethodManager.SHOW_IMPLICIT);
+                if (viewModel.enableBioAuth.get()) {
+                    viewModel.bioAuthentication(this);
+                } else {
+                    getDataBinding().password.clearFocus();
+                    getDataBinding().password.requestFocus();
+                    InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm != null) {
+                        imm.showSoftInput(getDataBinding().password, InputMethodManager.SHOW_IMPLICIT);
+                    }
                 }
             }
         }
@@ -59,7 +63,7 @@ public class StartupPasswordCheckFragment extends BaseFragment<StartupPasswordCh
                     }*/
                     break;
                 case StartupPasswordCheckViewModel.EVENT_BIO_AUTH:
-                    // TODO
+                    viewModel.bioAuthentication(this);
                     break;
             }
         }
