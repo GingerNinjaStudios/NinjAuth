@@ -150,7 +150,7 @@ public class Crypto {
     }
 
     public boolean isBioEnabled() {
-        return sharedPrefs.getBoolean(bioEnabledKey, true);
+        return sharedPrefs.getBoolean(bioEnabledKey, false);
     }
 
     @SuppressLint("ApplySharedPref")
