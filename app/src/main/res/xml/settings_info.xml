@@ -12,6 +12,13 @@
             android:data="https://www.ninjauth.app" />
     </Preference>
     <Preference
+        android:summary="https://github.com/GingerNinjaStudios/NinjAuth"
+        android:title="Source">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="https://github.com/GingerNinjaStudios/NinjAuth" />
+    </Preference>
+    <Preference
         android:key="settings_info_app_license"
         android:title="License"
         app:summary="MIT License" />
