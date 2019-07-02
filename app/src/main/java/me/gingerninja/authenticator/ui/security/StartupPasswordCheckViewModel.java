@@ -6,10 +6,12 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.biometric.BiometricConstants;
 import androidx.databinding.Observable;
 import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableInt;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -20,9 +22,11 @@ import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import me.gingerninja.authenticator.R;
+import me.gingerninja.authenticator.crypto.BiometricException;
 import me.gingerninja.authenticator.crypto.Crypto;
 import me.gingerninja.authenticator.data.db.provider.DatabaseHandler;
 import me.gingerninja.authenticator.util.SingleEvent;
+import timber.log.Timber;
 
 public class StartupPasswordCheckViewModel extends ViewModel {
     static final String EVENT_CONFIRM = "event.confirm";
@@ -35,7 +39,7 @@ public class StartupPasswordCheckViewModel extends ViewModel {
     public ObservableBoolean inputEnabled = new ObservableBoolean(true);
 
     public boolean usePin = false;
-    public boolean enableBioAuth = false;
+    public ObservableBoolean enableBioAuth = new ObservableBoolean(false);
 
     private MutableLiveData<SingleEvent> events = new MutableLiveData<>();
 
@@ -50,6 +54,7 @@ public class StartupPasswordCheckViewModel extends ViewModel {
     StartupPasswordCheckViewModel(@NonNull Crypto crypto, DatabaseHandler dbHandler) {
         this.crypto = crypto;
         this.dbHandler = dbHandler;
+        enableBioAuth.set(crypto.isBioEnabled());
         String lockType = crypto.getLockType();
         setUsePin(Crypto.PROTECTION_MODE_PIN.equals(lockType) || Crypto.PROTECTION_MODE_BIO_PIN.equals(lockType));
     }
@@ -70,11 +75,6 @@ public class StartupPasswordCheckViewModel extends ViewModel {
 
     private void setUsePin(boolean usePin) {
         this.usePin = usePin;
-        updateUi();
-    }
-
-    void setEnableBioAuth(boolean enableBioAuth) {
-        this.enableBioAuth = enableBioAuth;
         updateUi();
     }
 
@@ -104,6 +104,33 @@ public class StartupPasswordCheckViewModel extends ViewModel {
     public void onBioAuthClick(View v) {
         inputEnabled.set(false);
         events.setValue(new SingleEvent(EVENT_BIO_AUTH));
+    }
+
+    void bioAuthentication(Fragment fragment) {
+        if (enableBioAuth.get()) {
+            disposable.clear();
+            disposable.add(
+                    crypto.authenticate(fragment)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(() -> {
+                                        events.setValue(new SingleEvent(EVENT_CONFIRM));
+                                    },
+                                    throwable -> {
+                                        if (throwable instanceof BiometricException) {
+                                            int errCode = ((BiometricException) throwable).getErrorCode();
+                                            switch (errCode) {
+                                                case BiometricException.ERROR_KEY_INVALIDATED:
+                                                case BiometricConstants.ERROR_NO_BIOMETRICS:
+                                                    enableBioAuth.set(false);
+                                                    // TODO show error message
+                                                    break;
+                                            }
+                                        }
+                                        Timber.e(throwable, "Bio error");
+                                        inputEnabled.set(true);
+                                    })
+            );
+        }
     }
 
     @SuppressWarnings("ConstantConditions")

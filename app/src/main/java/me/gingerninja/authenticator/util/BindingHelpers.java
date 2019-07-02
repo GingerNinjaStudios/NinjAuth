@@ -1,6 +1,8 @@
 package me.gingerninja.authenticator.util;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -130,6 +132,19 @@ public class BindingHelpers {
     public static void setOnEditorActionListener(EditText view, boolean selectAll) {
         if (selectAll) {
             view.selectAll();
+
+            view.clearFocus();
+            view.requestFocus();
+
+            InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+            }
         }
+    }
+
+    @BindingAdapter("passwordToggleEnabled")
+    public static void setPasswordToggleEnabled(TextInputLayout view, boolean enabled) {
+        view.setEndIconMode(enabled ? TextInputLayout.END_ICON_PASSWORD_TOGGLE : TextInputLayout.END_ICON_NONE);
     }
 }

@@ -32,14 +32,6 @@ public class PasswordCheckFragment extends BaseFragment<PasswordCheckFragmentBin
 
         PasswordCheckFragmentArgs args = PasswordCheckFragmentArgs.fromBundle(requireArguments());
         source = args.getSource();
-
-        PasswordCheckViewModel viewModel = getViewModel(PasswordCheckViewModel.class);
-
-        if (!viewModel.hasLock()) {
-            getNavController().navigate(PasswordCheckFragmentDirections.openLockTypeSelectorAction(source, null));
-        } else {
-            requireActivity().getOnBackPressedDispatcher().addCallback(this, backButtonCallback);
-        }
     }
 
     @Override
@@ -55,11 +47,19 @@ public class PasswordCheckFragment extends BaseFragment<PasswordCheckFragmentBin
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (savedInstanceState == null) {
-            getDataBinding().password.requestFocus();
-            InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (imm != null) {
-                imm.showSoftInput(getDataBinding().password, 0);
+        PasswordCheckViewModel viewModel = getViewModel(PasswordCheckViewModel.class);
+
+        if (!viewModel.hasLock()) {
+            getNavController().navigate(PasswordCheckFragmentDirections.openLockTypeSelectorAction(source, null));
+        } else {
+            requireActivity().getOnBackPressedDispatcher().addCallback(this, backButtonCallback);
+
+            if (savedInstanceState == null) {
+                getDataBinding().password.requestFocus();
+                InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.showSoftInput(getDataBinding().password, 0);
+                }
             }
         }
     }

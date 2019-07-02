@@ -1,13 +1,15 @@
 package me.gingerninja.authenticator.crypto;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class BiometricException extends RuntimeException {
+    public static final int ERROR_KEY_INVALIDATED = -1;
+
     private final int errorCode;
-    @NonNull
+    @Nullable
     private final CharSequence errString;
 
-    BiometricException(int errorCode, @NonNull CharSequence errString) {
+    BiometricException(int errorCode, @Nullable CharSequence errString) {
         this.errorCode = errorCode;
         this.errString = errString;
     }
@@ -16,7 +18,7 @@ public class BiometricException extends RuntimeException {
         return errorCode;
     }
 
-    @NonNull
+    @Nullable
     public CharSequence getErrorString() {
         return errString;
     }

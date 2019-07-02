@@ -10,15 +10,11 @@ import android.view.ViewGroup;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.biometric.BiometricPrompt;
-
-import java.util.concurrent.Executors;
 
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.databinding.BiometricsSetFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
 import me.gingerninja.authenticator.util.SingleEvent;
-import timber.log.Timber;
 
 public class BiometricsSetFragment extends BaseFragment<BiometricsSetFragmentBinding> {
     private final OnBackPressedCallback backButtonCallback = new OnBackPressedCallback(true) {
@@ -55,35 +51,20 @@ public class BiometricsSetFragment extends BaseFragment<BiometricsSetFragmentBin
     }
 
     private void handleEvents(@NonNull SingleEvent event) {
+        BiometricsSetViewModel viewModel = getViewModel(BiometricsSetViewModel.class);
+        char[] pass = BiometricsSetFragmentArgs.fromBundle(requireArguments()).getPass().toCharArray();
+
         if (event.handle()) {
             switch (event.getId()) {
                 case BiometricsSetViewModel.EVENT_ENABLE:
-                    BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
-                            .setTitle("Authentication")
-                            .setNegativeButtonText(getString(android.R.string.cancel))
-                            .build();
-
-                    BiometricPrompt prompt = new BiometricPrompt(requireActivity(), Executors.newSingleThreadExecutor(), new BiometricPrompt.AuthenticationCallback() {
-                        @Override
-                        public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
-                            super.onAuthenticationError(errorCode, errString);
-                            Timber.e("Biometric error, code: %d, msg: %s", errorCode, errString);
-                        }
-
-                        @Override
-                        public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
-                            super.onAuthenticationSucceeded(result);
-                            Timber.e("Biometric success: %s", result);
-                        }
-
-                        @Override
-                        public void onAuthenticationFailed() {
-                            super.onAuthenticationFailed();
-                            Timber.e("Biometric failed");
-                        }
-                    });
-
-                    prompt.authenticate(promptInfo);
+                    viewModel.createBiometrics(this, pass);
+                    break;
+                case BiometricsSetViewModel.EVENT_ENABLE_SUCCESS:
+                case BiometricsSetViewModel.EVENT_DISABLE_SUCCESS:
+                    exit();
+                    break;
+                case BiometricsSetViewModel.EVENT_DISABLE:
+                    viewModel.removeBiometrics();
                     break;
                 case BiometricsSetViewModel.EVENT_SKIP:
                     exit();

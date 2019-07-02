@@ -79,6 +79,10 @@ public class AppSettings {
         return changed;
     }
 
+    public boolean hideFromRecents(){
+        return sharedPrefs.getBoolean(getString(R.string.settings_security_hide_recent_key), true);
+    }
+
     public boolean isFirstRunComplete() {
         return sharedPrefs.getBoolean(getString(R.string.settings_first_run_complete), false);
     }
