@@ -24,12 +24,15 @@ import java.util.Set;
 import javax.inject.Provider;
 
 import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.CompletableSubject;
 import io.reactivex.subjects.Subject;
 import me.gingerninja.authenticator.module.timecorrector.TimeCorrector;
 
 public class ModuleHandler implements SplitInstallStateUpdatedListener {
     public static final String MODULE_TIME_CORRECTOR = "timecorrector";
-    private static final String SHARED_PREF_NAME = "dynamic_modules";
+    public static final String MODULE_STATE_SUFFIX = "__install_state";
+
+    public static final String SHARED_PREF_NAME = "dynamic_modules";
     @NonNull
     private final SharedPreferences sharedPrefs;
     private Map<String, Provider<?>> moduleProviders = new HashMap<>();
@@ -61,6 +64,11 @@ public class ModuleHandler implements SplitInstallStateUpdatedListener {
 
     public boolean isInstalled(@NonNull @DynamicModule String moduleName) {
         return splitInstallManager.getInstalledModules().contains(moduleName);
+    }
+
+    // TODO this should be used to determine real state as e.g. uninstalling a module might happen only hours later and it should be shown to the users that it is uninstalled even if it isn't
+    public int getInstallState(@NonNull @DynamicModule String moduleName) {
+        return sharedPrefs.getInt(moduleName + MODULE_STATE_SUFFIX, 0);
     }
 
     public boolean isEnabled(@NonNull @DynamicModule String moduleName) {
@@ -170,7 +178,9 @@ public class ModuleHandler implements SplitInstallStateUpdatedListener {
         return subject;
     }
 
-    public void uninstall(@NonNull @DynamicModule String moduleName, @NonNull @DynamicModule String... moduleNames) {
+    public CompletableSubject uninstall(@NonNull @DynamicModule String moduleName, @NonNull @DynamicModule String... moduleNames) {
+        final CompletableSubject subject = CompletableSubject.create();
+
         disable(moduleName, moduleNames);
 
         ArrayList<String> moduleList = new ArrayList<>(1 + moduleNames.length);
@@ -180,7 +190,14 @@ public class ModuleHandler implements SplitInstallStateUpdatedListener {
         splitInstallManager
                 .deferredUninstall(moduleList)
                 .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        subject.onComplete();
+                    } else {
+                        subject.onError(new RuntimeException());
+                    }
                 });
+
+        return subject;
     }
 
     @SuppressWarnings("unchecked")
