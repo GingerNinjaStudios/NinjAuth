@@ -4,6 +4,8 @@ import androidx.annotation.Nullable;
 
 public class BiometricException extends RuntimeException {
     public static final int ERROR_KEY_INVALIDATED = -1;
+    public static final int ERROR_SHOULD_RETRY = -2;
+    public static final int ERROR_KEY_SECURITY_UPDATE = -3;
 
     private final int errorCode;
     @Nullable

@@ -105,11 +105,17 @@ public class BiometricsSetViewModel extends ViewModel {
                                     events.setValue(new SingleEvent(EVENT_ENABLE_SUCCESS));
                                 },
                                 throwable -> {
+                                    boolean enableInput = true;
+
                                     if (throwable instanceof BiometricException) {
                                         int errCode = ((BiometricException) throwable).getErrorCode();
                                         switch (errCode) {
                                             case BiometricException.ERROR_KEY_INVALIDATED:
                                                 bioErrorText.set(R.string.biometric_error_key_invalidated);
+                                                break;
+                                            case BiometricException.ERROR_SHOULD_RETRY:
+                                                enableInput = false;
+                                                events.setValue(new SingleEvent(EVENT_ENABLE));
                                                 break;
                                             case BiometricConstants.ERROR_LOCKOUT:
                                                 bioErrorText.set(R.string.biometric_error_temporary_lock);
@@ -139,7 +145,7 @@ public class BiometricsSetViewModel extends ViewModel {
                                         bioErrorText.set(R.string.biometric_error_unknown);
                                     }
 
-                                    inputEnabled.set(true);
+                                    inputEnabled.set(enableInput);
                                     Timber.v(throwable, "Bio error");
                                     events.setValue(new SingleEvent(EVENT_ENABLE_FAIL, throwable));
                                 })
