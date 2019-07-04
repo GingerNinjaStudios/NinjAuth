@@ -8,7 +8,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.annotation.StyleRes;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -39,17 +39,29 @@ public class AppSettings {
         this.moduleHandler = moduleHandler;
     }
 
-    @StyleRes
-    public int getTheme() {
+    public void applyTheme() {
         String themeValue = temporaryTheme != null ? temporaryTheme : sharedPrefs.getString(getString(R.string.settings_main_theme_key), getString(R.string.settings_appearance_theme_dark_value));
+        applyTheme(themeValue);
+    }
+
+    public void applyTheme(String themeValue) {
+        final int mode;
 
         switch (themeValue) {
             case "light":
-                return R.style.AppTheme_Light;
+                mode = AppCompatDelegate.MODE_NIGHT_NO;
+                break;
             case "dark":
+                mode = AppCompatDelegate.MODE_NIGHT_YES;
+                break;
+            case "battery":
+                mode = AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY;
+                break;
             default:
-                return R.style.AppTheme_Dark;
+                mode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
         }
+
+        AppCompatDelegate.setDefaultNightMode(mode);
     }
 
     /**
@@ -79,7 +91,7 @@ public class AppSettings {
         return changed;
     }
 
-    public boolean hideFromRecents(){
+    public boolean hideFromRecents() {
         return sharedPrefs.getBoolean(getString(R.string.settings_security_hide_recent_key), true);
     }
 

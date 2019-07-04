@@ -244,6 +244,7 @@
     <string name="security_use_biometrics">Use biometrics</string>
 
     <string name="biometric_error_key_invalidated">The biometric authentication is unavailable because you might have changed or removed the device\'s lock screen which resulted in the key being removed for security reasons.</string>
+    <string name="biometric_error_key_removed_security_update">The biometric authentication is unavailable due to security updates within the app which resulted in the key being removed. Please, use the password login.</string>
     <string name="biometric_error_temporary_lock">You have made too many login attempts. Please, try again later or use the password login.</string>
     <string name="biometric_error_permanent_lock">You have made too many login attempts. You must re-unlock your device using its lock screen.</string>
     <string name="biometric_error_no_biometrics">You need to enroll some biometrics before using this function.</string>

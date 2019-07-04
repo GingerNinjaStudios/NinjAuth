@@ -4,10 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
@@ -44,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         }
 
-        setTheme(appSettings.getTheme());
+        appSettings.applyTheme();
+        //setTheme(appSettings.getTheme());
 
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         drawerLayout = binding.drawerLayout;
@@ -118,8 +121,12 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            final TypedValue tv = new TypedValue();
+            getTheme().resolveAttribute(R.attr.isLightTheme, tv, true);
+            boolean isLightTheme = tv.data != 0;
+
             View decorView = getWindow().getDecorView();
-            if (appSettings.getTheme() == R.style.AppTheme_Light) {
+            if (isLightTheme) {
                 decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
             } else {
                 int flags = decorView.getSystemUiVisibility() & ~(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);

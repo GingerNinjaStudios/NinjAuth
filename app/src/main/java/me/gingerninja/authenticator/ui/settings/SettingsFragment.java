@@ -30,7 +30,7 @@ public class SettingsFragment extends BaseSettingsFragment {
                 String oldValue = ((ListPreference) preference).getValue();
                 String newValue = (String) newValueObj;
                 if (!newValue.equals(oldValue)) {
-                    requireActivity().recreate();
+                    appSettings.applyTheme(newValue);
                 }
                 return true;
             });
