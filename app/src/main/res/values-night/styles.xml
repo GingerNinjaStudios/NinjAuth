@@ -1,7 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-
-    <!-- Base application theme. -->
-    <style name="AppTheme.Dark" parent="Theme.MaterialComponents.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="dotsIndicator">@color/dotsIndicatorDark</item>
         <item name="colorPrimary">@color/colorPrimaryLight</item>
@@ -33,5 +32,4 @@
     <style name="Widget.MaterialComponents.Chip.Action.Dark">
         <item name="chipStrokeWidth">1dp</item>
     </style>
-
 </resources>

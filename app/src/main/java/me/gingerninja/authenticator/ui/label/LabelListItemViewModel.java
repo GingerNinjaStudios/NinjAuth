@@ -1,6 +1,6 @@
 package me.gingerninja.authenticator.ui.label;
 
-import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.TypedValue;
 import android.view.MenuItem;
@@ -32,18 +32,20 @@ public class LabelListItemViewModel {
         Resources resources = view.getResources();
         fgColor = isDark ? resources.getColor(R.color.colorLabelTextLight) : resources.getColor(R.color.colorLabelTextDark);
 
+        Configuration newConfig = new Configuration(view.getResources().getConfiguration());
         final TypedValue tv = new TypedValue();
-        final Context ctx;
         if (isDark) {
             // light color needed
-            ctx = new ContextThemeWrapper(view.getContext(), R.style.AppTheme_Dark);
+            newConfig.uiMode = (newConfig.uiMode & ~Configuration.UI_MODE_NIGHT_MASK) | Configuration.UI_MODE_NIGHT_YES;
         } else {
             // dark color needed
-            ctx = new ContextThemeWrapper(view.getContext(), R.style.AppTheme_Light);
+            newConfig.uiMode = (newConfig.uiMode & ~Configuration.UI_MODE_NIGHT_MASK) | Configuration.UI_MODE_NIGHT_NO;
         }
-        ctx.getTheme().resolveAttribute(R.attr.colorControlNormal, tv, true);
+        ContextThemeWrapper ctw = new ContextThemeWrapper(view.getContext(), R.style.AppTheme);
+        ctw.applyOverrideConfiguration(newConfig);
 
-        colorControlNormal = ContextCompat.getColor(ctx, tv.resourceId);
+        ctw.getTheme().resolveAttribute(R.attr.colorControlNormal, tv, true);
+        colorControlNormal = ContextCompat.getColor(ctw, tv.resourceId);
     }
 
     public String getName() {

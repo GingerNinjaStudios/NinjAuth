@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:key="@string/settings_module_timecorrector_key"
+        android:summary="@string/settings_module_state_not_installed"
+        android:title="@string/title_timecorrector" />
+</PreferenceScreen>

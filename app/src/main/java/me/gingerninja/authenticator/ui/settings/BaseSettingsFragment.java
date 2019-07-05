@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.XmlRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModel;
@@ -56,7 +57,7 @@ public abstract class BaseSettingsFragment extends PreferenceFragmentCompat impl
 
     @Override
     public void onCreatePreferencesFix(@Nullable Bundle savedInstanceState, String rootKey) {
-        getPreferenceManager().setSharedPreferencesName(AppSettings.SHARED_PREFS_NAME);
+        getPreferenceManager().setSharedPreferencesName(getSharedPreferencesName());
         setPreferencesFromResource(getSettingsXmlId(), rootKey);
 
         onPreferencesCreated(savedInstanceState, rootKey);
@@ -93,4 +94,12 @@ public abstract class BaseSettingsFragment extends PreferenceFragmentCompat impl
 
     @XmlRes
     protected abstract int getSettingsXmlId();
+
+    protected String getSharedPreferencesName() {
+        return AppSettings.SHARED_PREFS_NAME;
+    }
+
+    protected boolean isPreferenceKey(@Nullable String key, @StringRes int keyRes) {
+        return getString(keyRes).equals(key);
+    }
 }

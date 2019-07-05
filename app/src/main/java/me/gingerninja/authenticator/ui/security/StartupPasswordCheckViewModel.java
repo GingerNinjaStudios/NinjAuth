@@ -119,12 +119,22 @@ public class StartupPasswordCheckViewModel extends ViewModel {
                                         events.setValue(new SingleEvent(EVENT_CONFIRM));
                                     },
                                     throwable -> {
+                                        boolean enableInput = true;
+
                                         if (throwable instanceof BiometricException) {
                                             int errCode = ((BiometricException) throwable).getErrorCode();
                                             switch (errCode) {
                                                 case BiometricException.ERROR_KEY_INVALIDATED:
                                                     enableBioAuth.set(false);
                                                     bioErrorText.set(R.string.biometric_error_key_invalidated);
+                                                    break;
+                                                case BiometricException.ERROR_SHOULD_RETRY:
+                                                    enableInput = false;
+                                                    events.setValue(new SingleEvent(EVENT_BIO_AUTH));
+                                                    break;
+                                                case BiometricException.ERROR_KEY_SECURITY_UPDATE:
+                                                    enableBioAuth.set(false);
+                                                    bioErrorText.set(R.string.biometric_error_key_removed_security_update);
                                                     break;
                                                 case BiometricConstants.ERROR_LOCKOUT:
                                                     enableBioAuth.set(true);
@@ -154,7 +164,7 @@ public class StartupPasswordCheckViewModel extends ViewModel {
                                             bioErrorText.set(R.string.biometric_error_unknown);
                                         }
                                         Timber.e(throwable, "Bio error");
-                                        inputEnabled.set(true);
+                                        inputEnabled.set(enableInput);
                                     })
             );
         }

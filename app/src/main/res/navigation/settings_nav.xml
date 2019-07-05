@@ -31,6 +31,13 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/openModuleSettingsAction"
+            app:destination="@id/moduleSettingsFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
 
     <fragment
@@ -107,4 +114,20 @@
         android:id="@+id/infoSettingsFragment"
         android:name="me.gingerninja.authenticator.ui.settings.InfoSettingsFragment"
         android:label="InfoSettingsFragment" />
+    <fragment
+        android:id="@+id/moduleSettingsFragment"
+        android:name="me.gingerninja.authenticator.ui.settings.ModuleSettingsFragment"
+        android:label="ModuleSettingsFragment" >
+        <action
+            android:id="@+id/openTimeCorrectorSettingsAction"
+            app:destination="@id/timeCorrectorSettingsFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/timeCorrectorSettingsFragment"
+        android:name="me.gingerninja.authenticator.module.timecorrector.TimeCorrectorSettingsFragment"
+        android:label="TimeCorrectorSettingsFragment" />
 </navigation>

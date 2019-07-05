@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Settings -->
     <string name="settings_main_theme_key" translatable="false">settings_appearance_theme</string>
     <string name="settings_main_theme_title">Theme</string>
     <string name="settings_main_theme_val_light">Light</string>
     <string name="settings_main_theme_val_dark">Dark</string>
+    <string name="settings_main_theme_val_battery">Set by Battery Saver</string>
+    <string name="settings_main_theme_val_system_default">Use system default</string>
 
     <string name="settings_main_backup_key" translatable="false">settings_main_backup</string>
     <string name="settings_main_backup_title">Backup &amp; Restore</string>
@@ -49,15 +51,19 @@
 
     <string name="settings_appearance_theme_dark_value" translatable="false">dark</string>
     <string name="settings_appearance_theme_light_value" translatable="false">light</string>
+    <string name="settings_appearance_theme_battery_value" translatable="false">battery</string>
+    <string name="settings_appearance_theme_system_value" translatable="false">system</string>
     <string name="settings_appearance_theme_default_value" translatable="false">dark</string>
 
-    <string-array name="settings_appearance_theme_entries">
+    <string-array name="settings_appearance_theme_entries" tools:ignore="InconsistentArrays">
         <item>@string/settings_main_theme_val_dark</item>
         <item>@string/settings_main_theme_val_light</item>
+        <item>@string/settings_main_theme_val_battery</item>
     </string-array>
-    <string-array name="settings_appearance_theme_values">
+    <string-array name="settings_appearance_theme_values" tools:ignore="InconsistentArrays">
         <item>@string/settings_appearance_theme_dark_value</item>
         <item>@string/settings_appearance_theme_light_value</item>
+        <item>@string/settings_appearance_theme_battery_value</item>
     </string-array>
 
     <string name="settings_backup_uri_key">settings_backup_uri</string>

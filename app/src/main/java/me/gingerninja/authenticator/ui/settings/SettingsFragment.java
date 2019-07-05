@@ -30,7 +30,7 @@ public class SettingsFragment extends BaseSettingsFragment {
                 String oldValue = ((ListPreference) preference).getValue();
                 String newValue = (String) newValueObj;
                 if (!newValue.equals(oldValue)) {
-                    requireActivity().recreate();
+                    appSettings.applyTheme(newValue);
                 }
                 return true;
             });
@@ -46,6 +46,9 @@ public class SettingsFragment extends BaseSettingsFragment {
             return true;
         } else if (getString(R.string.settings_main_security_key).equals(key)) {
             getNavController().navigate(SettingsFragmentDirections.openSecuritySettingsAction());
+            return true;
+        } else if (getString(R.string.settings_main_modules_key).equals(key)) {
+            getNavController().navigate(SettingsFragmentDirections.openModuleSettingsAction());
             return true;
         } else if (getString(R.string.settings_main_info_key).equals(key)) {
             getNavController().navigate(SettingsFragmentDirections.openInfoSettingsAction());

@@ -20,9 +20,8 @@ import timber.log.Timber;
 
 @Singleton
 public class TimeCorrector extends BaseDynamicModule<TimeCorrector.BaseTimeCorrector> {
-    private static final String SHARED_PREFS_NAME = "module_timecorrector";
-    private static final String LAST_SYNC_KEY = "last_sync";
-    private static final String DELTA_KEY = "delta";
+    private static final String LAST_SYNC_KEY = "timecorrector__last_sync";
+    private static final String DELTA_KEY = "timecorrector__delta";
 
     private static final long THRESHOLD = 4 * 60 * 60 * 1000; // 4 hours in ms
 
@@ -36,7 +35,7 @@ public class TimeCorrector extends BaseDynamicModule<TimeCorrector.BaseTimeCorre
     @Inject
     public TimeCorrector(ModuleHandler moduleHandler, Context context) {
         this.moduleHandler = moduleHandler;
-        this.sharedPrefs = context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        this.sharedPrefs = context.getSharedPreferences(ModuleHandler.SHARED_PREF_NAME, Context.MODE_PRIVATE);
 
         lastSync = sharedPrefs.getLong(LAST_SYNC_KEY, 0);
         delta = sharedPrefs.getLong(DELTA_KEY, 0);
