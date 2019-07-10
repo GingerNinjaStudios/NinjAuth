@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.preference.Preference;
 
 import com.takisoft.preferencex.PreferenceFragmentCompat;
 
@@ -101,5 +102,25 @@ public abstract class BaseSettingsFragment extends PreferenceFragmentCompat impl
 
     protected boolean isPreferenceKey(@Nullable String key, @StringRes int keyRes) {
         return getString(keyRes).equals(key);
+    }
+
+    @Nullable
+    public <T extends Preference> T findPreference(@StringRes int keyResId) {
+        return findPreference(getString(keyResId));
+    }
+
+    @NonNull
+    public <T extends Preference> T requirePreference(@StringRes int keyResId) {
+        return requirePreference(getString(keyResId));
+    }
+
+    @SuppressWarnings("unchecked")
+    @NonNull
+    public <T extends Preference> T requirePreference(@NonNull CharSequence key) {
+        Preference preference = findPreference(key);
+        if (preference == null) {
+            throw new IllegalStateException("Preference not found for key '" + key + "'");
+        }
+        return (T) preference;
     }
 }

@@ -9,10 +9,10 @@ import android.view.View;
 import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
@@ -137,6 +137,38 @@ public class MainActivity extends AppCompatActivity {
         /*getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);*/
+
+        if (appSettings.stopLockScreenCounter()) {
+            // show lock screen
+            navController.navigate(MainNavDirections.openLoginScreenAsShieldAction().setIntermediate(true));
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        //appSettings.startLockScreenCounter(!(!isFinishing() && !isChangingConfigurations() && shouldShowLockScreen()));
+        appSettings.startLockScreenCounter(isFinishing() || isChangingConfigurations() || !shouldShowLockScreen());
+
+        /*if (!isFinishing() && !isChangingConfigurations() && shouldShowLockScreen()) {
+            // show lock screen
+            navController.navigate(MainNavDirections.openLoginScreenAsShieldAction().setIntermediate(true));
+        }*/
+        //Timber.v("[MAIN] onPause(), isFinishing: %s, isChangingConfigurations: %s", isFinishing(), isChangingConfigurations());
+    }
+
+    private boolean shouldShowLockScreen() {
+        NavDestination current = navController.getCurrentDestination();
+        if (current != null) {
+            int id = current.getId();
+
+            return id != R.id.splashFragment &&
+                    id != R.id.setupFragment &&
+                    id != R.id.startupPasswordCheckFragment;
+        }
+
+        return false;
     }
 
     @Override

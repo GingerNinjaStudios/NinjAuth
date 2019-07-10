@@ -21,25 +21,20 @@ public class SecuritySettingsFragment extends BaseSettingsFragment {
     @Override
     protected void onPreferencesCreated(@Nullable Bundle savedInstanceState, String rootKey) {
         final Crypto.Features features = crypto.getFeatures();
-        Preference bioPreference = findPreference(getString(R.string.settings_security_bio_key));
+        Preference bioPreference = requirePreference(R.string.settings_security_bio_key);
 
-        if (bioPreference != null) {
-            if (!features.isBiometricsSupported()) {
-                bioPreference.setEnabled(false);
-                bioPreference.setSummary(R.string.settings_security_bio_unsupported);
-            } else {
-                bioPreference.setSummaryProvider(new BiometricsSummary());
-            }
+        if (!features.isBiometricsSupported()) {
+            bioPreference.setEnabled(false);
+            bioPreference.setSummary(R.string.settings_security_bio_unsupported);
+        } else {
+            bioPreference.setSummaryProvider(new BiometricsSummary());
         }
 
-        Preference lockPreference = findPreference(getString(R.string.settings_security_lock_key));
+        requirePreference(R.string.settings_security_lock_key)
+                .setSummaryProvider(new LockTypeSummary());
 
-        if (lockPreference != null) {
-            lockPreference.setSummaryProvider(new LockTypeSummary());
-        }
 
-        //noinspection ConstantConditions
-        findPreference(getString(R.string.settings_security_hide_recent_key))
+        requirePreference(R.string.settings_security_hide_recent_key)
                 .setOnPreferenceChangeListener((preference, newValue) -> {
                     boolean hide = (boolean) newValue;
                     Window window = requireActivity().getWindow();
@@ -50,6 +45,14 @@ public class SecuritySettingsFragment extends BaseSettingsFragment {
                     }
                     return true;
                 });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        String lockType = getPreferenceManager().getSharedPreferences().getString(getString(R.string.settings_security_lock_key), getString(R.string.settings_prot_none_value));
+        requirePreference(R.string.settings_security_leave_lock_key).setEnabled(!getString(R.string.settings_prot_none_value).equals(lockType));
     }
 
     @Override

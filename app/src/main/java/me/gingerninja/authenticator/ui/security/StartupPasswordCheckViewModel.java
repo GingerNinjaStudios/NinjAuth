@@ -44,7 +44,9 @@ public class StartupPasswordCheckViewModel extends ViewModel {
 
     private MutableLiveData<SingleEvent> events = new MutableLiveData<>();
 
-    DatabaseHandler dbHandler;
+    public boolean isIntermediate = false;
+
+    private DatabaseHandler dbHandler;
 
     @NonNull
     private final Crypto crypto;
@@ -77,6 +79,10 @@ public class StartupPasswordCheckViewModel extends ViewModel {
     private void setUsePin(boolean usePin) {
         this.usePin = usePin;
         updateUi();
+    }
+
+    void setIntermediate(boolean intermediate) {
+        isIntermediate = intermediate;
     }
 
     @NonNull

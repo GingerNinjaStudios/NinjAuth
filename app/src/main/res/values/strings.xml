@@ -223,6 +223,11 @@
     <string name="security_lock_type_confirm_dialog_message">Removing the app lock results in anyone who has access to your device being able to access the data, such as accounts and labels.</string>
     <string name="security_lock_type_confirm_dialog_confirm">Remove lock</string>
 
+    <string name="security_intermediate_message">The app has been locked due to inactivity. Please, re-authenticate.</string>
+    <string name="security_intermediate_confirm_exit_dialog_title">Would you like to quit?</string>
+    <string name="security_intermediate_confirm_exit_dialog_message">If you don\'t re-authenticate, NinjAuth will be closed.</string>
+    <string name="security_intermediate_confirm_exit_dialog_confirm">Quit</string>
+
     <string name="security_first_password_title">Set application lock</string>
     <string name="security_first_password_message_password">For improved security, set password</string>
     <string name="security_first_password_message_confirm_password">Re-enter your password</string>

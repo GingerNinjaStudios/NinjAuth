@@ -33,6 +33,9 @@
     <string name="settings_security_bio_summary_off">Biometrics authentication is not enabled</string>
     <string name="settings_security_bio_unsupported">Not supported on your device</string>
 
+    <string name="settings_security_leave_lock_key" translatable="false">settings_security_lock_leave</string>
+    <string name="settings_security_leave_lock_title">Lock timer when leaving the app</string>
+
     <string name="settings_security_cat_privacy_title">Privacy</string>
 
     <string name="settings_security_hide_recent_key" translatable="false">settings_security_hide_recent</string>
@@ -79,32 +82,30 @@
     <string name="settings_security_lock_key">settings_security_lock_type</string>
     <string name="settings_security_bio_key">settings_security_bio_enabled</string>
 
-    <string-array name="settings_protection_entries">
-        <item>@string/settings_prot_none</item>
-        <item>@string/settings_prot_pin</item>
-        <item>@string/settings_prot_password</item>
-        <item>@string/settings_prot_bio_pin</item>
-        <item>@string/settings_prot_bio_password</item>
+    <string-array name="settings_auto_lock_entries">
+        <item>Immediately</item>
+        <item>5 seconds</item>
+        <item>15 seconds</item>
+        <item>30 seconds</item>
+        <item>1 minute</item>
+        <item>2 minutes</item>
+        <item>5 minutes</item>
+        <item>10 minutes</item>
+        <item>30 minutes</item>
+        <item>Never</item>
     </string-array>
 
-    <string-array name="settings_protection_values">
-        <item>@string/settings_prot_none_value</item>
-        <item>@string/settings_prot_pin_value</item>
-        <item>@string/settings_prot_password_value</item>
-        <item>@string/settings_prot_bio_pin_value</item>
-        <item>@string/settings_prot_bio_password_value</item>
-    </string-array>
-
-    <string-array name="settings_protection_entries_no_bio">
-        <item>@string/settings_prot_none</item>
-        <item>@string/settings_prot_pin</item>
-        <item>@string/settings_prot_password</item>
-    </string-array>
-
-    <string-array name="settings_protection_values_no_bio">
-        <item>@string/settings_prot_none_value</item>
-        <item>@string/settings_prot_pin_value</item>
-        <item>@string/settings_prot_password_value</item>
+    <string-array name="settings_auto_lock_values">
+        <item>0</item>
+        <item>5</item>
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>120</item>
+        <item>300</item>
+        <item>600</item>
+        <item>1800</item>
+        <item>-1</item>
     </string-array>
 
 </resources>

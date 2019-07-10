@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory android:title="@string/settings_security_cat_app_security_title">
         <Preference
             android:defaultValue="@string/settings_prot_none_value"
@@ -10,6 +11,13 @@
             android:key="@string/settings_security_bio_key"
             android:summary="@string/settings_security_bio_summary_off"
             android:title="@string/settings_security_bio_title" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/settings_auto_lock_entries"
+            android:entryValues="@array/settings_auto_lock_values"
+            android:key="@string/settings_security_leave_lock_key"
+            android:title="@string/settings_security_leave_lock_title"
+            app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_security_cat_privacy_title">
         <SwitchPreferenceCompat
