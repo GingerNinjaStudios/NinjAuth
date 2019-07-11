@@ -23,6 +23,7 @@ import me.gingerninja.authenticator.data.adapter.AccountListIteratorAdapter;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.databinding.AccountListFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
+import me.gingerninja.authenticator.ui.home.filter.AccountFilterDialogFragment;
 import me.gingerninja.authenticator.ui.home.form.AccountEditorFragment;
 import me.gingerninja.authenticator.ui.home.list.AccountListItemViewModel;
 import me.gingerninja.authenticator.util.RequestCodes;
@@ -127,8 +128,13 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
         binding.appBar.setNavigationOnClickListener(v -> {
             BottomNavigationFragment.show(R.menu.navigation_menu, R.id.nav_accounts, R.layout.bottom_nav_header, getChildFragmentManager());
         });
-        // TODO binding.appBar.inflateMenu(R.menu.account_list_menu);
+        binding.appBar.inflateMenu(R.menu.account_list_menu);
         binding.appBar.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.menu_filter:
+                    new AccountFilterDialogFragment().show(getChildFragmentManager(), "filter"); // TODO tag
+                    break;
+            }
             return true;
         });
 

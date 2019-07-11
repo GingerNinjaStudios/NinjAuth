@@ -43,7 +43,7 @@ buildscript {
                 colorpicker: '1.0.0'
         ]
 
-        materialComponentsVersion = '1.1.0-alpha07'
+        materialComponentsVersion = '1.1.0-alpha08'
 
         libVersions = [
                 sqlCipher                : '4.2.0',

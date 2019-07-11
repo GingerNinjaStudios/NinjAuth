@@ -12,6 +12,7 @@
     <string name="btn_start">Start</string>
     <string name="btn_splash_next">Continue setup</string>
     <string name="btn_authenticate">Authenticate</string>
+    <string name="btn_reset">Reset</string>
 
     <string name="skip_setup_dialog_title">Do you want to skip the setup?</string>
     <string name="skip_setup_dialog_msg">If you skip the setup, your authentication codes will not be protected against unauthorized access and auto-backup will not be enabled.</string>
@@ -265,6 +266,14 @@
         <item quantity="zero">No items</item>
         <item quantity="one">%d item</item>
         <item quantity="other">%d items</item>
+    </plurals>
+
+    <string name="filters">Filters</string>
+
+    <plurals name="accounts">
+        <item quantity="zero">%d Accounts</item>
+        <item quantity="one">%d Account</item>
+        <item quantity="other">%d Accounts</item>
     </plurals>
 
 </resources>

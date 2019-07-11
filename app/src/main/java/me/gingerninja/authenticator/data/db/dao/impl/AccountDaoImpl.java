@@ -16,9 +16,11 @@ import io.reactivex.SingleSource;
 import io.reactivex.functions.BiPredicate;
 import io.requery.Persistable;
 import io.requery.Transaction;
+import io.requery.query.JoinWhereGroupByOrderBy;
 import io.requery.query.MutableTuple;
 import io.requery.query.NamedNumericExpression;
 import io.requery.query.Tuple;
+import io.requery.query.WhereAndOr;
 import io.requery.query.function.Case;
 import io.requery.reactivex.ReactiveEntityStore;
 import io.requery.reactivex.ReactiveResult;
@@ -32,6 +34,7 @@ import me.gingerninja.authenticator.data.db.function.JsonObject;
 import me.gingerninja.authenticator.data.db.provider.DatabaseHandler;
 import me.gingerninja.authenticator.data.db.wrapper.AccountWrapper;
 import me.gingerninja.authenticator.data.db.wrapper.LabelWrapper;
+import me.gingerninja.authenticator.ui.home.filter.AccountFilterObject;
 
 public class AccountDaoImpl implements AccountDao {
     private final DatabaseHandler databaseHandler;
@@ -248,5 +251,79 @@ public class AccountDaoImpl implements AccountDao {
     @Override
     public Completable delete(Account account) {
         return getStore().delete(account);
+    }
+
+    @CheckResult
+    @Override
+    public Single<Integer> getFilteredAccountCount(@NonNull AccountFilterObject filterObject) {
+        JoinWhereGroupByOrderBy<ReactiveResult<Tuple>> method = getStore()
+                .select(Account.ID)
+                .distinct()
+                .from(Account.class);
+
+        final String str;
+        if (filterObject.hasSearchString()) {
+            //noinspection ConstantConditions
+            str = "%" +
+                    filterObject
+                            .getSearchString()
+                            .toLowerCase()
+                            .replaceAll("%", "\\%")
+                            .replaceAll("_", "\\_") +
+                    "%";
+        } else {
+            str = null;
+        }
+
+        WhereAndOr<ReactiveResult<Tuple>> builder;
+
+        if (filterObject.hasLabels() && filterObject.hasSearchString()) {
+            builder = method
+                    .join(AccountHasLabel.class).on(AccountHasLabel.ACCOUNT_ID.eq(Account.ID))
+                    .where(
+                            AccountHasLabel.LABEL.in(filterObject.getLabels())
+                                    .and(
+                                            Account.TITLE.lower().like(str)
+                                                    .or(
+                                                            Account.ACCOUNT_NAME.lower().like(str)
+                                                    )
+                                                    .or(
+                                                            Account.ISSUER.lower().like(str)
+                                                    )
+                                    )
+                    );
+        } else if (filterObject.hasSearchString()) {
+            builder = method.where(
+                    Account.TITLE.lower().like(str)
+                            .or(
+                                    Account.ACCOUNT_NAME.lower().like(str)
+                            )
+                            .or(
+                                    Account.ISSUER.lower().like(str)
+                            )
+            );
+        } else if (filterObject.hasLabels()) {
+            builder = method.join(AccountHasLabel.class).on(AccountHasLabel.ACCOUNT_ID.eq(Account.ID))
+                    .where(AccountHasLabel.LABEL.in(filterObject.getLabels()));
+        } else {
+            //builder = method.where(Account.ID.notNull());
+            throw new IllegalArgumentException("The filter must set either the search string or the labels");
+        }
+
+
+        return /*getStore()
+                .select(Account.ID)
+                .distinct()
+                .from(Account.class)
+                .join(AccountHasLabel.class).on(AccountHasLabel.ACCOUNT_ID.eq(Account.ID))
+                .where(AccountHasLabel.LABEL.in(filterObject.getLabels()))
+                //.join(AccountHasLabel.class).on(AccountHasLabel.LABEL.in(selectedLabels))*/
+                builder
+                        .get()
+                        .observable()
+                        .map(tuple -> tuple.get(Account.ID))
+                        .distinct()
+                        .count()
+                        .map(Long::intValue);
     }
 }

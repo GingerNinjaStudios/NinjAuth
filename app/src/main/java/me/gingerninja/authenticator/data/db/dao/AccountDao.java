@@ -1,6 +1,7 @@
 package me.gingerninja.authenticator.data.db.dao;
 
 import androidx.annotation.CheckResult;
+import androidx.annotation.NonNull;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import io.requery.query.Tuple;
 import io.requery.reactivex.ReactiveResult;
 import io.requery.sql.ResultSetIterator;
 import me.gingerninja.authenticator.data.db.entity.Account;
+import me.gingerninja.authenticator.ui.home.filter.AccountFilterObject;
 
 public interface AccountDao {
     @CheckResult
@@ -37,4 +39,7 @@ public interface AccountDao {
 
     @CheckResult
     Completable delete(Account account);
+
+    @CheckResult
+    Single<Integer> getFilteredAccountCount(@NonNull AccountFilterObject filterObject);
 }

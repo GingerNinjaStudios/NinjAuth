@@ -10,6 +10,7 @@ import javax.inject.Singleton;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 import io.requery.query.Tuple;
 import io.requery.reactivex.ReactiveResult;
 import io.requery.sql.ResultSetIterator;
@@ -18,6 +19,7 @@ import me.gingerninja.authenticator.data.db.dao.LabelDao;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.data.db.entity.AccountHasLabel;
 import me.gingerninja.authenticator.data.db.entity.Label;
+import me.gingerninja.authenticator.ui.home.filter.AccountFilterObject;
 
 @Singleton
 public class AccountRepository {
@@ -79,6 +81,10 @@ public class AccountRepository {
 
     public Completable deleteAccount(Account account) {
         return accountDao.delete(account);
+    }
+
+    public Single<Integer> getFilteredAccountCount(@NonNull AccountFilterObject filterObject) {
+        return accountDao.getFilteredAccountCount(filterObject).subscribeOn(Schedulers.io());
     }
 
     public Single<Label> addLabel(Label label) {
