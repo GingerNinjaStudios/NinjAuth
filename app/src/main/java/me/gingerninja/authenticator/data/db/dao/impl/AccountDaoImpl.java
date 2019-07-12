@@ -4,6 +4,7 @@ import android.os.Parcel;
 
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.security.SecureRandom;
 import java.sql.SQLIntegrityConstraintViolationException;
@@ -16,9 +17,11 @@ import io.reactivex.SingleSource;
 import io.reactivex.functions.BiPredicate;
 import io.requery.Persistable;
 import io.requery.Transaction;
+import io.requery.query.JoinAndOr;
 import io.requery.query.JoinWhereGroupByOrderBy;
 import io.requery.query.MutableTuple;
 import io.requery.query.NamedNumericExpression;
+import io.requery.query.SetGroupByOrderByLimit;
 import io.requery.query.Tuple;
 import io.requery.query.WhereAndOr;
 import io.requery.query.function.Case;
@@ -88,6 +91,7 @@ public class AccountDaoImpl implements AccountDao {
 
     @CheckResult
     @Override
+    @Deprecated
     public Observable<ReactiveResult<Tuple>> getAccountsAndLabelsWithListen() {
         return getStore()
                 .select(
@@ -120,6 +124,86 @@ public class AccountDaoImpl implements AccountDao {
                 .on(AccountHasLabel.ACCOUNT_ID.eq(Account.ID))
                 .leftJoin(Label.class)
                 .on(Label.ID.eq(AccountHasLabel.LABEL_ID))
+                .groupBy(Account.ID)
+                .orderBy(Account.POSITION)
+                .get()
+                .observableResult();
+    }
+
+    @Override
+    @CheckResult
+    public Observable<ReactiveResult<Tuple>> getAccountsAndLabelsWithListen(@Nullable AccountFilterObject filterObject) {
+        JoinAndOr<ReactiveResult<Tuple>> base = getStore()
+                .select(
+                        Account.ID,
+                        Account.TITLE,
+                        Account.ACCOUNT_NAME,
+                        Account.ISSUER,
+                        Account.SECRET,
+                        Account.TYPE,
+                        Account.TYPE_SPECIFIC_DATA,
+                        Account.ALGORITHM,
+                        Account.DIGITS,
+                        Account.SOURCE,
+                        Account.POSITION,
+                        Case.type(AccountWrapper.TUPLE_KEY_LABELS, String.class)
+                                .when(Label.ID.isNull(), GroupConcat.groupConcat(Label.ID))
+                                .elseThen(
+                                        GroupConcat.groupConcat(
+                                                JsonObject.create(LabelWrapper.FIELD_ID, Label.ID)
+                                                        .add(LabelWrapper.FIELD_NAME, Label.NAME)
+                                                        .add(LabelWrapper.FIELD_POSITION, AccountHasLabel.POSITION)
+                                                        .add(LabelWrapper.FIELD_ICON, Label.ICON)
+                                                        .add(LabelWrapper.FIELD_COLOR, Label.COLOR)
+                                                        .jsonObject()
+                                        )
+                                )
+                )
+                .from(Account.class)
+                .leftJoin(AccountHasLabel.class)
+                .on(AccountHasLabel.ACCOUNT_ID.eq(Account.ID))
+                .leftJoin(Label.class)
+                .on(Label.ID.eq(AccountHasLabel.LABEL_ID));
+
+        SetGroupByOrderByLimit<ReactiveResult<Tuple>> builder = base;
+
+        if (filterObject != null) {
+            String str = filterObject.getSearchString();
+
+            if (filterObject.hasLabels() && filterObject.hasSearchString()) {
+                builder = base
+                        .join(AccountHasLabel.class).on(AccountHasLabel.ACCOUNT_ID.eq(Account.ID))
+                        .where(
+                                AccountHasLabel.LABEL.in(filterObject.getLabels())
+                                        .and(
+                                                Account.TITLE.lower().like(str)
+                                                        .or(
+                                                                Account.ACCOUNT_NAME.lower().like(str)
+                                                        )
+                                                        .or(
+                                                                Account.ISSUER.lower().like(str)
+                                                        )
+                                        )
+                        );
+            } else if (filterObject.hasSearchString()) {
+                builder = base
+                        .where(
+                                Account.TITLE.lower().like(str)
+                                        .or(
+                                                Account.ACCOUNT_NAME.lower().like(str)
+                                        )
+                                        .or(
+                                                Account.ISSUER.lower().like(str)
+                                        )
+                        );
+            } else if (filterObject.hasLabels()) {
+                builder = base
+                        .join(AccountHasLabel.class).on(AccountHasLabel.ACCOUNT_ID.eq(Account.ID))
+                        .where(AccountHasLabel.LABEL.in(filterObject.getLabels()));
+            }
+        }
+
+        return builder
                 .groupBy(Account.ID)
                 .orderBy(Account.POSITION)
                 .get()
@@ -261,19 +345,19 @@ public class AccountDaoImpl implements AccountDao {
                 .distinct()
                 .from(Account.class);
 
-        final String str;
-        if (filterObject.hasSearchString()) {
+        final String str = filterObject.getSearchString();
+        /*if (filterObject.hasSearchString()) {
             //noinspection ConstantConditions
             str = "%" +
                     filterObject
                             .getSearchString()
                             .toLowerCase()
-                            .replaceAll("%", "\\%")
-                            .replaceAll("_", "\\_") +
+                            .replaceAll("%", "\\\\%")
+                            .replaceAll("_", "\\\\_") +
                     "%";
         } else {
             str = null;
-        }
+        }*/
 
         WhereAndOr<ReactiveResult<Tuple>> builder;
 

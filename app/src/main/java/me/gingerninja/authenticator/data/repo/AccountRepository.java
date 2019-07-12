@@ -1,6 +1,7 @@
 package me.gingerninja.authenticator.data.repo;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.List;
 
@@ -52,8 +53,8 @@ public class AccountRepository {
         return accountDao.getAll();
     }
 
-    public Observable<ReactiveResult<Tuple>> getAllAccountAndListen2() {
-        return accountDao.getAccountsAndLabelsWithListen();
+    public Observable<ReactiveResult<Tuple>> getAllAccountAndListen2(@Nullable AccountFilterObject filterObject) {
+        return accountDao.getAccountsAndLabelsWithListen(filterObject);
         /*return accountDao.getAllAndListen()
                 .map(accounts -> Observable.fromIterable(accounts)
                         .map(account -> new Pair<>(account, labelDao.getLabelsByAccount2(account)

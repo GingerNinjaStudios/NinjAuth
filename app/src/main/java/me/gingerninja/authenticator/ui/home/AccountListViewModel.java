@@ -4,6 +4,7 @@ import android.app.Application;
 import android.database.Cursor;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -16,6 +17,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.requery.query.Tuple;
 import io.requery.sql.ResultSetIterator;
 import me.gingerninja.authenticator.data.repo.AccountRepository;
+import me.gingerninja.authenticator.ui.home.filter.AccountFilterObject;
 import me.gingerninja.authenticator.util.AutoClosingMutableLiveData;
 import me.gingerninja.authenticator.util.SingleEvent;
 
@@ -31,26 +33,26 @@ public class AccountListViewModel extends ViewModel {
     private AutoClosingMutableLiveData<ResultSetIterator<Tuple>> accountList2 = new AutoClosingMutableLiveData<>();
     private Disposable disposable;
 
+    public ObservableBoolean hasFilter = new ObservableBoolean(false);
+
+    @Nullable
+    private AccountFilterObject filterObject;
+
     @Inject
     public AccountListViewModel(Application application, AccountRepository accountRepo) {
         this.application = application;
         this.accountRepo = accountRepo;
 
-        disposable = accountRepo.getAllAccountAndListen2()
+        setFilterAndRetrieve(null);
+        /*disposable = accountRepo.getAllAccountAndListen2(null)
                 .subscribeOn(Schedulers.io())
                 //.observeOn(AndroidSchedulers.mainThread())
                 .subscribe(tuples -> {
-                    /*ResultSetIterator<Tuple> oldResults = accountList2.getValue();
-
-                    // if there are active observers, we will let them close the result set
-                    if (oldResults != null && !accountList2.hasActiveObservers()) {
-                        oldResults.close();
-                    }*/
                     ResultSetIterator<Tuple> it = (ResultSetIterator<Tuple>) tuples.iterator();
                     hasLoaded.set(true);
                     hasData.set(it.unwrap(Cursor.class).getCount() > 0);
                     accountList2.postValue(it);
-                });
+                });*/
 
         /*disposable = accountRepo.getAllAccountAndListen()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -70,6 +72,37 @@ public class AccountListViewModel extends ViewModel {
         if (accountList2.getValue() != null) {
             accountList2.getValue().close();
         }
+    }
+
+    @Nullable
+    public AccountFilterObject getFilterObject() {
+        return filterObject;
+    }
+
+    public void setFilterAndRetrieve(@Nullable AccountFilterObject filterObject) {
+        this.filterObject = filterObject;
+
+        hasFilter.set(filterObject != null && filterObject.hasFilter());
+
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+        }
+
+        disposable = accountRepo.getAllAccountAndListen2(filterObject)
+                .subscribeOn(Schedulers.io())
+                //.observeOn(AndroidSchedulers.mainThread())
+                .subscribe(tuples -> {
+                    /*ResultSetIterator<Tuple> oldResults = accountList2.getValue();
+
+                    // if there are active observers, we will let them close the result set
+                    if (oldResults != null && !accountList2.hasActiveObservers()) {
+                        oldResults.close();
+                    }*/
+                    ResultSetIterator<Tuple> it = (ResultSetIterator<Tuple>) tuples.iterator();
+                    hasLoaded.set(true);
+                    hasData.set(it.unwrap(Cursor.class).getCount() > 0);
+                    accountList2.postValue(it);
+                });
     }
 
     /*LiveData<List<Account>> getAccountList() {

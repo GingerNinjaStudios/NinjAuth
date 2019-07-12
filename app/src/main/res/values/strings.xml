@@ -269,6 +269,7 @@
     </plurals>
 
     <string name="filters">Filters</string>
+    <string name="filters_active_msg">Filters are active</string>
 
     <plurals name="accounts">
         <item quantity="zero">%d Accounts</item>

@@ -3,9 +3,11 @@ package me.gingerninja.authenticator.ui.home.filter;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.databinding.Observable;
 import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
@@ -26,11 +28,15 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import me.gingerninja.authenticator.data.db.entity.Label;
 import me.gingerninja.authenticator.data.repo.AccountRepository;
+import me.gingerninja.authenticator.util.SingleEvent;
 
 public class AccountFilterViewModel extends ViewModel {
+    public static final String EVENT_FILTER_AND_DISMISS = "dismiss.with.filter";
+
     @NonNull
     private final AccountRepository repository;
     //AutoClosingMutableLiveData<ResultSetIterator<Label>> resultLiveData = new AutoClosingMutableLiveData<>();
+    private MutableLiveData<SingleEvent> events = new MutableLiveData<>();
     private MutableLiveData<List<Label>> labels = new MutableLiveData<>();
 
     private HashSet<Label> filterLabels = new HashSet<>();
@@ -47,6 +53,9 @@ public class AccountFilterViewModel extends ViewModel {
 
     private PublishSubject<String> searchSubject = PublishSubject.create();
 
+    private boolean initialDataSet = false;
+    private AccountFilterObject filterObject;
+
     private Observable.OnPropertyChangedCallback searchStringCallback = new Observable.OnPropertyChangedCallback() {
         @Override
         public void onPropertyChanged(Observable sender, int propertyId) {
@@ -61,7 +70,7 @@ public class AccountFilterViewModel extends ViewModel {
 
         disposable.addAll(
                 searchSubject
-                        .debounce(500, TimeUnit.MILLISECONDS)
+                        .debounce(300, TimeUnit.MILLISECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(str -> {
                             searchString = str;
@@ -83,6 +92,30 @@ public class AccountFilterViewModel extends ViewModel {
         super.onCleared();
         searchStringInput.removeOnPropertyChangedCallback(searchStringCallback);
         disposable.dispose();
+    }
+
+    void setFilterObject(@Nullable AccountFilterObject filterObject) {
+        if (initialDataSet) {
+            return;
+        }
+
+        initialDataSet = true;
+        this.filterObject = filterObject;
+
+        if (filterObject != null) {
+            if (filterObject.hasSearchString()) {
+                searchString = filterObject.getSearchString(false);
+                searchStringInput.set(filterObject.getSearchString(false));
+            }
+
+            if (filterObject.hasLabels()) {
+                filterLabels = (HashSet<Label>) filterObject.getLabels();
+                filterLabelLiveData.setValue(filterLabels);
+            }
+        }
+
+        refreshUi();
+        findAccounts();
     }
 
     @NonNull
@@ -114,7 +147,15 @@ public class AccountFilterViewModel extends ViewModel {
     }
 
     public boolean onSearchInit(TextView view, int actionId, KeyEvent event) {
-        // TODO dismiss the dialog and show results
+        boolean enter = event != null && event.getAction() == KeyEvent.ACTION_DOWN &&
+                (event.getKeyCode() == KeyEvent.KEYCODE_ENTER || event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER);
+
+        //noinspection ConstantConditions
+        if ((actionId == EditorInfo.IME_ACTION_SEARCH || enter) && !searchStringInput.get().trim().isEmpty()) {
+            // TODO dismiss and search for accounts
+            events.setValue(new SingleEvent(EVENT_FILTER_AND_DISMISS));
+        }
+
         return true;
     }
 
@@ -126,7 +167,7 @@ public class AccountFilterViewModel extends ViewModel {
         filterDisposable.clear();
 
         if (isFiltering.get()) {
-            AccountFilterObject filterObject = new AccountFilterObject.Builder().setLabels(filterLabels).setSearchString(searchString).build();
+            filterObject = new AccountFilterObject.Builder().setLabels(filterLabels).setSearchString(searchString).build();
 
             filterDisposable.add(
                     repository
@@ -136,10 +177,20 @@ public class AccountFilterViewModel extends ViewModel {
             );
         } else {
             resultCounter.set(-1);
+            filterObject = null;
         }
     }
 
     public LiveData<List<Label>> getLabels() {
         return labels;
+    }
+
+    public LiveData<SingleEvent> getEvents() {
+        return events;
+    }
+
+    @Nullable
+    public AccountFilterObject getFilterObject() {
+        return filterObject;
     }
 }

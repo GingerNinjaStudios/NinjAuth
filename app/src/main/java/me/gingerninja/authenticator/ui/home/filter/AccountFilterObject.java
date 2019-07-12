@@ -26,11 +26,33 @@ public class AccountFilterObject {
 
     @Nullable
     public String getSearchString() {
-        return searchString;
+        return getSearchString(true);
+    }
+
+    @Nullable
+    public String getSearchString(boolean escape) {
+        if (searchString == null) {
+            return null;
+        } else {
+            if (escape) {
+                return "%" +
+                        searchString
+                                .toLowerCase()
+                                .replaceAll("%", "\\\\%")
+                                .replaceAll("_", "\\\\_") +
+                        "%";
+            } else {
+                return searchString;
+            }
+        }
     }
 
     public boolean hasSearchString() {
         return searchString != null && !searchString.isEmpty();
+    }
+
+    public boolean hasFilter() {
+        return hasLabels() || hasSearchString();
     }
 
     public static class Builder {
@@ -53,10 +75,10 @@ public class AccountFilterObject {
             text = text != null ? text.trim() : null;
 
             if (TextUtils.isEmpty(text)) {
-                text = null;
+                object.searchString = null;
+            } else {
+                object.searchString = text;
             }
-
-            object.searchString = text;
             return this;
         }
 

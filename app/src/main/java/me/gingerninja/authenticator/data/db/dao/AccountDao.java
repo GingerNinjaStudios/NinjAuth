@@ -2,6 +2,7 @@ package me.gingerninja.authenticator.data.db.dao;
 
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.List;
 
@@ -27,7 +28,11 @@ public interface AccountDao {
     @CheckResult
     Observable<List<Account>> getAllAndListen();
 
+    @Deprecated
     Observable<ReactiveResult<Tuple>> getAccountsAndLabelsWithListen();
+
+    @CheckResult
+    Observable<ReactiveResult<Tuple>> getAccountsAndLabelsWithListen(@Nullable AccountFilterObject filterObject);
 
     @CheckResult
     Single<Account> save(Account account);
