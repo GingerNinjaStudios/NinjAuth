@@ -270,6 +270,9 @@
 
     <string name="filters">Filters</string>
     <string name="filters_active_msg">Filters are active</string>
+    <string name="filter_match_labels_title">Match all labels</string>
+    <string name="filter_match_labels_summary_all">Show accounts that have all of the labels</string>
+    <string name="filter_match_labels_summary_any">Show accounts that have any of the labels</string>
 
     <plurals name="accounts">
         <item quantity="zero">%d Accounts</item>

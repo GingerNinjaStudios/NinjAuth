@@ -39,6 +39,7 @@ public class AccountFilterViewModel extends ViewModel {
     private MutableLiveData<SingleEvent> events = new MutableLiveData<>();
     private MutableLiveData<List<Label>> labels = new MutableLiveData<>();
 
+    public ObservableBoolean labelsMatchAll = new ObservableBoolean(false);
     private HashSet<Label> filterLabels = new HashSet<>();
     private MutableLiveData<HashSet<Label>> filterLabelLiveData = new MutableLiveData<>(filterLabels);
 
@@ -108,6 +109,8 @@ public class AccountFilterViewModel extends ViewModel {
                 searchStringInput.set(filterObject.getSearchString(false));
             }
 
+            labelsMatchAll.set(filterObject.isMatchAllLabels());
+
             if (filterObject.hasLabels()) {
                 filterLabels = (HashSet<Label>) filterObject.getLabels();
                 filterLabelLiveData.setValue(filterLabels);
@@ -159,6 +162,12 @@ public class AccountFilterViewModel extends ViewModel {
         return true;
     }
 
+    public void onChangeLabelFilterModeClick(View view) {
+        labelsMatchAll.set(!labelsMatchAll.get());
+        refreshUi();
+        findAccounts();
+    }
+
     private void refreshUi() {
         isFiltering.set(!filterLabels.isEmpty() || (!TextUtils.isEmpty(searchStringInput.get()) && !TextUtils.isEmpty(searchStringInput.get().trim())));
     }
@@ -167,7 +176,10 @@ public class AccountFilterViewModel extends ViewModel {
         filterDisposable.clear();
 
         if (isFiltering.get()) {
-            filterObject = new AccountFilterObject.Builder().setLabels(filterLabels).setSearchString(searchString).build();
+            filterObject = new AccountFilterObject.Builder()
+                    .setMatchAllLabels(labelsMatchAll.get())
+                    .setLabels(filterLabels)
+                    .setSearchString(searchString).build();
 
             filterDisposable.add(
                     repository

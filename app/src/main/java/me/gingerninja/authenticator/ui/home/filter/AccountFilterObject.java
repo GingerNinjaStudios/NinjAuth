@@ -12,12 +12,18 @@ public class AccountFilterObject {
     @Nullable
     private String searchString;
 
+    private boolean matchAllLabels;
+
     @Nullable
     private Set<Label> labels;
 
     @Nullable
     public Set<Label> getLabels() {
         return labels;
+    }
+
+    public boolean isMatchAllLabels() {
+        return matchAllLabels;
     }
 
     public boolean hasLabels() {
@@ -60,6 +66,11 @@ public class AccountFilterObject {
 
         public Builder() {
             object = new AccountFilterObject();
+        }
+
+        public Builder setMatchAllLabels(boolean matchAllLabels) {
+            object.matchAllLabels = matchAllLabels;
+            return this;
         }
 
         public Builder setLabels(@Nullable Set<Label> labels) {

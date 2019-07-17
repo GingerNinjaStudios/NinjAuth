@@ -1,15 +1,20 @@
 package me.gingerninja.authenticator.ui.home.filter;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
+
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import javax.inject.Inject;
 
@@ -19,6 +24,7 @@ import me.gingerninja.authenticator.databinding.AccountFilterDialogFragmentBindi
 import me.gingerninja.authenticator.ui.base.BaseBottomSheetDialogFragment;
 import me.gingerninja.authenticator.ui.home.AccountListViewModel;
 import me.gingerninja.authenticator.util.SingleEvent;
+import timber.log.Timber;
 
 public class AccountFilterDialogFragment extends BaseBottomSheetDialogFragment<AccountFilterDialogFragmentBinding> implements AccountFilterLabelAdapter.LabelFilterListener {
 
@@ -95,6 +101,38 @@ public class AccountFilterDialogFragment extends BaseBottomSheetDialogFragment<A
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
         setFilterForParent();
+    }
+
+    @Override
+    @NonNull
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+
+        dialog.setOnShowListener(dialog1 -> {
+            BottomSheetDialog bottomSheetDialog = (BottomSheetDialog) dialog1;
+            FrameLayout bottomSheet = bottomSheetDialog.findViewById(R.id.design_bottom_sheet);
+            if (bottomSheet != null) {
+                BottomSheetBehavior<FrameLayout> behavior = BottomSheetBehavior.from(bottomSheet);
+                behavior.setSkipCollapsed(true);
+                //behavior.setSaveFlags(BottomSheetBehavior.SAVE_ALL);
+                behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+                behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+                    @Override
+                    public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                        if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                            dismiss();
+                        }
+                    }
+
+                    @Override
+                    public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                    }
+                });
+            }
+        });
+
+        return dialog;
     }
 
     private void handleEvents(SingleEvent event) {

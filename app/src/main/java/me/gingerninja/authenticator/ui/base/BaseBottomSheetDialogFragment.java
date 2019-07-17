@@ -36,6 +36,8 @@ public abstract class BaseBottomSheetDialogFragment<T extends ViewDataBinding> e
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        inflater = LayoutInflater.from(requireActivity());
+
         dataBinding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false);
         onCreateView(inflater, container, savedInstanceState, dataBinding.getRoot(), dataBinding);
         return dataBinding.getRoot();
