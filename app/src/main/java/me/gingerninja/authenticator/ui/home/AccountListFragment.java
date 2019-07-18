@@ -203,6 +203,9 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
             return;
         }
 
+        AccountListViewModel viewModel = getViewModel(AccountListViewModel.class);
+        viewModel.setReorderingEnabled(false);
+
         switch (tag) {
             case ADD_ACCOUNT_TAG:
                 handleAddAccountMenu(id);
