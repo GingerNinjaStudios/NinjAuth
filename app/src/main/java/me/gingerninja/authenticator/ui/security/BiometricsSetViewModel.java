@@ -47,7 +47,7 @@ public class BiometricsSetViewModel extends ViewModel {
     public ObservableInt bioErrorText = new ObservableInt(0);
     public ObservableBoolean bioErrorBtnVisible = new ObservableBoolean(false);
     public ObservableInt bioErrorBtnText = new ObservableInt(0);
-    public ObservableField<View.OnClickListener> bioErrorBtnClick = new ObservableField<>(null);
+    public ObservableField<View.OnClickListener> bioErrorBtnClick = new ObservableField<>();
 
     public ObservableBoolean inputEnabled = new ObservableBoolean(true);
 

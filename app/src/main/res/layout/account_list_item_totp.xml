@@ -10,6 +10,10 @@
             type="me.gingerninja.authenticator.ui.home.list.AccountListItemTotpViewModel" />
 
         <import type="me.gingerninja.authenticator.ui.home.list.AccountListItemTotpViewModel" />
+
+        <import type="android.view.View" />
+
+        <import type="me.gingerninja.authenticator.R" />
     </data>
 
     <FrameLayout
@@ -37,6 +41,7 @@
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="24dp"
                     android:layout_marginEnd="16dp"
+                    android:enabled="@{viewModel.mode == AccountListItemTotpViewModel.MODE_IDLE ? true : false}"
                     android:text="@{viewModel.code}"
                     android:textAppearance="@style/Widget.Account.Code"
                     app:layout_constraintEnd_toStartOf="@+id/circular_progress"
@@ -65,18 +70,20 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="24dp"
                     android:layout_marginBottom="8dp"
+                    android:alpha="@{viewModel.mode == AccountListItemTotpViewModel.MODE_IDLE ? 1f : .3f}"
                     app:currentProgress="@{viewModel.currentProgress}"
                     app:direction="counterclockwise"
-                    app:dotColor="@color/colorPrimaryDark"
+                    app:dotColor="@{R.attr.colorPrimaryDark}"
                     app:dotWidth="6dp"
                     app:drawDot="true"
                     app:enableProgressAnimation="true"
+                    app:enabled="@{viewModel.mode == AccountListItemTotpViewModel.MODE_IDLE}"
                     app:layout_constraintBottom_toBottomOf="@+id/text_account"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/menu_button"
                     app:maxProgress="@{viewModel.maxProgress}"
                     app:progressCap="round"
-                    app:progressColor="@color/colorPrimary"
+                    app:progressColor="@{R.attr.colorPrimary}"
                     app:progressStrokeWidth="4dp"
                     app:startAngle="270"
                     app:textAdapter="@{viewModel.TEXT_ADAPTER}"
@@ -89,6 +96,7 @@
                     android:background="?selectableItemBackgroundBorderless"
                     android:onClick="@{viewModel::onOverflowClick}"
                     android:padding="8dp"
+                    android:visibility="@{viewModel.mode == AccountListItemTotpViewModel.MODE_IDLE ? View.VISIBLE : View.INVISIBLE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_more_vert_24dp" />

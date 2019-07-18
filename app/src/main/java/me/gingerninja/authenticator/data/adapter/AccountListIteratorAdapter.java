@@ -50,6 +50,7 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
 
     private Disposable disposable;
     private BehaviorSubject<Long> clock = BehaviorSubject.create();
+    private boolean dragEnabled = false;
 
     private int moveFrom = -1, moveTo = -1;
 
@@ -133,13 +134,23 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
 
     private void onBindHotpViewHolder(@NonNull HotpViewHolder holder, int position) {
         AccountListItemHotpBinding listItemBinding = holder.getBinding();
-
         Account account = accountWrapperFactory.create(iterator.get(position));
+
+        AccountListItemHotpViewModel oldViewModel = listItemBinding.getViewModel();
+        if (oldViewModel != null) {
+            Account oldAccount = oldViewModel.getAccount();
+
+            if (oldAccount != null && account != null && account.getId() == oldAccount.getId()) {
+                oldViewModel.setMode(dragEnabled ? AccountListItemViewModel.MODE_DRAG : AccountListItemViewModel.MODE_IDLE);
+                return;
+            }
+        }
 
         setupLabels(account, listItemBinding.labels);
 
         AccountListItemHotpViewModel viewModel = new AccountListItemHotpViewModel(account, codeGenerator, accountRepository);
         viewModel.setMenuItemClickListener(this);
+        viewModel.setMode(dragEnabled ? AccountListItemViewModel.MODE_DRAG : AccountListItemViewModel.MODE_IDLE);
 
         listItemBinding.setViewModel(viewModel);
     }
@@ -153,6 +164,7 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
             Account oldAccount = oldViewModel.getAccount();
 
             if (account.equals(oldAccount)) {
+                oldViewModel.setMode(dragEnabled ? AccountListItemViewModel.MODE_DRAG : AccountListItemViewModel.MODE_IDLE);
                 return;
             }
 
@@ -163,6 +175,7 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
 
         AccountListItemTotpViewModel viewModel = new AccountListItemTotpViewModel(account, codeGenerator);
         viewModel.setMenuItemClickListener(this);
+        viewModel.setMode(dragEnabled ? AccountListItemViewModel.MODE_DRAG : AccountListItemViewModel.MODE_IDLE);
 
         listItemBinding.setViewModel(viewModel);
     }
@@ -282,9 +295,9 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
             return;
         }
 
-        int viewType = viewHolder.getItemViewType();
-        BindingViewHolder holder = (BindingViewHolder) viewHolder;
-        ViewDataBinding binding = holder.getBinding();
+        //int viewType = viewHolder.getItemViewType();
+        //BindingViewHolder holder = (BindingViewHolder) viewHolder;
+        //ViewDataBinding binding = holder.getBinding();
 
         MaterialCardView cardView = viewHolder.itemView.findViewById(R.id.card);
         if (cardView != null) {
@@ -308,7 +321,7 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
             set.start();*/
         }
 
-        switch (viewType) {
+        /*switch (viewType) {
             case AccountListIteratorAdapter.TYPE_ACCOUNT_TOTP:
                 AccountListItemTotpViewModel viewModel = ((AccountListItemTotpBinding) binding).getViewModel();
                 if (viewModel != null) {
@@ -321,6 +334,13 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
                     hotpViewModel.setMode(isDragging ? AccountListItemViewModel.MODE_DRAG : AccountListItemViewModel.MODE_IDLE);
                 }
                 break;
+        }*/
+    }
+
+    public void setDragEnabled(boolean enabled) {
+        if (dragEnabled != enabled) {
+            dragEnabled = enabled;
+            notifyDataSetChanged();
         }
     }
 

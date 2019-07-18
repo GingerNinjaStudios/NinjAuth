@@ -10,6 +10,10 @@
             type="me.gingerninja.authenticator.ui.home.list.AccountListItemHotpViewModel" />
 
         <import type="me.gingerninja.authenticator.ui.home.list.AccountListItemHotpViewModel" />
+
+        <import type="android.view.View" />
+
+        <import type="me.gingerninja.authenticator.R" />
     </data>
 
     <FrameLayout
@@ -37,6 +41,7 @@
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="24dp"
                     android:layout_marginEnd="16dp"
+                    android:enabled="@{viewModel.mode == AccountListItemHotpViewModel.MODE_IDLE ? true : false}"
                     android:text="@{viewModel.code}"
                     android:textAppearance="@style/Widget.Account.Code"
                     app:layout_constraintEnd_toStartOf="@+id/btn_refresh"
@@ -66,6 +71,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="24dp"
                     android:layout_marginBottom="8dp"
+                    android:enabled="@{viewModel.mode == AccountListItemHotpViewModel.MODE_IDLE &amp;&amp; !viewModel.cooldownInProgress ? true : false}"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
                     android:onClick="@{viewModel::onRefreshButtonClick}"
@@ -80,6 +86,33 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/menu_button" />
 
+                <antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator
+                    android:id="@+id/circular_progress"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginBottom="8dp"
+                    android:alpha="@{viewModel.mode == AccountListItemHotpViewModel.MODE_IDLE ? 1f : .3f}"
+                    android:visibility="@{viewModel.cooldownInProgress ? View.VISIBLE : View.GONE}"
+                    app:currentProgress="@{viewModel.cooldownProgress}"
+                    app:direction="counterclockwise"
+                    app:dotColor="@{R.attr.colorPrimaryDark}"
+                    app:dotWidth="6dp"
+                    app:drawDot="true"
+                    app:enableProgressAnimation="true"
+                    app:enabled="@{viewModel.mode == AccountListItemHotpViewModel.MODE_IDLE}"
+                    app:layout_constraintBottom_toBottomOf="@+id/text_account"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/menu_button"
+                    app:maxProgress="@{viewModel.MAX_PROGRESS}"
+                    app:progressCap="round"
+                    app:progressColor="@{R.attr.colorPrimary}"
+                    app:progressStrokeWidth="4dp"
+                    app:startAngle="270"
+                    app:textAdapter="@{viewModel.TEXT_ADAPTER}"
+                    app:textColor="?colorSurface" />
+
                 <ImageButton
                     android:id="@+id/menu_button"
                     android:layout_width="wrap_content"
@@ -87,6 +120,7 @@
                     android:background="?selectableItemBackgroundBorderless"
                     android:onClick="@{viewModel::onOverflowClick}"
                     android:padding="8dp"
+                    android:visibility="@{viewModel.mode == AccountListItemHotpViewModel.MODE_IDLE ? View.VISIBLE : View.INVISIBLE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_more_vert_24dp" />

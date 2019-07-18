@@ -39,7 +39,12 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
     private final OnBackPressedCallback backButtonCallback = new OnBackPressedCallback(true) {
         @Override
         public void handleOnBackPressed() {
-            exit();
+            AccountListViewModel viewModel = getViewModel(AccountListViewModel.class);
+            if (viewModel.isOrdering.get()) {
+                viewModel.setReorderingEnabled(false);
+            } else {
+                exit();
+            }
         }
     };
 
@@ -78,7 +83,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
         super.onCreate(savedInstanceState);
         accountListAdapter.setMenuItemClickListener(this);
 
-        AccountListViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountListViewModel.class);
+        AccountListViewModel viewModel = getViewModel(AccountListViewModel.class);
 
         viewModel.getAccountList2().observe(this, accountListAdapter::setResults);
 
@@ -176,7 +181,10 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
 
     private void enableListDrag(AccountListFragmentBinding binding) {
         AccountListViewModel viewModel = binding.getViewModel();
-        viewModel.getIsOrdering().observe(getViewLifecycleOwner(), isOrdering -> dragHelper.attachToRecyclerView(isOrdering ? binding.accountList : null));
+        viewModel.getIsOrdering().observe(getViewLifecycleOwner(), isOrdering -> {
+            dragHelper.attachToRecyclerView(isOrdering ? binding.accountList : null);
+            accountListAdapter.setDragEnabled(isOrdering);
+        });
     }
 
     @Override

@@ -4,12 +4,16 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.util.TypedValue;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.AttrRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
@@ -60,6 +64,37 @@ public class BindingHelpers {
         } else {
             view.setHelperTextEnabled(true);
             view.setHelperText(view.getContext().getString(helperTextRes));
+        }
+    }
+
+    private static int grayscale(int color) {
+        int uniformValue = (int) (Color.red(color) * 0.299 + Color.green(color) * 0.587 + Color.blue(color) * 0.114);
+        return Color.rgb(uniformValue, uniformValue, uniformValue);
+    }
+
+    @BindingAdapter(value = {"progressColor", "dotColor", "enabled"}, requireAll = false)
+    public static void setProgressAndDotColor(@NonNull CircularProgressIndicator progressIndicator, @AttrRes int progressResId, @AttrRes int dotResId, boolean enabled) {
+        progressIndicator.setEnabled(enabled);
+
+        TypedValue typedValue = new TypedValue();
+        Resources.Theme theme = progressIndicator.getContext().getTheme();
+
+        if (progressResId != 0) {
+            theme.resolveAttribute(progressResId, typedValue, true);
+            if (enabled) {
+                progressIndicator.setProgressColor(typedValue.data);
+            } else {
+                progressIndicator.setProgressColor(grayscale(typedValue.data));
+            }
+        }
+
+        if (dotResId != 0) {
+            theme.resolveAttribute(dotResId, typedValue, true);
+            if (enabled) {
+                progressIndicator.setDotColor(typedValue.data);
+            } else {
+                progressIndicator.setDotColor(grayscale(typedValue.data));
+            }
         }
     }
 
