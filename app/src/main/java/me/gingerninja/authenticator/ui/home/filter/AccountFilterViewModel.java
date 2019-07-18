@@ -39,6 +39,9 @@ public class AccountFilterViewModel extends ViewModel {
     private MutableLiveData<SingleEvent> events = new MutableLiveData<>();
     private MutableLiveData<List<Label>> labels = new MutableLiveData<>();
 
+    public ObservableBoolean hasLoaded = new ObservableBoolean(false);
+    public ObservableBoolean hasLabels = new ObservableBoolean(false);
+
     public ObservableBoolean labelsMatchAll = new ObservableBoolean(false);
     private HashSet<Label> filterLabels = new HashSet<>();
     private MutableLiveData<HashSet<Label>> filterLabelLiveData = new MutableLiveData<>(filterLabels);
@@ -81,8 +84,12 @@ public class AccountFilterViewModel extends ViewModel {
                 repository
                         .getAllLabelAndListen()
                         .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(this.labels::setValue)
+                        //.observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(value -> {
+                            hasLoaded.set(true);
+                            hasLabels.set(!value.isEmpty());
+                            this.labels.postValue(value);
+                        })
         );
 
         searchStringInput.addOnPropertyChangedCallback(searchStringCallback);
