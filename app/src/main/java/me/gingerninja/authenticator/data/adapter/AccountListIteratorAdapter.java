@@ -1,5 +1,6 @@
 package me.gingerninja.authenticator.data.adapter;
 
+import android.animation.ObjectAnimator;
 import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -12,6 +13,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
@@ -283,6 +285,28 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
         int viewType = viewHolder.getItemViewType();
         BindingViewHolder holder = (BindingViewHolder) viewHolder;
         ViewDataBinding binding = holder.getBinding();
+
+        MaterialCardView cardView = viewHolder.itemView.findViewById(R.id.card);
+        if (cardView != null) {
+            cardView.clearAnimation();
+
+            float targetElevation = cardView.getResources().getDimension(isDragging ? R.dimen.account_list_card_elevation_dragging : R.dimen.account_list_card_elevation_normal);
+            ObjectAnimator animator = ObjectAnimator.ofFloat(cardView, "cardElevation", cardView.getCardElevation(), targetElevation);
+            animator.start();
+
+            /*int targetPadding = cardView.getResources().getDimensionPixelSize(isDragging ? R.dimen.account_list_card_padding_dragging : R.dimen.account_list_card_padding_normal);
+            int originalPadding = cardView.getResources().getDimensionPixelSize(R.dimen.account_list_card_padding_normal);
+
+            ValueAnimator paddingAnimator = ValueAnimator.ofInt(viewHolder.itemView.getPaddingStart(), targetPadding);
+            paddingAnimator.addUpdateListener(valueAnimator -> {
+                int p = (int) valueAnimator.getAnimatedValue();
+                viewHolder.itemView.setPaddingRelative(p, originalPadding, p, originalPadding);
+            });
+
+            AnimatorSet set = new AnimatorSet();
+            set.playTogether(animator, paddingAnimator);
+            set.start();*/
+        }
 
         switch (viewType) {
             case AccountListIteratorAdapter.TYPE_ACCOUNT_TOTP:

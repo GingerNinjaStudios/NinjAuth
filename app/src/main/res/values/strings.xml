@@ -273,6 +273,10 @@
     <string name="filter_match_labels_title">Match all labels</string>
     <string name="filter_match_labels_summary_all">Show accounts that have all of the labels</string>
     <string name="filter_match_labels_summary_any">Show accounts that have any of the labels</string>
+    <string name="menu_filter">Filter</string>
+    <string name="menu_reorder">Reorder</string>
+    <string name="reorder_active_msg">Reordering active</string>
+    <string name="reorder_tutorial_msg">Long-click on items to reorder</string>
 
     <plurals name="accounts">
         <item quantity="zero">%d Accounts</item>

@@ -43,6 +43,33 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
         }
     };
 
+    private ItemTouchHelper dragHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
+        @Override
+        public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+            super.clearView(recyclerView, viewHolder);
+            accountListAdapter.onItemDrag(viewHolder, false);
+            getViewModel(AccountListViewModel.class).saveListOrder(accountListAdapter.getItemCount(), accountListAdapter.getMovementAndReset());
+            Timber.v("clearView() - Drag finished");
+        }
+
+        @Override
+        public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
+            super.onSelectedChanged(viewHolder, actionState);
+            Timber.v("onSelectedChanged() - actionState: %d", actionState);
+            accountListAdapter.onItemDrag(viewHolder, actionState == ItemTouchHelper.ACTION_STATE_DRAG);
+        }
+
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return accountListAdapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+        }
+    });
+
     @Inject
     AccountListIteratorAdapter accountListAdapter;
 
@@ -128,11 +155,17 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
         binding.appBar.setNavigationOnClickListener(v -> {
             BottomNavigationFragment.show(R.menu.navigation_menu, R.id.nav_accounts, R.layout.bottom_nav_header, getChildFragmentManager());
         });
-        binding.appBar.inflateMenu(R.menu.account_list_menu);
+        //binding.appBar.inflateMenu(R.menu.account_list_menu);
         binding.appBar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.menu_filter:
                     new AccountFilterDialogFragment().show(getChildFragmentManager(), "filter"); // TODO tag
+                    break;
+                case R.id.menu_order:
+                    viewModel.setReorderingEnabled(true);
+                    Snackbar.make(binding.accountList, R.string.reorder_tutorial_msg, Snackbar.LENGTH_LONG)
+                            .setAnchorView(binding.fab)
+                            .show();
                     break;
             }
             return true;
@@ -143,34 +176,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
 
     private void enableListDrag(AccountListFragmentBinding binding) {
         AccountListViewModel viewModel = binding.getViewModel();
-        ItemTouchHelper dragHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
-
-            @Override
-            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-                super.clearView(recyclerView, viewHolder);
-                accountListAdapter.onItemDrag(viewHolder, false);
-                viewModel.saveListOrder(accountListAdapter.getItemCount(), accountListAdapter.getMovementAndReset());
-                Timber.v("clearView() - Drag finished");
-            }
-
-            @Override
-            public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
-                super.onSelectedChanged(viewHolder, actionState);
-                Timber.v("onSelectedChanged() - actionState: %d", actionState);
-                accountListAdapter.onItemDrag(viewHolder, actionState == ItemTouchHelper.ACTION_STATE_DRAG);
-            }
-
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return accountListAdapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-
-            }
-        });
-        dragHelper.attachToRecyclerView(binding.accountList);
+        viewModel.getIsOrdering().observe(getViewLifecycleOwner(), isOrdering -> dragHelper.attachToRecyclerView(isOrdering ? binding.accountList : null));
     }
 
     @Override

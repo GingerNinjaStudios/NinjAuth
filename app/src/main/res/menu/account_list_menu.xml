@@ -4,6 +4,11 @@
     <item
         android:id="@+id/menu_filter"
         android:icon="@drawable/ic_filter_list_24dp"
-        android:title="Filter"
+        android:title="@string/menu_filter"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_order"
+        android:icon="@drawable/ic_reorder_24dp"
+        android:title="@string/menu_reorder"
         app:showAsAction="ifRoom" />
 </menu>

@@ -1,18 +1,24 @@
 package me.gingerninja.authenticator.util;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.core.graphics.ColorUtils;
 import androidx.databinding.BindingAdapter;
 
+import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.chip.Chip;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
 
 import antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator;
@@ -126,6 +132,41 @@ public class BindingHelpers {
     @BindingAdapter("srcCompatRes")
     public static void setCompatImageViewDrawable(ImageView imageView, @DrawableRes int resId) {
         imageView.setImageResource(resId);
+    }
+
+    @BindingAdapter("srcCompat")
+    public static void setCompatImageViewDrawable(final FloatingActionButton fab, final Drawable resId) {
+        final Drawable oldDrawable = fab.getDrawable();
+        if (oldDrawable == null) {
+            fab.setImageDrawable(resId);
+        } else {
+            fab.addOnShowAnimationListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    super.onAnimationStart(animation);
+
+                    fab.setImageDrawable(resId);
+                    fab.removeOnShowAnimationListener(this);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+
+                    fab.setImageDrawable(resId);
+                    fab.removeOnShowAnimationListener(this);
+                }
+            });
+        }
+    }
+
+    @BindingAdapter("menu")
+    public static void setCompatImageViewDrawable(BottomAppBar bottomAppBar, @MenuRes int resId) {
+        if (resId == 0) {
+            bottomAppBar.getMenu().clear();
+        } else {
+            bottomAppBar.replaceMenu(resId);
+        }
     }
 
     @BindingAdapter("onEditorActionListener")
