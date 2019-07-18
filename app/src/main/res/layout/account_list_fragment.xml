@@ -132,7 +132,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/no_accounts"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:text="@{viewModel.hasFilter ? @string/no_accounts_filtered : @string/no_accounts}"
+                android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
                 android:visibility="@{viewModel.hasLoaded &amp;&amp; !viewModel.hasData ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"

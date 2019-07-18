@@ -148,6 +148,7 @@
                     android:paddingTop="16dp"
                     android:paddingEnd="0dp"
                     android:paddingBottom="16dp"
+                    android:visibility="@{viewModel.hasLoaded &amp;&amp; viewModel.hasLabels ? View.VISIBLE : View.GONE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/labels_title">
@@ -195,6 +196,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="4dp"
+                    android:visibility="@{viewModel.hasLoaded &amp;&amp; viewModel.hasLabels ? View.VISIBLE : View.GONE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
@@ -203,6 +205,40 @@
                     tools:layout_marginTop="184dp"
                     tools:listitem="@layout/account_filter_label_list_item" />
 
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginBottom="18dp"
+                    android:visibility="@{viewModel.hasLoaded ? View.GONE : View.VISIBLE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/labels_title"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/no_labels"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="14sp"
+                    android:visibility="@{viewModel.hasLoaded &amp;&amp; !viewModel.hasLabels ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/labels_title"
+                    app:layout_constraintVertical_bias="0.0" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.core.widget.NestedScrollView>
