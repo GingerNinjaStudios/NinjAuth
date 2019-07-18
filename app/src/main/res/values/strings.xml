@@ -277,6 +277,7 @@
     <string name="menu_reorder">Reorder</string>
     <string name="reorder_active_msg">Reordering active</string>
     <string name="reorder_tutorial_msg">Long-click on items to reorder</string>
+    <string name="tutorial_account_form_label_reorder_message">You can reorder the labels by click-holding on them</string>
 
     <plurals name="accounts">
         <item quantity="zero">%d Accounts</item>
