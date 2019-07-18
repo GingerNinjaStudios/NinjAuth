@@ -754,7 +754,7 @@ public class Crypto {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(biometricPrompt -> {
                     Lifecycle.State state = activity.getLifecycle().getCurrentState();
-                    if (state.isAtLeast(Lifecycle.State.CREATED)) {
+                    if (state.isAtLeast(Lifecycle.State.STARTED)) {
                         biometricPrompt.authenticate(promptInfo, cryptoObject);
                     } else {
                         subject.onError(new BiometricException(BiometricException.ERROR_SHOULD_RETRY, ""));

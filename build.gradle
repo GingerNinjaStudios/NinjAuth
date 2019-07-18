@@ -43,7 +43,7 @@ buildscript {
                 colorpicker: '1.0.0'
         ]
 
-        materialComponentsVersion = '1.1.0-alpha07'
+        materialComponentsVersion = '1.1.0-alpha08'
 
         libVersions = [
                 sqlCipher                : '4.2.0',
@@ -67,7 +67,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.0-beta05'
+        classpath 'com.android.tools.build:gradle:3.5.0-rc01'
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:${androidX.navigation}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 

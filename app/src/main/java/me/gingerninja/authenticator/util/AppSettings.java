@@ -3,6 +3,7 @@ package me.gingerninja.authenticator.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -10,10 +11,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import me.gingerninja.authenticator.R;
+import me.gingerninja.authenticator.crypto.Crypto;
 import me.gingerninja.authenticator.module.ModuleHandler;
 import timber.log.Timber;
 
@@ -26,6 +30,10 @@ public class AppSettings {
 
     private final ModuleHandler moduleHandler;
 
+    private final Crypto crypo;
+
+    private long lockScreenStartTime = -1;
+
     /**
      * Used during the setup process.
      */
@@ -33,9 +41,10 @@ public class AppSettings {
     private String temporaryTheme;
 
     @Inject
-    public AppSettings(Context context, SharedPreferences sharedPrefs, ModuleHandler moduleHandler) {
+    public AppSettings(Context context, SharedPreferences sharedPrefs, Crypto crypto, ModuleHandler moduleHandler) {
         this.context = context;
         this.sharedPrefs = sharedPrefs;
+        this.crypo = crypto;
         this.moduleHandler = moduleHandler;
     }
 
@@ -93,6 +102,37 @@ public class AppSettings {
 
     public boolean hideFromRecents() {
         return sharedPrefs.getBoolean(getString(R.string.settings_security_hide_recent_key), true);
+    }
+
+    public void startLockScreenCounter(boolean forceReset) {
+        if (forceReset) {
+            lockScreenStartTime = -1;
+        } else {
+            String raw = sharedPrefs.getString(getString(R.string.settings_security_leave_lock_key), "0");
+            if (!crypo.hasLock() || "-1".equals(raw)) {
+                lockScreenStartTime = -1;
+            } else {
+                lockScreenStartTime = SystemClock.elapsedRealtime();
+            }
+        }
+    }
+
+
+    public boolean stopLockScreenCounter() {
+        if (lockScreenStartTime >= 0) {
+            String raw = sharedPrefs.getString(getString(R.string.settings_security_leave_lock_key), "0");
+
+            try {
+                long lockoutTime = Long.parseLong(raw);
+                if (SystemClock.elapsedRealtime() - lockScreenStartTime > TimeUnit.MILLISECONDS.convert(lockoutTime, TimeUnit.SECONDS)) {
+                    return true;
+                }
+            } catch (NumberFormatException e) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public boolean isFirstRunComplete() {

@@ -2,6 +2,7 @@ package me.gingerninja.authenticator.di.builder;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
+import me.gingerninja.authenticator.di.module.fragment.AccountFilterModule;
 import me.gingerninja.authenticator.di.module.fragment.AccountListModule;
 import me.gingerninja.authenticator.di.module.fragment.LabelListModule;
 import me.gingerninja.authenticator.di.module.fragment.RestoreFragmentModule;
@@ -17,6 +18,7 @@ import me.gingerninja.authenticator.ui.backup.page.RestoreLabelPageFragment;
 import me.gingerninja.authenticator.ui.backup.page.RestoreSummaryPageFragment;
 import me.gingerninja.authenticator.ui.home.AccountListFragment;
 import me.gingerninja.authenticator.ui.home.DeleteAccountBottomFragment;
+import me.gingerninja.authenticator.ui.home.filter.AccountFilterDialogFragment;
 import me.gingerninja.authenticator.ui.home.form.AccountEditorFragment;
 import me.gingerninja.authenticator.ui.home.form.LabelSelectorDialogFragment;
 import me.gingerninja.authenticator.ui.label.DeleteLabelBottomFragment;
@@ -58,6 +60,9 @@ public abstract class FragmentBuilder {
 
     @ContributesAndroidInjector(modules = AccountListModule.class)
     abstract AccountListFragment bindAccountListFragment();
+
+    @ContributesAndroidInjector(modules = AccountFilterModule.class)
+    abstract AccountFilterDialogFragment bindAccountFilterDialogFragment();
 
     @ContributesAndroidInjector
     abstract AddAccountFromCameraFragment bindAddAccountFromCameraFragment();

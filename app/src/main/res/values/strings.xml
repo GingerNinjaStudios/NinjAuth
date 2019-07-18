@@ -12,6 +12,7 @@
     <string name="btn_start">Start</string>
     <string name="btn_splash_next">Continue setup</string>
     <string name="btn_authenticate">Authenticate</string>
+    <string name="btn_reset">Reset</string>
 
     <string name="skip_setup_dialog_title">Do you want to skip the setup?</string>
     <string name="skip_setup_dialog_msg">If you skip the setup, your authentication codes will not be protected against unauthorized access and auto-backup will not be enabled.</string>
@@ -223,6 +224,11 @@
     <string name="security_lock_type_confirm_dialog_message">Removing the app lock results in anyone who has access to your device being able to access the data, such as accounts and labels.</string>
     <string name="security_lock_type_confirm_dialog_confirm">Remove lock</string>
 
+    <string name="security_intermediate_message">The app has been locked due to inactivity. Please, re-authenticate.</string>
+    <string name="security_intermediate_confirm_exit_dialog_title">Would you like to quit?</string>
+    <string name="security_intermediate_confirm_exit_dialog_message">If you don\'t re-authenticate, NinjAuth will be closed.</string>
+    <string name="security_intermediate_confirm_exit_dialog_confirm">Quit</string>
+
     <string name="security_first_password_title">Set application lock</string>
     <string name="security_first_password_message_password">For improved security, set password</string>
     <string name="security_first_password_message_confirm_password">Re-enter your password</string>
@@ -260,6 +266,23 @@
         <item quantity="zero">No items</item>
         <item quantity="one">%d item</item>
         <item quantity="other">%d items</item>
+    </plurals>
+
+    <string name="filters">Filters</string>
+    <string name="filters_active_msg">Filters are active</string>
+    <string name="filter_match_labels_title">Match all labels</string>
+    <string name="filter_match_labels_summary_all">Show accounts that have all of the labels</string>
+    <string name="filter_match_labels_summary_any">Show accounts that have any of the labels</string>
+    <string name="menu_filter">Filter</string>
+    <string name="menu_reorder">Reorder</string>
+    <string name="reorder_active_msg">Reordering active</string>
+    <string name="reorder_tutorial_msg">Long-click on items to reorder</string>
+    <string name="tutorial_account_form_label_reorder_message">You can reorder the labels by click-holding on them</string>
+
+    <plurals name="accounts">
+        <item quantity="zero">%d Accounts</item>
+        <item quantity="one">%d Account</item>
+        <item quantity="other">%d Accounts</item>
     </plurals>
 
 </resources>

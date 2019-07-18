@@ -1,6 +1,8 @@
 package me.gingerninja.authenticator.data.db.dao;
 
 import androidx.annotation.CheckResult;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.List;
 
@@ -11,6 +13,7 @@ import io.requery.query.Tuple;
 import io.requery.reactivex.ReactiveResult;
 import io.requery.sql.ResultSetIterator;
 import me.gingerninja.authenticator.data.db.entity.Account;
+import me.gingerninja.authenticator.ui.home.filter.AccountFilterObject;
 
 public interface AccountDao {
     @CheckResult
@@ -25,7 +28,11 @@ public interface AccountDao {
     @CheckResult
     Observable<List<Account>> getAllAndListen();
 
+    @Deprecated
     Observable<ReactiveResult<Tuple>> getAccountsAndLabelsWithListen();
+
+    @CheckResult
+    Observable<ReactiveResult<Tuple>> getAccountsAndLabelsWithListen(@Nullable AccountFilterObject filterObject);
 
     @CheckResult
     Single<Account> save(Account account);
@@ -37,4 +44,7 @@ public interface AccountDao {
 
     @CheckResult
     Completable delete(Account account);
+
+    @CheckResult
+    Single<Integer> getFilteredAccountCount(@NonNull AccountFilterObject filterObject);
 }

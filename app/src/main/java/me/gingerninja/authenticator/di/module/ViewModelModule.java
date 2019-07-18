@@ -18,6 +18,7 @@ import me.gingerninja.authenticator.ui.backup.page.RestoreLabelPageViewModel;
 import me.gingerninja.authenticator.ui.backup.page.RestoreSummaryPageViewModel;
 import me.gingerninja.authenticator.ui.home.AccountListViewModel;
 import me.gingerninja.authenticator.ui.home.DeleteAccountViewModel;
+import me.gingerninja.authenticator.ui.home.filter.AccountFilterViewModel;
 import me.gingerninja.authenticator.ui.home.form.AccountEditorViewModel;
 import me.gingerninja.authenticator.ui.label.DeleteLabelViewModel;
 import me.gingerninja.authenticator.ui.label.LabelsViewModel;
@@ -66,6 +67,11 @@ public abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(DeleteAccountViewModel.class)
     abstract ViewModel bindDeleteAccountViewModel(DeleteAccountViewModel myViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(AccountFilterViewModel.class)
+    abstract ViewModel bindAccountFilterViewModel(AccountFilterViewModel viewModel);
 
     @Binds
     @IntoMap

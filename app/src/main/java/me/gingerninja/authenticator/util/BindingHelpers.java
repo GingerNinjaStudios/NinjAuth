@@ -1,18 +1,28 @@
 package me.gingerninja.authenticator.util;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.util.TypedValue;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.AttrRes;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.core.graphics.ColorUtils;
 import androidx.databinding.BindingAdapter;
 
+import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.chip.Chip;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
 
 import antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator;
@@ -54,6 +64,37 @@ public class BindingHelpers {
         } else {
             view.setHelperTextEnabled(true);
             view.setHelperText(view.getContext().getString(helperTextRes));
+        }
+    }
+
+    private static int grayscale(int color) {
+        int uniformValue = (int) (Color.red(color) * 0.299 + Color.green(color) * 0.587 + Color.blue(color) * 0.114);
+        return Color.rgb(uniformValue, uniformValue, uniformValue);
+    }
+
+    @BindingAdapter(value = {"progressColor", "dotColor", "enabled"}, requireAll = false)
+    public static void setProgressAndDotColor(@NonNull CircularProgressIndicator progressIndicator, @AttrRes int progressResId, @AttrRes int dotResId, boolean enabled) {
+        progressIndicator.setEnabled(enabled);
+
+        TypedValue typedValue = new TypedValue();
+        Resources.Theme theme = progressIndicator.getContext().getTheme();
+
+        if (progressResId != 0) {
+            theme.resolveAttribute(progressResId, typedValue, true);
+            if (enabled) {
+                progressIndicator.setProgressColor(typedValue.data);
+            } else {
+                progressIndicator.setProgressColor(grayscale(typedValue.data));
+            }
+        }
+
+        if (dotResId != 0) {
+            theme.resolveAttribute(dotResId, typedValue, true);
+            if (enabled) {
+                progressIndicator.setDotColor(typedValue.data);
+            } else {
+                progressIndicator.setDotColor(grayscale(typedValue.data));
+            }
         }
     }
 
@@ -126,6 +167,41 @@ public class BindingHelpers {
     @BindingAdapter("srcCompatRes")
     public static void setCompatImageViewDrawable(ImageView imageView, @DrawableRes int resId) {
         imageView.setImageResource(resId);
+    }
+
+    @BindingAdapter("srcCompat")
+    public static void setCompatImageViewDrawable(final FloatingActionButton fab, final Drawable resId) {
+        final Drawable oldDrawable = fab.getDrawable();
+        if (oldDrawable == null) {
+            fab.setImageDrawable(resId);
+        } else {
+            fab.addOnShowAnimationListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    super.onAnimationStart(animation);
+
+                    fab.setImageDrawable(resId);
+                    fab.removeOnShowAnimationListener(this);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+
+                    fab.setImageDrawable(resId);
+                    fab.removeOnShowAnimationListener(this);
+                }
+            });
+        }
+    }
+
+    @BindingAdapter("menu")
+    public static void setCompatImageViewDrawable(BottomAppBar bottomAppBar, @MenuRes int resId) {
+        if (resId == 0) {
+            bottomAppBar.getMenu().clear();
+        } else {
+            bottomAppBar.replaceMenu(resId);
+        }
     }
 
     @BindingAdapter("onEditorActionListener")

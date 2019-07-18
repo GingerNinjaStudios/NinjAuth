@@ -1,5 +1,6 @@
 package me.gingerninja.authenticator.data.adapter;
 
+import android.animation.ObjectAnimator;
 import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -12,6 +13,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
@@ -48,6 +50,7 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
 
     private Disposable disposable;
     private BehaviorSubject<Long> clock = BehaviorSubject.create();
+    private boolean dragEnabled = false;
 
     private int moveFrom = -1, moveTo = -1;
 
@@ -131,13 +134,23 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
 
     private void onBindHotpViewHolder(@NonNull HotpViewHolder holder, int position) {
         AccountListItemHotpBinding listItemBinding = holder.getBinding();
-
         Account account = accountWrapperFactory.create(iterator.get(position));
+
+        AccountListItemHotpViewModel oldViewModel = listItemBinding.getViewModel();
+        if (oldViewModel != null) {
+            Account oldAccount = oldViewModel.getAccount();
+
+            if (oldAccount != null && account != null && account.getId() == oldAccount.getId()) {
+                oldViewModel.setMode(dragEnabled ? AccountListItemViewModel.MODE_DRAG : AccountListItemViewModel.MODE_IDLE);
+                return;
+            }
+        }
 
         setupLabels(account, listItemBinding.labels);
 
         AccountListItemHotpViewModel viewModel = new AccountListItemHotpViewModel(account, codeGenerator, accountRepository);
         viewModel.setMenuItemClickListener(this);
+        viewModel.setMode(dragEnabled ? AccountListItemViewModel.MODE_DRAG : AccountListItemViewModel.MODE_IDLE);
 
         listItemBinding.setViewModel(viewModel);
     }
@@ -151,6 +164,7 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
             Account oldAccount = oldViewModel.getAccount();
 
             if (account.equals(oldAccount)) {
+                oldViewModel.setMode(dragEnabled ? AccountListItemViewModel.MODE_DRAG : AccountListItemViewModel.MODE_IDLE);
                 return;
             }
 
@@ -161,6 +175,7 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
 
         AccountListItemTotpViewModel viewModel = new AccountListItemTotpViewModel(account, codeGenerator);
         viewModel.setMenuItemClickListener(this);
+        viewModel.setMode(dragEnabled ? AccountListItemViewModel.MODE_DRAG : AccountListItemViewModel.MODE_IDLE);
 
         listItemBinding.setViewModel(viewModel);
     }
@@ -280,11 +295,33 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
             return;
         }
 
-        int viewType = viewHolder.getItemViewType();
-        BindingViewHolder holder = (BindingViewHolder) viewHolder;
-        ViewDataBinding binding = holder.getBinding();
+        //int viewType = viewHolder.getItemViewType();
+        //BindingViewHolder holder = (BindingViewHolder) viewHolder;
+        //ViewDataBinding binding = holder.getBinding();
 
-        switch (viewType) {
+        MaterialCardView cardView = viewHolder.itemView.findViewById(R.id.card);
+        if (cardView != null) {
+            cardView.clearAnimation();
+
+            float targetElevation = cardView.getResources().getDimension(isDragging ? R.dimen.account_list_card_elevation_dragging : R.dimen.account_list_card_elevation_normal);
+            ObjectAnimator animator = ObjectAnimator.ofFloat(cardView, "cardElevation", cardView.getCardElevation(), targetElevation);
+            animator.start();
+
+            /*int targetPadding = cardView.getResources().getDimensionPixelSize(isDragging ? R.dimen.account_list_card_padding_dragging : R.dimen.account_list_card_padding_normal);
+            int originalPadding = cardView.getResources().getDimensionPixelSize(R.dimen.account_list_card_padding_normal);
+
+            ValueAnimator paddingAnimator = ValueAnimator.ofInt(viewHolder.itemView.getPaddingStart(), targetPadding);
+            paddingAnimator.addUpdateListener(valueAnimator -> {
+                int p = (int) valueAnimator.getAnimatedValue();
+                viewHolder.itemView.setPaddingRelative(p, originalPadding, p, originalPadding);
+            });
+
+            AnimatorSet set = new AnimatorSet();
+            set.playTogether(animator, paddingAnimator);
+            set.start();*/
+        }
+
+        /*switch (viewType) {
             case AccountListIteratorAdapter.TYPE_ACCOUNT_TOTP:
                 AccountListItemTotpViewModel viewModel = ((AccountListItemTotpBinding) binding).getViewModel();
                 if (viewModel != null) {
@@ -297,6 +334,13 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
                     hotpViewModel.setMode(isDragging ? AccountListItemViewModel.MODE_DRAG : AccountListItemViewModel.MODE_IDLE);
                 }
                 break;
+        }*/
+    }
+
+    public void setDragEnabled(boolean enabled) {
+        if (dragEnabled != enabled) {
+            dragEnabled = enabled;
+            notifyDataSetChanged();
         }
     }
 
