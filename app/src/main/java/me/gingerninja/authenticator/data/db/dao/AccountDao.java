@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import java.util.List;
 
 import io.reactivex.Completable;
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.requery.query.Tuple;
@@ -47,4 +48,7 @@ public interface AccountDao {
 
     @CheckResult
     Single<Integer> getFilteredAccountCount(@NonNull AccountFilterObject filterObject);
+
+    @CheckResult
+    Maybe<Account> findExistingAccount(@NonNull Account account);
 }

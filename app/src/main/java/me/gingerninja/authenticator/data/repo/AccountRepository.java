@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.Completable;
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
@@ -114,5 +115,9 @@ public class AccountRepository {
 
     public Completable deleteLabel(Label label) {
         return labelDao.delete(label);
+    }
+
+    public Maybe<Account> findExistingAccount(@NonNull Account account) {
+        return accountDao.findExistingAccount(account);
     }
 }

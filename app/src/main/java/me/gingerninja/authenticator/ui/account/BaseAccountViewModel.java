@@ -46,7 +46,7 @@ public abstract class BaseAccountViewModel extends ViewModel {
     protected AccountRepository accountRepository;
 
     protected SingleSubject<List<LabelData>> labels = SingleSubject.create();
-    private CompositeDisposable disposable = new CompositeDisposable();
+    protected CompositeDisposable disposable = new CompositeDisposable();
 
     public BaseAccountViewModel(@NonNull AccountRepository accountRepository) {
         this.accountRepository = accountRepository;

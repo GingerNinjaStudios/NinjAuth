@@ -11,6 +11,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 import io.reactivex.Completable;
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
@@ -311,11 +312,34 @@ public class AccountDaoImpl implements AccountDao {
     @Override
     public Single<Integer> getFilteredAccountCount(@NonNull AccountFilterObject filterObject) {
         return getFilteredAccounts(filterObject)
-                        .observable()
-                        .map(tuple -> tuple.get(Account.ID))
-                        .distinct()
-                        .count()
-                        .map(Long::intValue);
+                .observable()
+                .map(tuple -> tuple.get(Account.ID))
+                .distinct()
+                .count()
+                .map(Long::intValue);
+    }
+
+    @Override
+    public Maybe<Account> findExistingAccount(@NonNull Account account) {
+        account.generateUID(null);
+
+        return getStore()
+                .select(Account.class)
+                .where(Account.UID.eq(account.getUid()))
+                .get()
+                .maybe()
+                .switchIfEmpty(
+                        getStore()
+                                .select(Account.class)
+                                .where(
+                                        Account.ACCOUNT_NAME.eq(account.getAccountName())
+                                                .and(
+                                                        Account.ISSUER.eq(account.getIssuer())
+                                                )
+                                )
+                                .get()
+                                .maybe()
+                );
     }
 
     @CheckResult
