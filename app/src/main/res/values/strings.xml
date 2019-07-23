@@ -287,6 +287,9 @@
 
     <string name="account_comp_secrets_same">The secrets are the same</string>
     <string name="account_comp_secrets_different">The secrets are different</string>
+    <string name="show_comparison">Compare the accounts</string>
+    <string name="add_anyways">Add anyways</string>
+    <string name="existing_account_dialog_title">It seems like there is a similar account. What would you like to do?</string>
 
     <plurals name="accounts">
         <item quantity="zero">%d Accounts</item>
