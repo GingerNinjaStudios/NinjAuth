@@ -732,7 +732,9 @@ public class Crypto {
             @Override
             public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                 Timber.d("[AUTH] error: %d, str: %s", errorCode, errString);
-                subject.onError(new BiometricException(errorCode, errString));
+                if (!subject.hasThrowable()) {
+                    subject.onError(new BiometricException(errorCode, errString));
+                }
             }
 
             @Override
