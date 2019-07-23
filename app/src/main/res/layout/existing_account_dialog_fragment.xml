@@ -82,10 +82,14 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
+            android:fadeScrollbars="true"
             android:fillViewport="true"
+            android:scrollbars="vertical"
             android:visibility="@{viewModel.showComparison ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toTopOf="@id/btn_edit"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_default="wrap"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_msg">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -117,24 +121,37 @@
                     android:layout_height="wrap_content"
                     app:constraint_referenced_ids="comparison_type_text,comparison_type_new,comparison_type_old" />
 
+                <androidx.constraintlayout.widget.Group
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="comparison_type_data_text,comparison_type_data_new,comparison_type_data_old" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="comparison_digits_text,comparison_digits_new,comparison_digits_old" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="comparison_algo_text,comparison_algo_new,comparison_algo_old" />
+
                 <!-- Title -->
                 <TextView
                     android:id="@+id/comparison_title_text"
                     style="@style/TextAppearance.AccountComparison.FirstColumn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp"
                     android:text="@string/account_title_text"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <!-- TODO use databinding to get the account data from the ViewModel -->
                 <TextView
                     android:id="@+id/comparison_title_new"
                     style="@style/TextAppearance.AccountComparison.New"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text=""
+                    android:text="@{viewModel.newAccount.title}"
                     app:layout_constraintBaseline_toBaselineOf="@id/comparison_title_text"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/barrier"
@@ -145,7 +162,7 @@
                     style="@style/TextAppearance.AccountComparison.Old"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text=""
+                    android:text="@{viewModel.oldAccount.title}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/barrier"
                     app:layout_constraintTop_toBottomOf="@id/comparison_title_new"
@@ -166,20 +183,22 @@
                     style="@style/TextAppearance.AccountComparison.New"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="new"
+                    android:text="@{viewModel.newAccount.accountName}"
                     app:layout_constraintBaseline_toBaselineOf="@id/comparison_name_text"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/barrier" />
+                    app:layout_constraintStart_toEndOf="@+id/barrier"
+                    tools:text="new" />
 
                 <TextView
                     android:id="@+id/comparison_name_old"
                     style="@style/TextAppearance.AccountComparison.Old"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="old"
+                    android:text="@{viewModel.oldAccount.accountName}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/barrier"
-                    app:layout_constraintTop_toBottomOf="@id/comparison_name_new" />
+                    app:layout_constraintTop_toBottomOf="@id/comparison_name_new"
+                    tools:text="old" />
 
                 <!-- Issuer -->
                 <TextView
@@ -196,20 +215,22 @@
                     style="@style/TextAppearance.AccountComparison.New"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="new"
+                    android:text="@{viewModel.newAccount.issuer}"
                     app:layout_constraintBaseline_toBaselineOf="@id/comparison_issuer_text"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/barrier" />
+                    app:layout_constraintStart_toEndOf="@+id/barrier"
+                    tools:text="new" />
 
                 <TextView
                     android:id="@+id/comparison_issuer_old"
                     style="@style/TextAppearance.AccountComparison.Old"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="old"
+                    android:text="@{viewModel.oldAccount.issuer}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/barrier"
-                    app:layout_constraintTop_toBottomOf="@id/comparison_issuer_new" />
+                    app:layout_constraintTop_toBottomOf="@id/comparison_issuer_new"
+                    tools:text="old" />
 
                 <!-- Secret -->
                 <TextView
@@ -226,7 +247,7 @@
                     style="@style/TextAppearance.AccountComparison.New"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="The secrets don\'t match"
+                    android:text="@{viewModel.sameSecrets() ? @string/account_comp_secrets_same : @string/account_comp_secrets_different}"
                     app:layout_constraintBaseline_toBaselineOf="@id/comparison_secret_text"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/barrier" />
@@ -246,20 +267,118 @@
                     style="@style/TextAppearance.AccountComparison.New"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="new"
                     app:layout_constraintBaseline_toBaselineOf="@id/comparison_type_text"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/barrier" />
+                    app:layout_constraintStart_toEndOf="@+id/barrier"
+                    app:text="@{viewModel.newAccount.typeAsResource}"
+                    tools:text="new" />
 
                 <TextView
                     android:id="@+id/comparison_type_old"
                     style="@style/TextAppearance.AccountComparison.Old"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="old"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/barrier"
-                    app:layout_constraintTop_toBottomOf="@id/comparison_type_new" />
+                    app:layout_constraintTop_toBottomOf="@id/comparison_type_new"
+                    app:text="@{viewModel.oldAccount.typeAsResource}"
+                    tools:text="old" />
+
+                <!-- Type specific data -->
+                <TextView
+                    android:id="@+id/comparison_type_data_text"
+                    style="@style/TextAppearance.AccountComparison.FirstColumn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/account_type_spec_text"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/comparison_type_barrier" />
+
+                <TextView
+                    android:id="@+id/comparison_type_data_new"
+                    style="@style/TextAppearance.AccountComparison.New"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBaseline_toBaselineOf="@id/comparison_type_data_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/barrier"
+                    app:text="@{viewModel.newAccount.getTypeSpecificDataAsReadable(context)}"
+                    tools:text="30s (period)" />
+
+                <TextView
+                    android:id="@+id/comparison_type_data_old"
+                    style="@style/TextAppearance.AccountComparison.Old"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/barrier"
+                    app:layout_constraintTop_toBottomOf="@id/comparison_type_data_new"
+                    app:text="@{viewModel.oldAccount.getTypeSpecificDataAsReadable(context)}"
+                    tools:text="12 (counter)" />
+
+                <!-- Digits -->
+                <TextView
+                    android:id="@+id/comparison_digits_text"
+                    style="@style/TextAppearance.AccountComparison.FirstColumn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/account_digits_text"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/comparison_type_data_barrier" />
+
+                <TextView
+                    android:id="@+id/comparison_digits_new"
+                    style="@style/TextAppearance.AccountComparison.New"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.newAccount.digits + ``}"
+                    app:layout_constraintBaseline_toBaselineOf="@id/comparison_digits_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/barrier"
+                    tools:text="new" />
+
+                <TextView
+                    android:id="@+id/comparison_digits_old"
+                    style="@style/TextAppearance.AccountComparison.Old"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/barrier"
+                    app:layout_constraintTop_toBottomOf="@id/comparison_digits_new"
+                    app:text="@{viewModel.oldAccount.digits + ``}"
+                    tools:text="old" />
+
+                <!-- Algorithm -->
+                <TextView
+                    android:id="@+id/comparison_algo_text"
+                    style="@style/TextAppearance.AccountComparison.FirstColumn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/account_algo_text"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/comparison_digits_barrier" />
+
+                <TextView
+                    android:id="@+id/comparison_algo_new"
+                    style="@style/TextAppearance.AccountComparison.New"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.newAccount.algorithmAsReadable}"
+                    app:layout_constraintBaseline_toBaselineOf="@id/comparison_algo_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/barrier"
+                    tools:text="new" />
+
+                <TextView
+                    android:id="@+id/comparison_algo_old"
+                    style="@style/TextAppearance.AccountComparison.Old"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/barrier"
+                    app:layout_constraintTop_toBottomOf="@id/comparison_algo_new"
+                    app:text="@{viewModel.oldAccount.algorithmAsReadable}"
+                    tools:text="old" />
 
                 <!-- Barriers -->
                 <androidx.constraintlayout.widget.Barrier
@@ -267,7 +386,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:barrierDirection="end"
-                    app:constraint_referenced_ids="comparison_title_text,comparison_name_text,comparison_issuer_text" />
+                    app:constraint_referenced_ids="comparison_title_text,comparison_name_text,comparison_issuer_text,comparison_secret_text,comparison_type_text,comparison_type_data_text" />
 
                 <androidx.constraintlayout.widget.Barrier
                     android:id="@+id/comparison_title_barrier"
@@ -303,6 +422,27 @@
                     android:layout_height="wrap_content"
                     app:barrierDirection="bottom"
                     app:constraint_referenced_ids="comparison_type_text,comparison_type_old" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/comparison_type_data_barrier"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="comparison_type_data_text,comparison_type_data_old" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/comparison_digits_barrier"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="comparison_digits_text,comparison_digits_old" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/comparison_algo_barrier"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="comparison_algo_text,comparison_algo_old" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

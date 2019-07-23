@@ -81,6 +81,10 @@
 
     <string name="account_hotp_generate_new_code_desc">Generate new code</string>
 
+    <string name="account_type_spec_text">Type data</string>
+    <string name="account_type_spec_totp_detail_full">%ds (period)</string>
+    <string name="account_type_spec_hotp_detail_full">%d (counter)</string>
+
     <string name="labels">Labels</string>
 
     <string name="label_new_form_title">Add label</string>
@@ -280,6 +284,9 @@
     <string name="reorder_active_msg">Reordering active</string>
     <string name="reorder_tutorial_msg">Long-click on items to reorder</string>
     <string name="tutorial_account_form_label_reorder_message">You can reorder the labels by click-holding on them</string>
+
+    <string name="account_comp_secrets_same">The secrets are the same</string>
+    <string name="account_comp_secrets_different">The secrets are different</string>
 
     <plurals name="accounts">
         <item quantity="zero">%d Accounts</item>
