@@ -72,6 +72,10 @@ public class AccountRepository {
         return accountDao.saveAccountOrder(count, from, to, results);
     }
 
+    public Completable saveLabelOrder(int count, int from, int to, ResultSetIterator<Label> results) {
+        return labelDao.saveLabelOrder(count, from, to, results);
+    }
+
 
     public Completable saveAccounts(List<Account> accountList) {
         return accountDao.saveAll(accountList);
@@ -107,6 +111,10 @@ public class AccountRepository {
 
     public Observable<List<Label>> getAllLabelAndListen() {
         return labelDao.getAllAndListen();
+    }
+
+    public Observable<ReactiveResult<Label>> getAllLabelAndListen2() {
+        return labelDao.getAllAndListen2();
     }
 
     public Completable deleteLabel(long labelId) {

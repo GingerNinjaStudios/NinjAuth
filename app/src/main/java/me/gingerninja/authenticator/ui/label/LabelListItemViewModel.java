@@ -8,18 +8,25 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
+import androidx.databinding.BaseObservable;
+import androidx.databinding.Bindable;
+import androidx.databinding.library.baseAdapters.BR;
 
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.Label;
 
-public class LabelListItemViewModel {
+public class LabelListItemViewModel extends BaseObservable {
     @NonNull
     private final Label label;
+
+    @Mode
+    protected int mode = Mode.IDLE;
 
     private LabelMenuItemClickListener menuItemClickListener;
 
@@ -76,6 +83,22 @@ public class LabelListItemViewModel {
         return label.getAccounts().size();
     }
 
+    @NonNull
+    public Label getLabel() {
+        return label;
+    }
+
+    @Mode
+    @Bindable
+    public int getMode() {
+        return mode;
+    }
+
+    public void setMode(@Mode int mode) {
+        this.mode = mode;
+        notifyPropertyChanged(BR.mode);
+    }
+
     public LabelListItemViewModel setMenuItemClickListener(LabelMenuItemClickListener menuItemClickListener) {
         this.menuItemClickListener = menuItemClickListener;
         return this;
@@ -97,5 +120,11 @@ public class LabelListItemViewModel {
 
     public interface LabelMenuItemClickListener {
         void onLabelMenuItemClicked(MenuItem item, Label label);
+    }
+
+    @IntDef({Mode.IDLE, Mode.DRAG})
+    public @interface Mode {
+        int IDLE = 0;
+        int DRAG = 1;
     }
 }

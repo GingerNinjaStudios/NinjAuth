@@ -10,6 +10,8 @@
             type="me.gingerninja.authenticator.ui.label.LabelsViewModel" />
 
         <import type="android.view.View" />
+
+        <import type="com.google.android.material.bottomappbar.BottomAppBar" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -54,10 +56,33 @@
                     android:gravity="center"
                     android:text="@string/nav_labels_title"
                     android:textColor="?colorOnSurface"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/guideline"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_begin="?actionBarSize" />
+
+                <TextView
+                    android:id="@+id/subtitle"
+                    style="@style/TextAppearance.MaterialComponents.Caption"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="?colorSecondary"
+                    android:gravity="center"
+                    android:textColor="?colorOnSecondary"
+                    android:visibility="@{viewModel.isOrdering ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/title"
+                    app:text="@{viewModel.headerMessage}" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -112,8 +137,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            app:fabAlignmentMode="center"
+            app:fabAlignmentMode="@{viewModel.isOrdering ? BottomAppBar.FAB_ALIGNMENT_MODE_END : BottomAppBar.FAB_ALIGNMENT_MODE_CENTER}"
+            app:fabAnimationMode="scale"
             app:hideOnScroll="true"
+            app:menu="@{viewModel.menuRes}"
             app:navigationIcon="@drawable/ic_menu_24dp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -124,6 +151,6 @@
             android:onClick="@{viewModel::onAddLabelClick}"
             app:fabSize="normal"
             app:layout_anchor="@+id/app_bar"
-            app:srcCompat="@drawable/ic_add_24dp" />
+            app:srcCompat="@{viewModel.isOrdering ? @drawable/ic_done_24dp : @drawable/ic_add_24dp}" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
