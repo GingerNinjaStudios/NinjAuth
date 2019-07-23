@@ -20,6 +20,7 @@ import me.gingerninja.authenticator.ui.home.AccountListFragment;
 import me.gingerninja.authenticator.ui.home.DeleteAccountBottomFragment;
 import me.gingerninja.authenticator.ui.home.filter.AccountFilterDialogFragment;
 import me.gingerninja.authenticator.ui.home.form.AccountEditorFragment;
+import me.gingerninja.authenticator.ui.home.form.ExistingAccountDialogFragment;
 import me.gingerninja.authenticator.ui.home.form.LabelSelectorDialogFragment;
 import me.gingerninja.authenticator.ui.label.DeleteLabelBottomFragment;
 import me.gingerninja.authenticator.ui.label.LabelsBottomFragment;
@@ -72,6 +73,9 @@ public abstract class FragmentBuilder {
 
     @ContributesAndroidInjector
     abstract AccountEditorFragment bindAccountEditorFragment();
+
+    @ContributesAndroidInjector
+    abstract ExistingAccountDialogFragment bindExistingAccountDialogFragment();
 
     @ContributesAndroidInjector
     abstract DeleteAccountBottomFragment bindDeleteAccountBottomFragment();

@@ -20,6 +20,7 @@ import me.gingerninja.authenticator.ui.home.AccountListViewModel;
 import me.gingerninja.authenticator.ui.home.DeleteAccountViewModel;
 import me.gingerninja.authenticator.ui.home.filter.AccountFilterViewModel;
 import me.gingerninja.authenticator.ui.home.form.AccountEditorViewModel;
+import me.gingerninja.authenticator.ui.home.form.ExistingAccountViewModel;
 import me.gingerninja.authenticator.ui.label.DeleteLabelViewModel;
 import me.gingerninja.authenticator.ui.label.LabelsViewModel;
 import me.gingerninja.authenticator.ui.label.form.LabelEditorViewModel;
@@ -62,6 +63,11 @@ public abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(AccountEditorViewModel.class)
     abstract ViewModel bindAccountEditorViewModel(AccountEditorViewModel myViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ExistingAccountViewModel.class)
+    abstract ViewModel bindExistingAccountViewModel(ExistingAccountViewModel myViewModel);
 
     @Binds
     @IntoMap

@@ -66,6 +66,18 @@ public class AccountEditorFragment extends BaseFragment<AccountFormFragmentBindi
                 }
             }
         });
+
+        viewModel.getEvents().observe(getViewLifecycleOwner(), event -> {
+            if (event.handle()) {
+                switch (event.getId()) {
+                    case AccountEditorViewModel.EVENT_EXISTING_ACCOUNT:
+                        ExistingAccountDialogFragment dialog = new ExistingAccountDialogFragment();
+                        dialog.show(getChildFragmentManager(), ExistingAccountDialogFragment.TAG);
+                        break;
+                }
+            }
+        });
+
         // labels
         labelListAdapter = new AccountLabelListAdapter(viewModel.getLabels()).setLabelClickListener(this);
         /*FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(getContext());

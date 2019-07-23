@@ -42,6 +42,9 @@ public class AccountEditorViewModel extends BaseAccountViewModel {
     private MutableLiveData<SingleEvent<String>> navAction = new MutableLiveData<>();
     private MutableLiveData<SingleEvent> events = new MutableLiveData<>();
 
+    @Nullable
+    private Account oldAccount, newAccount;
+
     @Inject
     public AccountEditorViewModel(@NonNull AccountRepository accountRepository) {
         super(accountRepository);
@@ -88,6 +91,22 @@ public class AccountEditorViewModel extends BaseAccountViewModel {
         return events;
     }
 
+    @Nullable
+    Account getExistingAccount() {
+        if (mode != MODE_CREATE) {
+            throw new IllegalStateException("There's no existing account if the mode is not set to create");
+        }
+        return oldAccount;
+    }
+
+    @Nullable
+    Account getNewAccount() {
+        if (mode != MODE_CREATE) {
+            throw new IllegalStateException("There's no new account if the mode is not set to create");
+        }
+        return newAccount;
+    }
+
     @SuppressWarnings("unchecked")
     private void checkExistingAccount(Account account) {
         disposable.add(
@@ -95,7 +114,11 @@ public class AccountEditorViewModel extends BaseAccountViewModel {
                         .findExistingAccount(account)
                         .subscribeOn(Schedulers.io())
                         .subscribe(
-                                existingAccount -> events.postValue(new SingleEvent(EVENT_EXISTING_ACCOUNT, existingAccount)),
+                                existingAccount -> {
+                                    newAccount = account;
+                                    oldAccount = existingAccount;
+                                    events.postValue(new SingleEvent(EVENT_EXISTING_ACCOUNT, existingAccount));
+                                },
                                 throwable -> Timber.w(throwable, "Cannot check existing account")
                         )
         );

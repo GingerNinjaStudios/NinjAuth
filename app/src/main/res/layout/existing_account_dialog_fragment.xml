@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="me.gingerninja.authenticator.ui.home.form.ExistingAccountViewModel" />
+
+        <import type="android.view.View" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv_msg"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="It seems like there is a similar account. What would you like to do?"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_cancel"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/cancel"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_edit"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_edit"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:text="Add anyways"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btn_cancel" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_show_comparison"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:onClick="@{viewModel::onShowComparisonClick}"
+            android:text="Show comparison"
+            android:visibility="@{viewModel.showComparison ? View.GONE : View.VISIBLE}"
+            app:layout_constraintBottom_toTopOf="@+id/btn_cancel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.515"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_msg" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:fillViewport="true"
+            android:visibility="@{viewModel.showComparison ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toTopOf="@id/btn_edit"
+            app:layout_constraintHeight_default="wrap"
+            app:layout_constraintTop_toBottomOf="@id/tv_msg">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.constraintlayout.widget.Group
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="comparison_title_text,comparison_title_new,comparison_title_old" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="comparison_name_text,comparison_name_new,comparison_name_old" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="comparison_issuer_text,comparison_issuer_new,comparison_issuer_old" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="comparison_secret_text,comparison_secret_match" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="comparison_type_text,comparison_type_new,comparison_type_old" />
+
+                <!-- Title -->
+                <TextView
+                    android:id="@+id/comparison_title_text"
+                    style="@style/TextAppearance.AccountComparison.FirstColumn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:text="@string/account_title_text"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- TODO use databinding to get the account data from the ViewModel -->
+                <TextView
+                    android:id="@+id/comparison_title_new"
+                    style="@style/TextAppearance.AccountComparison.New"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    app:layout_constraintBaseline_toBaselineOf="@id/comparison_title_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/barrier"
+                    tools:text="new" />
+
+                <TextView
+                    android:id="@+id/comparison_title_old"
+                    style="@style/TextAppearance.AccountComparison.Old"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/barrier"
+                    app:layout_constraintTop_toBottomOf="@id/comparison_title_new"
+                    tools:text="old" />
+
+                <!-- Account name -->
+                <TextView
+                    android:id="@+id/comparison_name_text"
+                    style="@style/TextAppearance.AccountComparison.FirstColumn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/account_name_text"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/comparison_title_barrier" />
+
+                <TextView
+                    android:id="@+id/comparison_name_new"
+                    style="@style/TextAppearance.AccountComparison.New"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="new"
+                    app:layout_constraintBaseline_toBaselineOf="@id/comparison_name_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/barrier" />
+
+                <TextView
+                    android:id="@+id/comparison_name_old"
+                    style="@style/TextAppearance.AccountComparison.Old"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="old"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/barrier"
+                    app:layout_constraintTop_toBottomOf="@id/comparison_name_new" />
+
+                <!-- Issuer -->
+                <TextView
+                    android:id="@+id/comparison_issuer_text"
+                    style="@style/TextAppearance.AccountComparison.FirstColumn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/account_issuer_text"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/comparison_name_barrier" />
+
+                <TextView
+                    android:id="@+id/comparison_issuer_new"
+                    style="@style/TextAppearance.AccountComparison.New"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="new"
+                    app:layout_constraintBaseline_toBaselineOf="@id/comparison_issuer_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/barrier" />
+
+                <TextView
+                    android:id="@+id/comparison_issuer_old"
+                    style="@style/TextAppearance.AccountComparison.Old"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="old"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/barrier"
+                    app:layout_constraintTop_toBottomOf="@id/comparison_issuer_new" />
+
+                <!-- Secret -->
+                <TextView
+                    android:id="@+id/comparison_secret_text"
+                    style="@style/TextAppearance.AccountComparison.FirstColumn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/account_secret_text"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/comparison_issuer_barrier" />
+
+                <TextView
+                    android:id="@+id/comparison_secret_match"
+                    style="@style/TextAppearance.AccountComparison.New"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="The secrets don\'t match"
+                    app:layout_constraintBaseline_toBaselineOf="@id/comparison_secret_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/barrier" />
+
+                <!-- Type -->
+                <TextView
+                    android:id="@+id/comparison_type_text"
+                    style="@style/TextAppearance.AccountComparison.FirstColumn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/account_type_text"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/comparison_secret_barrier" />
+
+                <TextView
+                    android:id="@+id/comparison_type_new"
+                    style="@style/TextAppearance.AccountComparison.New"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="new"
+                    app:layout_constraintBaseline_toBaselineOf="@id/comparison_type_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/barrier" />
+
+                <TextView
+                    android:id="@+id/comparison_type_old"
+                    style="@style/TextAppearance.AccountComparison.Old"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="old"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/barrier"
+                    app:layout_constraintTop_toBottomOf="@id/comparison_type_new" />
+
+                <!-- Barriers -->
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="end"
+                    app:constraint_referenced_ids="comparison_title_text,comparison_name_text,comparison_issuer_text" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/comparison_title_barrier"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="comparison_title_text,comparison_title_old" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/comparison_name_barrier"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="comparison_name_text,comparison_name_old" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/comparison_issuer_barrier"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="comparison_issuer_text,comparison_issuer_old" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/comparison_secret_barrier"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="comparison_secret_text,comparison_secret_match" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/comparison_type_barrier"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="comparison_type_text,comparison_type_old" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
