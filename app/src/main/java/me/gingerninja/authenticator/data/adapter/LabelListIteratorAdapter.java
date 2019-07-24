@@ -171,17 +171,27 @@ public class LabelListIteratorAdapter extends BaseIteratorAdapter<BindingViewHol
             ObjectAnimator animator = ObjectAnimator.ofFloat(cardView, "cardElevation", cardView.getCardElevation(), targetElevation);
             animator.start();
 
-            /*int targetPadding = cardView.getResources().getDimensionPixelSize(isDragging ? R.dimen.account_list_card_padding_dragging : R.dimen.account_list_card_padding_normal);
-            int originalPadding = cardView.getResources().getDimensionPixelSize(R.dimen.account_list_card_padding_normal);
+            /*int originalPadding = cardView.getResources().getDimensionPixelSize(R.dimen.account_list_card_padding_normal);
+            int draggingPadding = cardView.getResources().getDimensionPixelSize(R.dimen.account_list_card_padding_dragging);
+
+            int targetPadding = isDragging ? draggingPadding : originalPadding;
+            int extTargetPadding = isDragging ? originalPadding - draggingPadding : 0;
+            //int originalPadding = cardView.getResources().getDimensionPixelSize(R.dimen.account_list_card_padding_normal);
 
             ValueAnimator paddingAnimator = ValueAnimator.ofInt(viewHolder.itemView.getPaddingStart(), targetPadding);
             paddingAnimator.addUpdateListener(valueAnimator -> {
                 int p = (int) valueAnimator.getAnimatedValue();
-                viewHolder.itemView.setPaddingRelative(p, originalPadding, p, originalPadding);
+                viewHolder.itemView.setPaddingRelative(p, p, p, p);
+            });
+
+            ValueAnimator paddingAnimator2 = ValueAnimator.ofInt(cardView.getContentPaddingTop(), extTargetPadding);
+            paddingAnimator2.addUpdateListener(valueAnimator -> {
+                int p = (int) valueAnimator.getAnimatedValue();
+                cardView.setContentPadding(p, p, p, p);
             });
 
             AnimatorSet set = new AnimatorSet();
-            set.playTogether(animator, paddingAnimator);
+            set.playTogether(animator, paddingAnimator, paddingAnimator2);
             set.start();*/
         }
 
