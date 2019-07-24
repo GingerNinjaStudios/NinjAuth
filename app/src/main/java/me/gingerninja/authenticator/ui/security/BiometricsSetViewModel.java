@@ -147,7 +147,10 @@ public class BiometricsSetViewModel extends ViewModel {
 
                                     inputEnabled.set(enableInput);
                                     Timber.v(throwable, "Bio error");
-                                    events.setValue(new SingleEvent(EVENT_ENABLE_FAIL, throwable));
+
+                                    if (enableInput) {
+                                        events.setValue(new SingleEvent(EVENT_ENABLE_FAIL, throwable));
+                                    }
                                 })
         );
     }
