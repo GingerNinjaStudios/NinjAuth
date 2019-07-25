@@ -187,11 +187,11 @@ public class AccountLabelListAdapter extends RecyclerView.Adapter<AccountLabelLi
         }
 
         private void setFromLabel(Label label) {
+            chip.setChipIcon(label.getIconDrawable(itemView.getContext()));
             chip.setTag(label);
             chip.setText(label.getName());
             chip.setChipBackgroundColor(ColorStateList.valueOf(label.getColor()));
             BindingHelpers.setChipTextColor(chip, label.getColor());
-            // TODO chip.setTextColor();
         }
     }
 }

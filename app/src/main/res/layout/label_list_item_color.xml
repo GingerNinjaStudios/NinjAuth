@@ -53,7 +53,7 @@
                     app:layout_constraintEnd_toEndOf="@+id/label_circle"
                     app:layout_constraintStart_toStartOf="@+id/label_circle"
                     app:layout_constraintTop_toTopOf="@+id/label_circle"
-                    app:srcCompatRes="@{viewModel.icon}" />
+                    app:srcCompatRes="@{viewModel.getIcon(context)}" />
 
                 <TextView
                     android:id="@+id/label_name"

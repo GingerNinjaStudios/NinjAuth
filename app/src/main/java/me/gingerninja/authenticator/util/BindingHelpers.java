@@ -17,6 +17,7 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.graphics.ColorUtils;
 import androidx.databinding.BindingAdapter;
 
@@ -167,6 +168,11 @@ public class BindingHelpers {
     @BindingAdapter("srcCompatRes")
     public static void setCompatImageViewDrawable(ImageView imageView, @DrawableRes int resId) {
         imageView.setImageResource(resId);
+    }
+
+    @BindingAdapter("srcCompatRes")
+    public static void setCompatImageViewDrawable(ImageView imageView, @Nullable Drawable res) {
+        imageView.setImageDrawable(res);
     }
 
     @BindingAdapter("srcCompat")

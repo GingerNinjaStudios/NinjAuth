@@ -74,6 +74,7 @@ public class AccountAvailableLabelListAdapter extends RecyclerView.Adapter<Accou
 
         private void setFromLabel(Label label) {
             itemView.setTag(label);
+            chip.setChipIcon(label.getIconDrawable(itemView.getContext()));
             chip.setText(label.getName());
             chip.setChipBackgroundColor(ColorStateList.valueOf(label.getColor()));
             BindingHelpers.setChipTextColor(chip, label.getColor());

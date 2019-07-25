@@ -24,6 +24,7 @@ import me.gingerninja.authenticator.util.validator.Validator;
 
 public class LabelEditorViewModel extends BaseLabelViewModel {
     public static final String NAV_ACTION_PICK_COLOR = "label.color_picker";
+    public static final String NAV_ACTION_PICK_ICON = "label.icon_picker";
     public static final String NAV_ACTION_SAVE = "label.save";
 
     public static final int MODE_CREATE = 0;
@@ -67,6 +68,16 @@ public class LabelEditorViewModel extends BaseLabelViewModel {
         data.color.set(color);
     }
 
+    @Nullable
+    public String getIcon() {
+        return data.icon.get();
+    }
+
+    public void setIcon(@Nullable String id) {
+        data.icon.set(id);
+        prepareIcon();
+    }
+
     private boolean checkValues() {
         return ((EditableData) data).prepareAndCheckData(label, error);
     }
@@ -84,7 +95,11 @@ public class LabelEditorViewModel extends BaseLabelViewModel {
         navAction.setValue(new SingleEvent<>(NAV_ACTION_PICK_COLOR));
     }
 
-    public LiveData<SingleEvent<Label>> getNavigationAction() {
+    public void onPickIconClick(View view) {
+        navAction.setValue(new SingleEvent<>(NAV_ACTION_PICK_ICON));
+    }
+
+    LiveData<SingleEvent<Label>> getNavigationAction() {
         return navAction;
     }
 
@@ -120,6 +135,7 @@ public class LabelEditorViewModel extends BaseLabelViewModel {
 
             if (success) {
                 label.setColor(color.get());
+                label.setIcon(icon.get());
             }
 
             return success;

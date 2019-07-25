@@ -72,7 +72,7 @@ public class AccountFilterLabelAdapter extends RecyclerView.Adapter<AccountFilte
 
     @Override
     public int getItemCount() {
-        return labels == null ? 0 : labels.size() * 1;
+        return labels == null ? 0 : labels.size();
     }
 
     static class ChipViewHolder extends RecyclerView.ViewHolder {
@@ -84,6 +84,7 @@ public class AccountFilterLabelAdapter extends RecyclerView.Adapter<AccountFilte
         }
 
         private void setFromLabel(Label label) {
+            chip.setChipIcon(label.getIconDrawable(itemView.getContext()));
             chip.setTag(label);
             chip.setText(label.getName());
             chip.setChipBackgroundColor(ColorStateList.valueOf(label.getColor()));

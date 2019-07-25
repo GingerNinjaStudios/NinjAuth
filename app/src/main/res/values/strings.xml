@@ -13,6 +13,7 @@
     <string name="btn_splash_next">Continue setup</string>
     <string name="btn_authenticate">Authenticate</string>
     <string name="btn_reset">Reset</string>
+    <string name="btn_remove">Remove</string>
 
     <string name="skip_setup_dialog_title">Do you want to skip the setup?</string>
     <string name="skip_setup_dialog_msg">If you skip the setup, your authentication codes will not be protected against unauthorized access and auto-backup will not be enabled.</string>
@@ -290,6 +291,7 @@
     <string name="show_comparison">Compare the accounts</string>
     <string name="add_anyways">Add anyways</string>
     <string name="existing_account_dialog_title">It seems like there is a similar account. What would you like to do?</string>
+    <string name="icon">Icon</string>
 
     <plurals name="accounts">
         <item quantity="zero">%d Accounts</item>

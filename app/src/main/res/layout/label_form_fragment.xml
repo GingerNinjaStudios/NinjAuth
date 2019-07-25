@@ -104,13 +104,14 @@
                     style="@style/Widget.Form.TextInputLayout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
                     android:hint="@string/label_color_text"
                     app:boxBackgroundColor="@{viewModel.data.color}"
                     app:helperText="@string/label_color_desc"
                     app:helperTextEnabled="true"
                     app:hintEnabled="true"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/icon"
                     app:layout_constraintTop_toBottomOf="@id/name"
                     app:readableHintTextColorFromBackground="@{viewModel.data.color}">
 
@@ -125,6 +126,45 @@
                         android:onClick="@{viewModel::onPickColorClick}"
                         android:text="" />
                 </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/icon"
+                    style="@style/Widget.Form.TextInputLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/icon"
+                    app:hintEnabled="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/name">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="48dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="0dp"
+                        android:clickable="false"
+                        android:editable="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:inputType="none"
+                        android:text="@{viewModel.iconDrawable != null ? ` ` : `...`}"
+                        android:textAlignment="center" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    style="@style/Widget.MaterialComponents.Button.TextButton.Dialog.Flush"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:insetTop="6dp"
+                    android:insetBottom="0dp"
+                    android:onClick="@{viewModel::onPickIconClick}"
+                    app:icon="@{viewModel.iconDrawable}"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconTint="?colorControlNormal"
+                    app:layout_constraintBottom_toBottomOf="@id/icon"
+                    app:layout_constraintEnd_toEndOf="@id/icon"
+                    app:layout_constraintStart_toStartOf="@id/icon"
+                    app:layout_constraintTop_toTopOf="@id/icon" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"

@@ -64,7 +64,14 @@ public class LabelEditorFragment extends BaseFragment<LabelFormFragmentBinding> 
                         ColorPickerDialog.Params params = new ColorPickerDialog.Params.Builder(getContext())
                                 .setSelectedColor(viewModel.getColor())
                                 .build();
-                        ColorPickerDialogFragment.newInstance(params).show(getChildFragmentManager(), "colorpicker");
+                        ColorPickerDialogFragment
+                                .newInstance(params)
+                                .show(getChildFragmentManager(), "colorpicker");
+                        break;
+                    case LabelEditorViewModel.NAV_ACTION_PICK_ICON:
+                        LabelIconPickerDialogFragment
+                                .newInstance(viewModel.getIcon())
+                                .show(getChildFragmentManager(), "iconpicker");
                         break;
                 }
             }

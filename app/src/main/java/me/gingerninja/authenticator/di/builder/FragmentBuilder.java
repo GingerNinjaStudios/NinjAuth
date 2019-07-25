@@ -4,6 +4,7 @@ import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
 import me.gingerninja.authenticator.di.module.fragment.AccountFilterModule;
 import me.gingerninja.authenticator.di.module.fragment.AccountListModule;
+import me.gingerninja.authenticator.di.module.fragment.LabelIconPickerModule;
 import me.gingerninja.authenticator.di.module.fragment.LabelListModule;
 import me.gingerninja.authenticator.di.module.fragment.RestoreFragmentModule;
 import me.gingerninja.authenticator.di.module.fragment.SetupFragmentModule;
@@ -25,6 +26,7 @@ import me.gingerninja.authenticator.ui.home.form.LabelSelectorDialogFragment;
 import me.gingerninja.authenticator.ui.label.DeleteLabelBottomFragment;
 import me.gingerninja.authenticator.ui.label.LabelsBottomFragment;
 import me.gingerninja.authenticator.ui.label.form.LabelEditorFragment;
+import me.gingerninja.authenticator.ui.label.form.LabelIconPickerDialogFragment;
 import me.gingerninja.authenticator.ui.security.BiometricsSetFragment;
 import me.gingerninja.authenticator.ui.security.LockTypeSelectorFragment;
 import me.gingerninja.authenticator.ui.security.PasswordCheckFragment;
@@ -109,6 +111,9 @@ public abstract class FragmentBuilder {
 
     @ContributesAndroidInjector
     abstract LabelEditorFragment bindLabelEditorFragment();
+
+    @ContributesAndroidInjector(modules = LabelIconPickerModule.class)
+    abstract LabelIconPickerDialogFragment bindLabelIconSelectorDialogFragment();
 
     @ContributesAndroidInjector
     abstract LabelSelectorDialogFragment bindLabelSelectorDialogFragment();

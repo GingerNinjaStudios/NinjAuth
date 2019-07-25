@@ -1,7 +1,9 @@
 package me.gingerninja.authenticator.ui.label;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
@@ -74,9 +76,8 @@ public class LabelListItemViewModel extends BaseObservable {
         return colorControlNormal;
     }
 
-    @DrawableRes
-    public int getIcon() {
-        return label.getIconResourceId();
+    public Drawable getIcon(Context ctx) {
+        return label.getIconDrawable(ctx);
     }
 
     public int getAccountCount() {
