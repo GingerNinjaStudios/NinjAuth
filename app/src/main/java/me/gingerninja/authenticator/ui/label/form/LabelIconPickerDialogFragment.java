@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.JustifyContent;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import javax.inject.Inject;
@@ -41,7 +42,11 @@ public class LabelIconPickerDialogFragment extends BaseDialogFragment<LabelIconS
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, LabelIconSelectorDialogFragmentBinding binding) {
         adapter.setSelectedIcon(requireArguments().getString(ARG_CURRENT_ICON));
         adapter.setIconListener(this);
-        binding.list.setLayoutManager(/*new GridLayoutManager(requireContext(), 4, GridLayoutManager.VERTICAL, false)*/new FlexboxLayoutManager(requireContext(), FlexDirection.ROW, FlexWrap.WRAP));
+
+        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(requireContext(), FlexDirection.ROW, FlexWrap.WRAP);
+        layoutManager.setJustifyContent(JustifyContent.CENTER);
+
+        binding.list.setLayoutManager(/*new GridLayoutManager(requireContext(), 4, GridLayoutManager.VERTICAL, false)*/layoutManager);
         binding.list.setAdapter(adapter);
     }
 

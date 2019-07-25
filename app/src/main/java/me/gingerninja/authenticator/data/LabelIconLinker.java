@@ -5,7 +5,7 @@ import androidx.annotation.DrawableRes;
 import me.gingerninja.authenticator.R;
 
 public class LabelIconLinker {
-    public static final String[] ICONS = {"google", "github", "gitlab", "bitbucket", "aws", "heart", "school", "work", "money", "face_happy", "face_sad", "thumbs_up", "thumbs_down", "time", "puzzle", "lock", "palette"};
+    public static final String[] ICONS = {"google", "facebook", "twitter", "tumblr", "twitch", "dropbox", "github", "gitlab", "bitbucket", "aws", "slack", "discord", "sentry", "heart", "school", "work", "cloud", "money", "ubisoft", "video_game", "face_happy", "face_sad", "thumbs_up", "thumbs_down", "time", "puzzle", "lock", "palette"};
 
     @DrawableRes
     public static int getIconResourceId(@androidx.annotation.Nullable String icon) {
@@ -16,6 +16,22 @@ public class LabelIconLinker {
         switch (icon) {
             case "google":
                 return R.drawable.label_icon_google;
+            case "facebook":
+                return R.drawable.label_icon_facebook;
+            case "twitter":
+                return R.drawable.label_icon_twitter;
+            case "tumblr":
+                return R.drawable.label_icon_tumblr;
+            case "twitch":
+                return R.drawable.label_icon_twitch;
+            case "dropbox":
+                return R.drawable.label_icon_dropbox;
+            case "slack":
+                return R.drawable.label_icon_slack;
+            case "discord":
+                return R.drawable.label_icon_discord;
+            case "sentry":
+                return R.drawable.label_icon_sentry;
             case "github":
                 return R.drawable.label_icon_github;
             case "gitlab":
@@ -30,8 +46,14 @@ public class LabelIconLinker {
                 return R.drawable.label_icon_school;
             case "work":
                 return R.drawable.label_icon_work;
+            case "cloud":
+                return R.drawable.label_icon_cloud;
             case "money":
                 return R.drawable.label_icon_money;
+            case "ubisoft":
+                return R.drawable.label_icon_ubisoft;
+            case "video_game":
+                return R.drawable.label_icon_video_game;
             case "face_happy":
                 return R.drawable.label_icon_face_happy;
             case "face_sad":
