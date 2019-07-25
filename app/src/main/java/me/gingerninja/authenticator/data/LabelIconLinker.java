@@ -8,8 +8,8 @@ public class LabelIconLinker {
     public static final String[] ICONS = {"google", "facebook", "twitter", "tumblr", "twitch",
             "dropbox", "github", "gitlab", "bitbucket", "aws", "slack", "discord", "sentry", "face",
             "person", "group", "heart", "school", "work", "hot", "cloud", "money", "shopping_cart",
-            "ubisoft", "video_game", "face_happy", "face_sad", "thumbs_up", "thumbs_down", "time",
-            "puzzle", "lock", "palette"};
+            "video_game", "face_happy", "face_sad", "thumbs_up", "thumbs_down", "time", "puzzle",
+            "lock", "palette"};
 
     @DrawableRes
     public static int getIconResourceId(@androidx.annotation.Nullable String icon) {
@@ -64,8 +64,6 @@ public class LabelIconLinker {
                 return R.drawable.label_icon_money;
             case "shopping_cart":
                 return R.drawable.label_icon_shopping_cart;
-            case "ubisoft":
-                return R.drawable.label_icon_ubisoft;
             case "video_game":
                 return R.drawable.label_icon_video_game;
             case "face_happy":
