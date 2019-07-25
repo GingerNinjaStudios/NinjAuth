@@ -5,7 +5,11 @@ import androidx.annotation.DrawableRes;
 import me.gingerninja.authenticator.R;
 
 public class LabelIconLinker {
-    public static final String[] ICONS = {"google", "facebook", "twitter", "tumblr", "twitch", "dropbox", "github", "gitlab", "bitbucket", "aws", "slack", "discord", "sentry", "heart", "school", "work", "cloud", "money", "ubisoft", "video_game", "face_happy", "face_sad", "thumbs_up", "thumbs_down", "time", "puzzle", "lock", "palette"};
+    public static final String[] ICONS = {"google", "facebook", "twitter", "tumblr", "twitch",
+            "dropbox", "github", "gitlab", "bitbucket", "aws", "slack", "discord", "sentry", "face",
+            "person", "group", "heart", "school", "work", "hot", "cloud", "money", "shopping_cart",
+            "ubisoft", "video_game", "face_happy", "face_sad", "thumbs_up", "thumbs_down", "time",
+            "puzzle", "lock", "palette"};
 
     @DrawableRes
     public static int getIconResourceId(@androidx.annotation.Nullable String icon) {
@@ -40,16 +44,26 @@ public class LabelIconLinker {
                 return R.drawable.label_icon_bitbucket;
             case "aws":
                 return R.drawable.label_icon_aws;
+            case "face":
+                return R.drawable.label_icon_face;
+            case "person":
+                return R.drawable.label_icon_person;
+            case "group":
+                return R.drawable.label_icon_group;
             case "heart":
                 return R.drawable.label_icon_heart;
             case "school":
                 return R.drawable.label_icon_school;
             case "work":
                 return R.drawable.label_icon_work;
+            case "hot":
+                return R.drawable.label_icon_hot;
             case "cloud":
                 return R.drawable.label_icon_cloud;
             case "money":
                 return R.drawable.label_icon_money;
+            case "shopping_cart":
+                return R.drawable.label_icon_shopping_cart;
             case "ubisoft":
                 return R.drawable.label_icon_ubisoft;
             case "video_game":
