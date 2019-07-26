@@ -52,7 +52,7 @@ public class RestoreLabelAdapter extends BaseRestoreCheckableAdapter<RestoreLabe
         RestoreLabelItemBinding binding = holder.getBinding();
         binding.labelName.setText(item.get(TempLabel.NAME));
         binding.labelCircle.setImageTintList(ColorStateList.valueOf(labelColor));
-        binding.labelIcon.setImageResource(TempLabel.getIconResourceId("work")); // item.get(TempLabel.ICON)
+        binding.labelIcon.setImageDrawable(TempLabel.getIconDrawable(holder.itemView.getContext(), item.get(TempLabel.ICON)));
         binding.labelIcon.setImageTintList(ColorStateList.valueOf(fgColor));
     }
 

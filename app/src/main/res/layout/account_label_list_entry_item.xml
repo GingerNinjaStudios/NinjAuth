@@ -21,6 +21,8 @@
         android:clickable="false"
         android:focusable="false"
         android:focusableInTouchMode="false"
+        app:chipIconSize="@dimen/chip_icon_size"
         app:closeIconVisible="false"
+        app:iconStartPadding="@dimen/chip_icon_start_padding"
         tools:text="Personal" />
 </FrameLayout>

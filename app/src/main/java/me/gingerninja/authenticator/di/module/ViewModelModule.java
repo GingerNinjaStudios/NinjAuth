@@ -20,9 +20,11 @@ import me.gingerninja.authenticator.ui.home.AccountListViewModel;
 import me.gingerninja.authenticator.ui.home.DeleteAccountViewModel;
 import me.gingerninja.authenticator.ui.home.filter.AccountFilterViewModel;
 import me.gingerninja.authenticator.ui.home.form.AccountEditorViewModel;
+import me.gingerninja.authenticator.ui.home.form.ExistingAccountViewModel;
 import me.gingerninja.authenticator.ui.label.DeleteLabelViewModel;
 import me.gingerninja.authenticator.ui.label.LabelsViewModel;
 import me.gingerninja.authenticator.ui.label.form.LabelEditorViewModel;
+import me.gingerninja.authenticator.ui.label.form.LabelIconPickerViewModel;
 import me.gingerninja.authenticator.ui.security.BiometricsSetViewModel;
 import me.gingerninja.authenticator.ui.security.LockTypeSelectorViewModel;
 import me.gingerninja.authenticator.ui.security.PasswordCheckViewModel;
@@ -65,6 +67,11 @@ public abstract class ViewModelModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(ExistingAccountViewModel.class)
+    abstract ViewModel bindExistingAccountViewModel(ExistingAccountViewModel myViewModel);
+
+    @Binds
+    @IntoMap
     @ViewModelKey(DeleteAccountViewModel.class)
     abstract ViewModel bindDeleteAccountViewModel(DeleteAccountViewModel myViewModel);
 
@@ -82,6 +89,11 @@ public abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(LabelEditorViewModel.class)
     abstract ViewModel bindLabelEditorViewModel(LabelEditorViewModel myViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LabelIconPickerViewModel.class)
+    abstract ViewModel bindLabelIconSelectorViewModel(LabelIconPickerViewModel myViewModel);
 
     @Binds
     @IntoMap

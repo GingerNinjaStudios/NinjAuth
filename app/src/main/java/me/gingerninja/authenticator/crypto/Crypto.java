@@ -24,7 +24,9 @@ import androidx.biometric.BiometricPrompt;
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -732,7 +734,9 @@ public class Crypto {
             @Override
             public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                 Timber.d("[AUTH] error: %d, str: %s", errorCode, errString);
-                subject.onError(new BiometricException(errorCode, errString));
+                if (!subject.hasThrowable()) {
+                    subject.onError(new BiometricException(errorCode, errString));
+                }
             }
 
             @Override
@@ -750,12 +754,25 @@ public class Crypto {
             }
         });
 
+        final DefaultLifecycleObserver retryObserver = new DefaultLifecycleObserver() {
+            @Override
+            public void onPause(@NonNull LifecycleOwner owner) {
+                owner.getLifecycle().removeObserver(this);
+
+                if (!subject.hasValue() && !subject.hasThrowable()) {
+                    prompt.cancelAuthentication();
+                    subject.onError(new BiometricException(BiometricException.ERROR_SHOULD_RETRY, ""));
+                }
+            }
+        };
+
         Disposable disposable = Single.just(prompt)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(biometricPrompt -> {
                     Lifecycle.State state = activity.getLifecycle().getCurrentState();
                     if (state.isAtLeast(Lifecycle.State.STARTED)) {
                         biometricPrompt.authenticate(promptInfo, cryptoObject);
+                        activity.getLifecycle().addObserver(retryObserver);
                     } else {
                         subject.onError(new BiometricException(BiometricException.ERROR_SHOULD_RETRY, ""));
                     }
@@ -763,6 +780,7 @@ public class Crypto {
 
 
         return subject
+                .doFinally(() -> activity.getLifecycle().removeObserver(retryObserver))
                 .doOnDispose(() -> {
                     prompt.cancelAuthentication();
 

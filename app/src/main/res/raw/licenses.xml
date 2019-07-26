@@ -6,6 +6,16 @@
         <license>Apache Software License 2.0</license>
     </notice>
     <notice>
+        <name>Material Icons</name>
+        <url>https://material.io/tools/icons/</url>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Font Awesome Icons</name>
+        <url>https://fontawesome.com</url>
+        <license>Creative Commons Attribution 4.0 International</license>
+    </notice>
+    <notice>
         <name>SQLCipher</name>
         <url>https://www.zetetic.net/sqlcipher/sqlcipher-for-android/</url>
         <copyright>Copyright © 2019 Zetetic, LLC</copyright>

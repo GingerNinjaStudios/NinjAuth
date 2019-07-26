@@ -1,10 +1,12 @@
 package me.gingerninja.authenticator.data.db.entity;
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.util.Base64;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -21,7 +23,7 @@ import io.requery.Nullable;
 import io.requery.PreInsert;
 import io.requery.PropertyNameStyle;
 import io.requery.Superclass;
-import me.gingerninja.authenticator.R;
+import me.gingerninja.authenticator.data.LabelIconLinker;
 
 @Superclass
 @Entity(propertyNameStyle = PropertyNameStyle.FLUENT_BEAN)
@@ -57,18 +59,15 @@ abstract class AbstractLabel {
         label.setPosition(parcel.readInt());
     }
 
-    @DrawableRes
-    public static int getIconResourceId(String icon) {
-        if (icon == null) {
-            return 0;
+    @androidx.annotation.Nullable
+    public static Drawable getIconDrawable(@NonNull Context ctx, @androidx.annotation.Nullable String icon) {
+        int resId = LabelIconLinker.getIconResourceId(icon);
+
+        if (resId == 0) {
+            return null;
         }
 
-        switch (icon) {
-            case "work":
-                return R.drawable.label_icon_work;
-            default:
-                return 0;
-        }
+        return AppCompatResources.getDrawable(ctx, resId);
     }
 
     @PreInsert
@@ -117,8 +116,8 @@ abstract class AbstractLabel {
         return dest;
     }
 
-    @DrawableRes
-    public int getIconResourceId() {
-        return getIconResourceId(icon);
+    @androidx.annotation.Nullable
+    public Drawable getIconDrawable(@NonNull Context ctx) {
+        return getIconDrawable(ctx, icon);
     }
 }

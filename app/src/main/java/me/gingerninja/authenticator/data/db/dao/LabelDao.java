@@ -8,6 +8,8 @@ import java.util.List;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.requery.reactivex.ReactiveResult;
+import io.requery.sql.ResultSetIterator;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.data.db.entity.AccountHasLabel;
 import me.gingerninja.authenticator.data.db.entity.Label;
@@ -32,6 +34,9 @@ public interface LabelDao {
     Observable<List<Label>> getAllAndListen();
 
     @CheckResult
+    Observable<ReactiveResult<Label>> getAllAndListen2();
+
+    @CheckResult
     Single<Label> save(Label label);
 
     @CheckResult
@@ -39,4 +44,7 @@ public interface LabelDao {
 
     @CheckResult
     Completable delete(Label label);
+
+    @CheckResult
+    Completable saveLabelOrder(int count, int from, int to, ResultSetIterator<Label> results);
 }

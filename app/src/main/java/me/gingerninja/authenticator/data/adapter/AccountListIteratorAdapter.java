@@ -1,14 +1,15 @@
 package me.gingerninja.authenticator.data.adapter;
 
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Size;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
@@ -183,14 +184,13 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
     private void setupLabels(@NonNull Account account, @NonNull ChipGroup chipGroup) {
         chipGroup.removeAllViews();
 
+        Context ctx = chipGroup.getContext();
         for (Label label : account.getLabels()) {
-            int iconRes = label.getIconResourceId();
+            Drawable icon = label.getIconDrawable(ctx);
             Chip chip = new Chip(chipGroup.getContext());
             chip.setChipIconSizeResource(R.dimen.chip_icon_size);
             chip.setIconStartPaddingResource(R.dimen.chip_icon_start_padding);
-            if (iconRes != 0) {
-                chip.setChipIcon(AppCompatResources.getDrawable(chip.getContext(), iconRes));
-            }
+            chip.setChipIcon(icon);
             chip.setText(label.getName());
             chip.setChipBackgroundColor(ColorStateList.valueOf(label.getColor()));
             BindingHelpers.setChipTextColor(chip, label.getColor());

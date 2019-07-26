@@ -21,6 +21,8 @@ import io.requery.query.MutableTuple;
 import io.requery.query.NamedNumericExpression;
 import io.requery.query.Tuple;
 import io.requery.reactivex.ReactiveEntityStore;
+import io.requery.reactivex.ReactiveResult;
+import io.requery.sql.ResultSetIterator;
 import me.gingerninja.authenticator.data.db.dao.LabelDao;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.data.db.entity.AccountHasLabel;
@@ -153,6 +155,16 @@ public class LabelDaoImpl implements LabelDao {
 
     @CheckResult
     @Override
+    public Observable<ReactiveResult<Label>> getAllAndListen2() {
+        return getStore()
+                .select(Label.class)
+                .orderBy(Label.POSITION.asc())
+                .get()
+                .observableResult();
+    }
+
+    @CheckResult
+    @Override
     public Single<Label> save(Label label) {
         if (label.getPosition() < 0) {
             return getStore()
@@ -234,5 +246,47 @@ public class LabelDaoImpl implements LabelDao {
     @Override
     public Completable delete(Label label) {
         return getStore().delete(label);
+    }
+
+    @CheckResult
+    @Override
+    public Completable saveLabelOrder(int count, int from, int to, ResultSetIterator<Label> results) {
+        return getStore()
+                .runInTransaction(db -> {
+                    Transaction transaction = db.transaction();
+                    if (!transaction.active()) {
+                        transaction.begin();
+                    }
+                    try {
+                        int pos;
+                        int min = Math.min(from, to);
+                        int max = Math.max(from, to);
+                        for (int i = 0; i < count; i++) {
+                            if (i == from) {
+                                pos = to;
+                            } else if (i >= min && i <= max) {
+                                if (from < to) {
+                                    pos = i - 1;
+                                } else {
+                                    pos = i + 1;
+                                }
+                            } else {
+                                pos = i;
+                            }
+
+                            Label label = results.get(i);
+                            if (pos != label.getPosition()) {
+                                db.update(Label.class).set(Label.POSITION, pos).where(Label.ID.eq(label.getId())).get().call();
+                            }
+                        }
+
+                        transaction.commit();
+                    } catch (Throwable t) {
+                        transaction.rollback();
+                        throw new RuntimeException(t);
+                    }
+                    return true;
+                })
+                .ignoreElement();
     }
 }

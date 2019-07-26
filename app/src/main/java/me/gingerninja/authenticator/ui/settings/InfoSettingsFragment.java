@@ -5,13 +5,21 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
+import de.psdev.licensesdialog.LicenseResolver;
 import de.psdev.licensesdialog.LicensesDialogFragment;
 import de.psdev.licensesdialog.licenses.MITLicense;
 import de.psdev.licensesdialog.model.Notice;
 import me.gingerninja.authenticator.BuildConfig;
 import me.gingerninja.authenticator.R;
+import me.gingerninja.authenticator.util.license.CreativeCommonsAttribution40International;
 
 public class InfoSettingsFragment extends BaseSettingsFragment {
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        LicenseResolver.registerLicense(new CreativeCommonsAttribution40International());
+    }
+
     @Override
     protected void onPreferencesCreated(@Nullable Bundle savedInstanceState, String rootKey) {
         findPreference("settings_info_version").setSummaryProvider(new VersionInfoProvider());

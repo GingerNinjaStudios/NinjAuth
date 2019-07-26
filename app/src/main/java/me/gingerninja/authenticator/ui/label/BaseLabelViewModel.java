@@ -1,6 +1,7 @@
 package me.gingerninja.authenticator.ui.label;
 
 import android.app.Application;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -25,6 +26,8 @@ public abstract class BaseLabelViewModel extends ViewModel {
     public Data data;
     protected Label label;
     private Disposable disposable;
+
+    public ObservableField<Drawable> iconDrawable = new ObservableField<>();
 
     public BaseLabelViewModel(Application application, @NonNull AccountRepository accountRepo) {
         this.application = application;
@@ -87,15 +90,23 @@ public abstract class BaseLabelViewModel extends ViewModel {
         }
 
         data.init(label);
+        prepareIcon();
+    }
+
+    protected void prepareIcon() {
+        String iconId = data.icon.get();
+        iconDrawable.set(Label.getIconDrawable(application, iconId));
     }
 
     public static class Data {
         public ObservableField<String> name = new ObservableField<>();
         public ObservableInt color = new ObservableInt();
+        public ObservableField<String> icon = new ObservableField<>();
 
         private void init(@NonNull Label label) {
             name.set(label.getName());
             color.set(label.getColor());
+            icon.set(label.getIcon());
         }
     }
 }

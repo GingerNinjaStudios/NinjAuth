@@ -17,6 +17,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.db.entity.Account;
 import me.gingerninja.authenticator.data.repo.AccountRepository;
@@ -29,6 +30,7 @@ import timber.log.Timber;
 
 public class AccountEditorViewModel extends BaseAccountViewModel {
     public static final String NAV_ACTION_SAVE = "account.save";
+    public static final String EVENT_EXISTING_ACCOUNT = "event.existing_account";
 
     public static final int MODE_CREATE = 0;
     public static final int MODE_EDIT = 1;
@@ -38,6 +40,10 @@ public class AccountEditorViewModel extends BaseAccountViewModel {
     private Disposable saveDisposable;
 
     private MutableLiveData<SingleEvent<String>> navAction = new MutableLiveData<>();
+    private MutableLiveData<SingleEvent> events = new MutableLiveData<>();
+
+    @Nullable
+    private Account oldAccount, newAccount;
 
     @Inject
     public AccountEditorViewModel(@NonNull AccountRepository accountRepository) {
@@ -77,8 +83,45 @@ public class AccountEditorViewModel extends BaseAccountViewModel {
         }
     }
 
-    public LiveData<SingleEvent<String>> getNavigationAction() {
+    LiveData<SingleEvent<String>> getNavigationAction() {
         return navAction;
+    }
+
+    LiveData<SingleEvent> getEvents() {
+        return events;
+    }
+
+    @Nullable
+    Account getExistingAccount() {
+        if (mode != MODE_CREATE) {
+            throw new IllegalStateException("There's no existing account if the mode is not set to create");
+        }
+        return oldAccount;
+    }
+
+    @Nullable
+    Account getNewAccount() {
+        if (mode != MODE_CREATE) {
+            throw new IllegalStateException("There's no new account if the mode is not set to create");
+        }
+        return newAccount;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void checkExistingAccount(Account account) {
+        disposable.add(
+                accountRepository
+                        .findExistingAccount(account)
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(
+                                existingAccount -> {
+                                    newAccount = account;
+                                    oldAccount = existingAccount;
+                                    events.postValue(new SingleEvent(EVENT_EXISTING_ACCOUNT, existingAccount));
+                                },
+                                throwable -> Timber.w(throwable, "Cannot check existing account")
+                        )
+        );
     }
 
     @Override
@@ -99,6 +142,7 @@ public class AccountEditorViewModel extends BaseAccountViewModel {
             AccountEditorFragmentArgs args = AccountEditorFragmentArgs.fromBundle(bundle);
             if (args.getUrl() != null) {
                 account = Parser.parseUrl(args.getUrl());
+                checkExistingAccount(account);
             } else {
                 account = new Account();
                 showAdvanced.set(true);

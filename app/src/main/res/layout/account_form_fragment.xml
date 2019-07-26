@@ -98,6 +98,9 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:lines="1"
+                        android:maxLines="1"
                         android:text="@={viewModel.data.title}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -119,6 +122,9 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:lines="1"
+                        android:maxLines="1"
                         android:text="@={viewModel.data.accountName}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -139,6 +145,9 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:lines="1"
+                        android:maxLines="1"
                         android:text="@={viewModel.data.issuer}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -191,6 +200,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPassword"
+                        android:singleLine="true"
+                        android:lines="1"
+                        android:maxLines="1"
                         android:text="@={viewModel.data.secret}"
                         android:textAllCaps="true" />
                 </com.google.android.material.textfield.TextInputLayout>

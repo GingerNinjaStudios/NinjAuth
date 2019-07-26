@@ -27,7 +27,7 @@ import me.gingerninja.authenticator.ui.base.BaseFragment;
 import me.gingerninja.authenticator.ui.home.AccountListFragment;
 import timber.log.Timber;
 
-public class AccountEditorFragment extends BaseFragment<AccountFormFragmentBinding> implements LabelClickListener, LabelListClickListener {
+public class AccountEditorFragment extends BaseFragment<AccountFormFragmentBinding> implements LabelClickListener, LabelListClickListener, ExistingAccountDialogFragment.ExistingAccountActionListener {
     public static final String RESULT_ARG_ACCOUNT_NAME = "accountName";
     private AccountLabelListAdapter labelListAdapter;
 
@@ -66,6 +66,18 @@ public class AccountEditorFragment extends BaseFragment<AccountFormFragmentBindi
                 }
             }
         });
+
+        viewModel.getEvents().observe(getViewLifecycleOwner(), event -> {
+            if (event.handle()) {
+                switch (event.getId()) {
+                    case AccountEditorViewModel.EVENT_EXISTING_ACCOUNT:
+                        ExistingAccountDialogFragment dialog = new ExistingAccountDialogFragment();
+                        dialog.show(getChildFragmentManager(), ExistingAccountDialogFragment.TAG);
+                        break;
+                }
+            }
+        });
+
         // labels
         labelListAdapter = new AccountLabelListAdapter(viewModel.getLabels()).setLabelClickListener(this);
         /*FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(getContext());
@@ -140,5 +152,10 @@ public class AccountEditorFragment extends BaseFragment<AccountFormFragmentBindi
     @Override
     public void onLabelSelected(Label label) {
         labelListAdapter.addLabel(label);
+    }
+
+    @Override
+    public void onCancelExistingAccount() {
+        setResultAndLeave(RESULT_CANCELED);
     }
 }

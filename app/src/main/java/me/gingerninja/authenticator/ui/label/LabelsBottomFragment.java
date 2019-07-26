@@ -6,20 +6,26 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import javax.inject.Inject;
 
 import me.gingerninja.authenticator.R;
-import me.gingerninja.authenticator.data.adapter.LabelListAdapter;
+import me.gingerninja.authenticator.data.adapter.LabelListIteratorAdapter;
 import me.gingerninja.authenticator.data.db.entity.Label;
 import me.gingerninja.authenticator.databinding.LabelsFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
 import me.gingerninja.authenticator.ui.home.BottomNavigationFragment;
 import me.gingerninja.authenticator.ui.label.form.LabelEditorFragment;
 import me.gingerninja.authenticator.util.RequestCodes;
+import timber.log.Timber;
 
 public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> implements BottomNavigationFragment.BottomNavigationListener, LabelListItemViewModel.LabelMenuItemClickListener {
     public static final String LABEL_OP_ADD = "labelAdded";
@@ -27,7 +33,45 @@ public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> im
     public static final String LABEL_OP_DELETE = "labelDeleted";
 
     @Inject
-    LabelListAdapter labelListAdapter;
+    LabelListIteratorAdapter labelListAdapter;
+
+    private final OnBackPressedCallback backButtonCallback = new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+            LabelsViewModel viewModel = getViewModel(LabelsViewModel.class);
+            if (viewModel.isOrdering.get()) {
+                viewModel.setReorderingEnabled(false);
+            } else {
+                getNavController().popBackStack();
+            }
+        }
+    };
+
+    private ItemTouchHelper dragHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
+        @Override
+        public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+            super.clearView(recyclerView, viewHolder);
+            labelListAdapter.onItemDrag(viewHolder, false);
+            getViewModel(LabelsViewModel.class).saveListOrder(labelListAdapter.getItemCount(), labelListAdapter.getMovementAndReset());
+            Timber.v("clearView() - Drag finished");
+        }
+
+        @Override
+        public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
+            super.onSelectedChanged(viewHolder, actionState);
+            Timber.v("onSelectedChanged() - actionState: %d", actionState);
+            labelListAdapter.onItemDrag(viewHolder, actionState == ItemTouchHelper.ACTION_STATE_DRAG);
+        }
+
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return labelListAdapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+        }
+    });
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,7 +94,9 @@ public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> im
                     }
                 });
 
-        viewModel.getLabelList().observe(this, labelListAdapter::setLabelList);
+        viewModel.getLabelList().observe(this, labelListAdapter::setResults);
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, backButtonCallback);
     }
 
     @Override
@@ -64,12 +110,32 @@ public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> im
 
         binding.labelList.setAdapter(labelListAdapter);
 
+        enableListDrag(binding);
+
         binding.appBar.setNavigationOnClickListener(v -> {
             BottomNavigationFragment.show(R.menu.navigation_menu, R.id.nav_labels, R.layout.bottom_nav_header, getChildFragmentManager());
         });
-        // TODO binding.appBar.inflateMenu(R.menu.account_list_menu);
+
         binding.appBar.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                /*case R.id.menu_filter:
+                    break;*/
+                case R.id.menu_order:
+                    viewModel.setReorderingEnabled(true);
+                    Snackbar.make(binding.labelList, R.string.reorder_tutorial_msg, Snackbar.LENGTH_LONG)
+                            .setAnchorView(binding.fab)
+                            .show();
+                    break;
+            }
             return true;
+        });
+    }
+
+    private void enableListDrag(LabelsFragmentBinding binding) {
+        LabelsViewModel viewModel = binding.getViewModel();
+        viewModel.getIsOrdering().observe(getViewLifecycleOwner(), isOrdering -> {
+            dragHelper.attachToRecyclerView(isOrdering ? binding.labelList : null);
+            labelListAdapter.setDragEnabled(isOrdering);
         });
     }
 
@@ -83,6 +149,8 @@ public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> im
         if (tag == null) {
             return;
         }
+
+        getViewModel(LabelsViewModel.class).setReorderingEnabled(false);
 
         switch (tag) {
             case BottomNavigationFragment.BOTTOM_NAV_TAG:

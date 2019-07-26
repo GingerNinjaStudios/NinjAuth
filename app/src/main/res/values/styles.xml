@@ -88,4 +88,20 @@
     <style name="TextAppearance.ErrorText" parent="@style/TextAppearance.MaterialComponents.Caption">
         <item name="android:textColor">?colorError</item>
     </style>
+
+    <style name="TextAppearance.AccountComparison.FirstColumn" parent="@style/TextAppearance.MaterialComponents.Body2">
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:layout_marginTop">18dp</item>
+    </style>
+
+    <style name="TextAppearance.AccountComparison.New" parent="@style/TextAppearance.MaterialComponents.Body2">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.AccountComparison.Old" parent="@style/TextAppearance.MaterialComponents.Body2">
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
 </resources>

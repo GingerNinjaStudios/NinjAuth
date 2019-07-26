@@ -1,6 +1,10 @@
 package me.gingerninja.authenticator.data.db.wrapper;
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -85,6 +89,12 @@ public class LabelWrapper extends Label implements Comparable<LabelWrapper> {
     @Override
     public Set<Account> getAccounts() {
         throw new UnsupportedOperationException();
+    }
+
+    @Nullable
+    @Override
+    public Drawable getIconDrawable(@NonNull Context ctx) {
+        return Label.getIconDrawable(ctx, icon);
     }
 
     @Override
