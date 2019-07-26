@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.util.Base64;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -24,7 +23,6 @@ import io.requery.Nullable;
 import io.requery.PreInsert;
 import io.requery.PropertyNameStyle;
 import io.requery.Superclass;
-import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.data.LabelIconLinker;
 
 @Superclass
