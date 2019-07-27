@@ -21,17 +21,21 @@ import io.requery.Table;
 abstract class AbstractTempAccount extends AbstractAccount {
     @Key
     Long id;
+
     /**
      * Defines whether the account already has a matching pair in the normal database. This can help
      * setup the UI so the user can select to replace the existing or insert a new account.
      */
     @Nullable
     String restoreMatchingUid = null;
+
     @RestoreMode
     @Column(value = "" + RestoreMode.INSERT, nullable = false)
     int restoreMode = RestoreMode.INSERT;
+
     @Column(value = "true", nullable = false)
     boolean restore = true;
+
     @ManyToMany
     @JunctionTable(type = AbstractTempAccountHasLabel.class)
     Set<TempLabel> labels;
@@ -42,6 +46,7 @@ abstract class AbstractTempAccount extends AbstractAccount {
                 ObjectsCompat.equals(this.issuer, account.getIssuer()) &&
                 ObjectsCompat.equals(this.secret, account.getSecret()) &&
                 ObjectsCompat.equals(this.type, account.getType()) &&
+                this.typeSpecificData == account.getTypeSpecificData() &&
                 ObjectsCompat.equals(this.algorithm, account.getAlgorithm()) &&
                 this.digits == account.getDigits();
     }

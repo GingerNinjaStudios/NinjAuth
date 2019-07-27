@@ -153,8 +153,4 @@ abstract class AbstractAccount {
             e.printStackTrace();
         }
     }
-
-    /*public void generateUID(boolean time) {
-        MessageDigest digest = MessageDigest.getInstance("SHA-384");
-    }*/
 }
