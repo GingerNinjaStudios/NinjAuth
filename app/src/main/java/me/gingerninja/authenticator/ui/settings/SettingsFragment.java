@@ -25,8 +25,6 @@ public class SettingsFragment extends BaseSettingsFragment {
 
         if (themePref != null) {
             themePref.setOnPreferenceChangeListener((preference, newValueObj) -> {
-                appSettings.setTemporaryTheme(null);
-
                 String oldValue = ((ListPreference) preference).getValue();
                 String newValue = (String) newValueObj;
                 if (!newValue.equals(oldValue)) {

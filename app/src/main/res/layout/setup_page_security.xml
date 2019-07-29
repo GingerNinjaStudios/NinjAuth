@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="viewModel"
-            type="me.gingerninja.authenticator.ui.setup.theme.ThemeSetupViewModel" />
+            type="me.gingerninja.authenticator.ui.setup.security.SecuritySetupViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -79,7 +80,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/ic_palette_24dp" />
+                        app:srcCompat="@drawable/ic_lock_24dp" />
 
                     <TextView
                         android:id="@+id/title"
@@ -88,7 +89,7 @@
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="24dp"
-                        android:text="@string/setup_theme_title"
+                        android:text="@string/setup_security_title"
                         android:textAlignment="center"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline3"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -103,38 +104,25 @@
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="24dp"
                         android:gravity="center"
-                        android:text="@string/setup_theme_description"
+                        android:text="@string/setup_security_description"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                         android:textSize="18sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/title" />
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/theme"
-                        style="@style/Widget.Form.TextInputLayout"
-                        android:layout_width="0dp"
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_security_setup"
+                        style="@style/Widget.MaterialComponents.Button"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="24dp"
                         android:layout_marginEnd="24dp"
-                        android:hint="@string/setup_theme_hint"
+                        android:text="@string/setup_security_button_text"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/description"
-                        app:layout_constraintWidth_max="240dp">
-
-                        <me.gingerninja.authenticator.widget.MaterialSpinner
-                            android:id="@+id/theme_spinner"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:editable="false"
-                            app:displayEntries="@array/settings_appearance_theme_entries"
-                            app:menuEntries="@array/settings_appearance_theme_entries"
-                            app:onSpinnerChangeListener="@{viewModel::onThemeChanged}"
-                            app:value="@={viewModel.theme}"
-                            app:values="@array/settings_appearance_theme_values" />
-                    </com.google.android.material.textfield.TextInputLayout>
+                        app:layout_constraintTop_toBottomOf="@+id/description" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.core.widget.NestedScrollView>
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
@@ -146,7 +134,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
-            android:text="@string/btn_next"
+            android:text="@string/btn_finish"
             app:icon="@drawable/ic_chevron_next_24dp"
             app:iconGravity="end"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -160,6 +148,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginBottom="8dp"
             android:text="@string/btn_skip_setup"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 

@@ -19,7 +19,6 @@ import javax.inject.Singleton;
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.crypto.Crypto;
 import me.gingerninja.authenticator.module.ModuleHandler;
-import timber.log.Timber;
 
 @Singleton
 public class AppSettings {
@@ -34,12 +33,6 @@ public class AppSettings {
 
     private long lockScreenStartTime = -1;
 
-    /**
-     * Used during the setup process.
-     */
-    @Nullable
-    private String temporaryTheme;
-
     @Inject
     public AppSettings(Context context, SharedPreferences sharedPrefs, Crypto crypto, ModuleHandler moduleHandler) {
         this.context = context;
@@ -49,8 +42,7 @@ public class AppSettings {
     }
 
     public void applyTheme() {
-        String themeValue = temporaryTheme != null ? temporaryTheme : sharedPrefs.getString(getString(R.string.settings_main_theme_key), getString(R.string.settings_appearance_theme_dark_value));
-        applyTheme(themeValue);
+        applyTheme(getTheme());
     }
 
     public void applyTheme(String themeValue) {
@@ -73,31 +65,24 @@ public class AppSettings {
         AppCompatDelegate.setDefaultNightMode(mode);
     }
 
-    /**
-     * Sets the temporary theme to be used by the app. This is used during the initial setup
-     * process.
-     *
-     * @param theme the theme to be used
-     * @return Returns {@code true} if the change was made; false otherwise
-     */
-    public boolean setTemporaryTheme(@Nullable String theme) {
-        boolean changed = !TextUtils.equals(theme, temporaryTheme);
-        Timber.v("Setting temporary theme from %s to %s, changed: %s", temporaryTheme, theme, changed);
+    public String getTheme() {
+        return sharedPrefs.getString(getString(R.string.settings_main_theme_key), getString(R.string.settings_appearance_theme_dark_value));
+    }
 
-        if (theme == null) {
-            temporaryTheme = null;
-        } else {
-            switch (theme) {
-                case "light":
-                case "dark":
-                    temporaryTheme = theme;
-                    break;
-                default:
-                    temporaryTheme = getString(R.string.settings_appearance_theme_dark_value);
-            }
+    public void saveTheme(String themeValue) {
+        String value;
+        switch (themeValue) {
+            case "light":
+            case "dark":
+            case "battery":
+                value = themeValue;
+                break;
+            default:
+                value = getString(R.string.settings_appearance_theme_default_value);
         }
 
-        return changed;
+        sharedPrefs.edit().putString(getString(R.string.settings_main_theme_key), value).apply();
+        applyTheme(value);
     }
 
     public boolean hideFromRecents() {

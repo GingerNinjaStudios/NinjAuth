@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import javax.inject.Inject;
 
 import me.gingerninja.authenticator.R;
-import me.gingerninja.authenticator.crypto.Crypto;
 import me.gingerninja.authenticator.databinding.SplashFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
 import me.gingerninja.authenticator.util.AppSettings;
@@ -21,9 +20,6 @@ import me.gingerninja.authenticator.util.AppSettings;
 public class SplashFragment extends BaseFragment<SplashFragmentBinding> implements SkipConfirmationBottomFragment.SkipDialogListener {
     @Inject
     AppSettings appSettings;
-
-    @Inject
-    Crypto crypto;
 
     private Runnable animationRunnable;
 
@@ -34,9 +30,9 @@ public class SplashFragment extends BaseFragment<SplashFragmentBinding> implemen
         boolean isFirstTime = !appSettings.isFirstRunComplete();
 
         if (isFirstTime) {
-            //binding.btnSkipSetup.setOnClickListener(v -> SkipConfirmationBottomFragment.show(getChildFragmentManager()));
-            binding.btnSkipSetup.setOnClickListener(v -> onSkipSetup());
-            binding.btnNext.setOnClickListener(v -> getNavController().navigate(SplashFragmentDirections.startSetupAction()));
+            binding.btnSkipSetup.setOnClickListener(v -> SkipConfirmationBottomFragment.show(getChildFragmentManager()));
+            //binding.btnSkipSetup.setOnClickListener(v -> onSkipSetup());
+            binding.btnNext.setOnClickListener(v -> getNavController().navigate(SplashFragmentDirections.openThemeSetupAction()));
 
             //binding.motionLayout.rebuildScene();
 
@@ -49,13 +45,7 @@ public class SplashFragment extends BaseFragment<SplashFragmentBinding> implemen
                 binding.motionLayout.transitionToState(R.id.end);
             }
         } else {
-            //getNavController().navigate(R.id.skipSetupToAccountListAction);
             getNavController().navigate(SplashFragmentDirections.openStartupPasswordCheckFragmentAction());
-            /*if (crypto.hasLock()) {
-                getNavController().navigate(SplashFragmentDirections.openStartupPasswordCheckFragmentAction());
-            } else {
-                getNavController().navigate(R.id.skipSetupToAccountListAction);
-            }*/
         }
     }
 

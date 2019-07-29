@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">NinjAuth</string>
 
-    <string name="splash_welcome_msg">Welcome to NinjAuth, the open-source authenticator app!\n\nPlease, continue with the setup where you can enable authentication and auto-backup.</string>
+    <string name="splash_welcome_msg">Welcome to NinjAuth, the open-source authenticator app!\n\nPlease, continue with the setup where you can select the theme and enable authentication.</string>
     <string name="splash_welcome_msg_alt">Welcome to NinjAuth, the open-source authenticator app!\n\nThe app is still in development with weekly updates incoming. Stay tuned!</string>
 
     <string name="misc_empty" translatable="false" />
@@ -14,14 +14,22 @@
     <string name="btn_authenticate">Authenticate</string>
     <string name="btn_reset">Reset</string>
     <string name="btn_remove">Remove</string>
+    <string name="btn_skip_setup">Finish setup</string>
+    <string name="btn_finish">Finish</string>
 
     <string name="skip_setup_dialog_title">Do you want to skip the setup?</string>
-    <string name="skip_setup_dialog_msg">If you skip the setup, your authentication codes will not be protected against unauthorized access and auto-backup will not be enabled.</string>
+    <string name="skip_setup_dialog_msg">If you skip the setup, your authentication codes may not be protected against unauthorized access.</string>
     <string name="skip_setup_dialog_tip">You can change these settings later in the Settings menu.</string>
+
+    <string name="setup_title">Setup</string>
 
     <string name="setup_theme_title">Theme</string>
     <string name="setup_theme_description">Select the desired theme that will be used across the app</string>
     <string name="setup_theme_hint">Theme</string>
+
+    <string name="setup_security_title">Security</string>
+    <string name="setup_security_description">It is highly recommended to set an app lock as this way your data will be protected using your credentials and unauthorized access will not be possible.</string>
+    <string name="setup_security_button_text">Set security</string>
 
     <string name="nav_accounts_title">Accounts</string>
     <string name="nav_labels_title">Labels</string>
@@ -228,7 +236,7 @@
     <string name="security_lock_type_title">App lock type</string>
     <string name="security_lock_type_current">Current app lock</string>
     <string name="security_lock_type_confirm_dialog_title">Remove app lock?</string>
-    <string name="security_lock_type_confirm_dialog_message">Removing the app lock results in anyone who has access to your device being able to access the data, such as accounts and labels.</string>
+    <string name="security_lock_type_confirm_dialog_message">Removing the app lock may result in anyone who has access to your device being able to access the data, such as accounts and labels.</string>
     <string name="security_lock_type_confirm_dialog_confirm">Remove lock</string>
 
     <string name="security_intermediate_message">The app has been locked due to inactivity. Please, re-authenticate.</string>

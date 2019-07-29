@@ -7,7 +7,6 @@ import me.gingerninja.authenticator.di.module.fragment.AccountListModule;
 import me.gingerninja.authenticator.di.module.fragment.LabelIconPickerModule;
 import me.gingerninja.authenticator.di.module.fragment.LabelListModule;
 import me.gingerninja.authenticator.di.module.fragment.RestoreFragmentModule;
-import me.gingerninja.authenticator.di.module.fragment.SetupFragmentModule;
 import me.gingerninja.authenticator.ui.account.camera.AddAccountFromCameraFragment;
 import me.gingerninja.authenticator.ui.account.image.AddAccountFromImageFragment;
 import me.gingerninja.authenticator.ui.backup.BackupDialogFragment;
@@ -32,11 +31,9 @@ import me.gingerninja.authenticator.ui.security.LockTypeSelectorFragment;
 import me.gingerninja.authenticator.ui.security.PasswordCheckFragment;
 import me.gingerninja.authenticator.ui.security.PasswordSetFragment;
 import me.gingerninja.authenticator.ui.security.StartupPasswordCheckFragment;
-import me.gingerninja.authenticator.ui.setup.SetupFragment;
 import me.gingerninja.authenticator.ui.setup.SplashFragment;
-import me.gingerninja.authenticator.ui.setup.page.BackupSetupPageFragment;
-import me.gingerninja.authenticator.ui.setup.page.ProtectionSelectorPageFragment;
-import me.gingerninja.authenticator.ui.setup.page.ThemeSelectorPageFragment;
+import me.gingerninja.authenticator.ui.setup.security.SecuritySetupFragment;
+import me.gingerninja.authenticator.ui.setup.theme.ThemeSetupFragment;
 
 @Module(includes = {SettingsFragmentBuilder.class})
 public abstract class FragmentBuilder {
@@ -49,17 +46,11 @@ public abstract class FragmentBuilder {
     @ContributesAndroidInjector
     abstract StartupPasswordCheckFragment bindStartupPasswordCheckFragment();
 
-    @ContributesAndroidInjector(modules = SetupFragmentModule.class)
-    abstract SetupFragment bindSetupFragment();
+    @ContributesAndroidInjector
+    abstract ThemeSetupFragment bindThemeSetupFragment();
 
     @ContributesAndroidInjector
-    abstract ThemeSelectorPageFragment bindThemeSelectorPageFragment();
-
-    @ContributesAndroidInjector
-    abstract ProtectionSelectorPageFragment bindProtectionSelectorPageFragment();
-
-    @ContributesAndroidInjector
-    abstract BackupSetupPageFragment bindBackupSetupPageFragment();
+    abstract SecuritySetupFragment bindSecuritySetupFragment();
 
     @ContributesAndroidInjector(modules = AccountListModule.class)
     abstract AccountListFragment bindAccountListFragment();
