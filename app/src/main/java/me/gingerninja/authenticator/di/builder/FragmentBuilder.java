@@ -31,6 +31,7 @@ import me.gingerninja.authenticator.ui.security.LockTypeSelectorFragment;
 import me.gingerninja.authenticator.ui.security.PasswordCheckFragment;
 import me.gingerninja.authenticator.ui.security.PasswordSetFragment;
 import me.gingerninja.authenticator.ui.security.StartupPasswordCheckFragment;
+import me.gingerninja.authenticator.ui.setup.SetupCompleteFragment;
 import me.gingerninja.authenticator.ui.setup.SplashFragment;
 import me.gingerninja.authenticator.ui.setup.security.SecuritySetupFragment;
 import me.gingerninja.authenticator.ui.setup.theme.ThemeSetupFragment;
@@ -51,6 +52,9 @@ public abstract class FragmentBuilder {
 
     @ContributesAndroidInjector
     abstract SecuritySetupFragment bindSecuritySetupFragment();
+
+    @ContributesAndroidInjector
+    abstract SetupCompleteFragment bindSetupCompleteFragment();
 
     @ContributesAndroidInjector(modules = AccountListModule.class)
     abstract AccountListFragment bindAccountListFragment();

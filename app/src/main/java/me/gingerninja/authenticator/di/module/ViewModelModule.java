@@ -30,6 +30,7 @@ import me.gingerninja.authenticator.ui.security.LockTypeSelectorViewModel;
 import me.gingerninja.authenticator.ui.security.PasswordCheckViewModel;
 import me.gingerninja.authenticator.ui.security.PasswordSetViewModel;
 import me.gingerninja.authenticator.ui.security.StartupPasswordCheckViewModel;
+import me.gingerninja.authenticator.ui.setup.SetupCompleteViewModel;
 import me.gingerninja.authenticator.ui.setup.security.SecuritySetupViewModel;
 import me.gingerninja.authenticator.ui.setup.theme.ThemeSetupViewModel;
 import me.gingerninja.authenticator.viewmodel.NinjaViewModelFactory;
@@ -51,6 +52,10 @@ public abstract class ViewModelModule {
     @ViewModelKey(SecuritySetupViewModel.class)
     abstract ViewModel bindSecuritySetupViewModel(SecuritySetupViewModel viewModel);
 
+    @Binds
+    @IntoMap
+    @ViewModelKey(SetupCompleteViewModel.class)
+    abstract ViewModel bindSetupCompleteViewModel(SetupCompleteViewModel viewModel);
 
     @Binds
     @IntoMap

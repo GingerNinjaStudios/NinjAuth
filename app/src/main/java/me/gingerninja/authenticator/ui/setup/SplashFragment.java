@@ -72,7 +72,7 @@ public class SplashFragment extends BaseFragment<SplashFragmentBinding> implemen
     @Override
     public void onSkipSetup() {
         appSettings.setFirstRunComplete();
-        getNavController().navigate(SplashFragmentDirections.openStartupPasswordCheckFragmentAction());
+        getNavController().navigate(SplashFragmentDirections.skipToSetupCompleteAction());
         //getNavController().navigate(SplashFragmentDirections.skipSetupToAccountListAction());
     }
 }

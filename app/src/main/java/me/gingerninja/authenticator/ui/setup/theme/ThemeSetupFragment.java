@@ -8,12 +8,17 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import javax.inject.Inject;
+
 import me.gingerninja.authenticator.R;
 import me.gingerninja.authenticator.databinding.SetupPageThemeSelectorBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
 import me.gingerninja.authenticator.ui.setup.SkipConfirmationBottomFragment;
+import me.gingerninja.authenticator.util.AppSettings;
 
 public class ThemeSetupFragment extends BaseFragment<SetupPageThemeSelectorBinding> implements SkipConfirmationBottomFragment.SkipDialogListener {
+    @Inject
+    AppSettings appSettings;
 
     @Override
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, SetupPageThemeSelectorBinding binding) {
@@ -37,6 +42,7 @@ public class ThemeSetupFragment extends BaseFragment<SetupPageThemeSelectorBindi
 
     @Override
     public void onSkipSetup() {
+        appSettings.setFirstRunComplete();
         getNavController().navigate(ThemeSetupFragmentDirections.skipSetupFromThemeAction());
     }
 }

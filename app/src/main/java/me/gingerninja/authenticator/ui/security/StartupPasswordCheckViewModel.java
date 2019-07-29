@@ -73,7 +73,7 @@ public class StartupPasswordCheckViewModel extends ViewModel {
     }
 
     void openUnlockedDatabase() {
-        dbHandler.openDatabase("fakepass");
+        dbHandler.openDatabaseDefaultPassword();
     }
 
     private void setUsePin(boolean usePin) {

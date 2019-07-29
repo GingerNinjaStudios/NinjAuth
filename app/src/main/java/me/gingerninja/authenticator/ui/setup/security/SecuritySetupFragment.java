@@ -15,10 +15,14 @@ import me.gingerninja.authenticator.crypto.Crypto;
 import me.gingerninja.authenticator.databinding.SetupPageSecurityBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
 import me.gingerninja.authenticator.ui.setup.SkipConfirmationBottomFragment;
+import me.gingerninja.authenticator.util.AppSettings;
 
 public class SecuritySetupFragment extends BaseFragment<SetupPageSecurityBinding> implements SkipConfirmationBottomFragment.SkipDialogListener {
     @Inject
     Crypto crypto;
+
+    @Inject
+    AppSettings appSettings;
 
     @Override
     protected void onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState, View root, SetupPageSecurityBinding binding) {
@@ -32,7 +36,8 @@ public class SecuritySetupFragment extends BaseFragment<SetupPageSecurityBinding
         super.onResume();
 
         if (crypto.hasLock()) {
-            getNavController().navigate(SecuritySetupFragmentDirections.finishSetupAction());
+            appSettings.setFirstRunComplete();
+            getNavController().navigate(SecuritySetupFragmentDirections.openSetupCompleteAction());
         }
     }
 
@@ -52,6 +57,7 @@ public class SecuritySetupFragment extends BaseFragment<SetupPageSecurityBinding
 
     @Override
     public void onSkipSetup() {
-        getNavController().navigate(SecuritySetupFragmentDirections.skipSetupFromSecurityAction());
+        appSettings.setFirstRunComplete();
+        getNavController().navigate(SecuritySetupFragmentDirections.openSetupCompleteAction());
     }
 }

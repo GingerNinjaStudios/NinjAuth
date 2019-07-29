@@ -157,6 +157,15 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/skipToSetupCompleteAction"
+            app:destination="@id/setupCompleteFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/splashFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <action
         android:id="@+id/openAccountList"
@@ -212,7 +221,7 @@
             app:exitAnim="@anim/nav_default_exit_anim" />
         <action
             android:id="@+id/skipSetupFromThemeAction"
-            app:destination="@id/startupPasswordCheckFragment"
+            app:destination="@id/setupCompleteFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
@@ -223,7 +232,8 @@
     <fragment
         android:id="@+id/setupPageSecurity"
         android:name="me.gingerninja.authenticator.ui.setup.security.SecuritySetupFragment"
-        android:label="SecuritySetupFragment">
+        android:label="SecuritySetupFragment"
+        tools:layout="@layout/setup_page_security">
         <action
             android:id="@+id/setLockFromSetupAction"
             app:destination="@id/security_setup">
@@ -232,18 +242,28 @@
                 app:argType="reference" />
         </action>
         <action
-            android:id="@+id/finishSetupAction"
-            app:destination="@id/accountListFragment"
+            android:id="@+id/openSetupCompleteAction"
+            app:destination="@id/setupCompleteFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim"
             app:popUpTo="@+id/splashFragment"
             app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/setupCompleteFragment"
+        android:name="me.gingerninja.authenticator.ui.setup.SetupCompleteFragment"
+        android:label="SetupCompleteFragment"
+        tools:layout="@layout/setup_complete_fragment">
         <action
-            android:id="@+id/skipSetupFromSecurityAction"
-            app:destination="@id/startupPasswordCheckFragment"
-            app:popUpTo="@+id/splashFragment"
+            android:id="@+id/finishSetupAction"
+            app:destination="@id/accountListFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/setupCompleteFragment"
             app:popUpToInclusive="true" />
     </fragment>
 </navigation>

@@ -25,6 +25,10 @@ public class DatabaseHandler {
         this.context = context;
     }
 
+    public void openDatabaseDefaultPassword() {
+        openDatabase("fakepass");
+    }
+
     public void openDatabase(String password) {
         if (databaseSource != null) {
             return;
