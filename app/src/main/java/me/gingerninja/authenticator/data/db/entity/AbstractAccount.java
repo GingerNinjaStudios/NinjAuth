@@ -24,7 +24,7 @@ import io.requery.Superclass;
 
 @Superclass
 @Entity(propertyNameStyle = PropertyNameStyle.FLUENT_BEAN)
-abstract class AbstractAccount {
+public abstract class AbstractAccount {
     public static final long DEFAULT_COUNTER = 0;
     public static final long DEFAULT_PERIOD = 30;
 

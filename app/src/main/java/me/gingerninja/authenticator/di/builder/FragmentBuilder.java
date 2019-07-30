@@ -6,16 +6,14 @@ import me.gingerninja.authenticator.di.module.fragment.AccountFilterModule;
 import me.gingerninja.authenticator.di.module.fragment.AccountListModule;
 import me.gingerninja.authenticator.di.module.fragment.LabelIconPickerModule;
 import me.gingerninja.authenticator.di.module.fragment.LabelListModule;
-import me.gingerninja.authenticator.di.module.fragment.RestoreFragmentModule;
+import me.gingerninja.authenticator.di.module.fragment.RestoreContentListFragmentModule;
 import me.gingerninja.authenticator.ui.account.camera.AddAccountFromCameraFragment;
 import me.gingerninja.authenticator.ui.account.image.AddAccountFromImageFragment;
 import me.gingerninja.authenticator.ui.backup.BackupDialogFragment;
 import me.gingerninja.authenticator.ui.backup.BackupFragment;
+import me.gingerninja.authenticator.ui.backup.RestoreContentListFragment;
 import me.gingerninja.authenticator.ui.backup.RestoreFragment;
 import me.gingerninja.authenticator.ui.backup.RestorePasswordDialogFragment;
-import me.gingerninja.authenticator.ui.backup.page.RestoreAccountPageFragment;
-import me.gingerninja.authenticator.ui.backup.page.RestoreLabelPageFragment;
-import me.gingerninja.authenticator.ui.backup.page.RestoreSummaryPageFragment;
 import me.gingerninja.authenticator.ui.home.AccountListFragment;
 import me.gingerninja.authenticator.ui.home.DeleteAccountBottomFragment;
 import me.gingerninja.authenticator.ui.home.filter.AccountFilterDialogFragment;
@@ -83,17 +81,11 @@ public abstract class FragmentBuilder {
     @ContributesAndroidInjector
     abstract BackupDialogFragment bindBackupDialogFragment();
 
-    @ContributesAndroidInjector(modules = RestoreFragmentModule.class)
+    @ContributesAndroidInjector
     abstract RestoreFragment bindRestoreFragment();
 
-    @ContributesAndroidInjector
-    abstract RestoreAccountPageFragment bindRestoreAccountPageFragment();
-
-    @ContributesAndroidInjector
-    abstract RestoreLabelPageFragment bindRestoreLabelPageFragment();
-
-    @ContributesAndroidInjector
-    abstract RestoreSummaryPageFragment bindRestoreSummaryPageFragment();
+    @ContributesAndroidInjector(modules = RestoreContentListFragmentModule.class)
+    abstract RestoreContentListFragment bindRestoreContentListFragment();
 
     @ContributesAndroidInjector
     abstract RestorePasswordDialogFragment bindRestorePasswordDialogFragment();

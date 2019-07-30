@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
@@ -11,8 +12,10 @@
         app:cardUseCompatPadding="false">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/card_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground">
 
             <TextView
                 android:id="@+id/title"
@@ -45,6 +48,8 @@
                 android:id="@id/restore_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
                 app:layout_constraintBaseline_toBaselineOf="@+id/title"
                 app:layout_constraintEnd_toEndOf="parent" />
 

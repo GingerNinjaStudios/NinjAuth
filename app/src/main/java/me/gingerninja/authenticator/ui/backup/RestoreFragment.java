@@ -9,38 +9,26 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
-import androidx.viewpager.widget.ViewPager;
+import androidx.navigation.fragment.FragmentNavigator;
 
 import com.google.android.material.snackbar.Snackbar;
-
-import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import me.gingerninja.authenticator.R;
-import me.gingerninja.authenticator.data.adapter.RestorePagerAdapter;
 import me.gingerninja.authenticator.databinding.RestoreFragmentBinding;
 import me.gingerninja.authenticator.ui.base.BaseFragment;
 import me.gingerninja.authenticator.util.SingleEvent;
 import timber.log.Timber;
 
 public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> {
-    @Inject
-    RestorePagerAdapter pagerAdapter;
-
     private CompositeDisposable disposable = new CompositeDisposable();
 
     private OnBackPressedCallback backButtonCallback = new OnBackPressedCallback(true) {
         @Override
         public void handleOnBackPressed() {
-            ViewPager viewPager = getDataBinding().viewPager;
-            int currItem = viewPager.getCurrentItem();
-
-            if (currItem > 0) {
-                viewPager.setCurrentItem(currItem - 1, true);
-            } else {
-                setResultAndLeave(RESULT_CANCELED);
-            }
+            // TODO confirmation dialog
+            setResultAndLeave(RESULT_CANCELED);
         }
     };
 
@@ -61,13 +49,6 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> {
     private void subscribeToUi(RestoreFragmentBinding binding) {
         binding.toolbar.setNavigationOnClickListener(v -> getNavController().navigateUp());
 
-        binding.btnPrev.setOnClickListener(this::handleBackButton);
-        binding.btnNext.setOnClickListener(this::handleNextButton);
-
-        binding.viewPager.setAdapter(pagerAdapter);
-        binding.progressIndicator.setViewPager(binding.viewPager);
-        binding.progressIndicator.setDotsClickable(false);
-
         RestoreViewModel viewModel = getViewModel(RestoreViewModel.class);
 
         binding.setViewModel(viewModel);
@@ -79,6 +60,25 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(this::handleRestoreEvents, this::handleRestoreError, this::handleRestoreComplete)
         );
+
+        binding.accountsSelector.setOnClickListener(view -> {
+            RestoreFragmentDirections.OpenRestoreContentListAction action = RestoreFragmentDirections.openRestoreContentListAction(RestoreContentListFragment.Type.ACCOUNTS);
+
+            FragmentNavigator.Extras extras = new FragmentNavigator.Extras.Builder()
+                    .addSharedElement(binding.accountsSelector, "accounts")
+                    .build();
+
+            getNavController().navigate(action);
+        });
+
+        binding.labelsSelector.setOnClickListener(view -> {
+            FragmentNavigator.Extras extras = new FragmentNavigator.Extras.Builder()
+                    .addSharedElement(binding.labelsSelector, "labels")
+                    .build();
+
+            RestoreFragmentDirections.OpenRestoreContentListAction action = RestoreFragmentDirections.openRestoreContentListAction(RestoreContentListFragment.Type.LABELS);
+            getNavController().navigate(action);
+        });
     }
 
     @Override
@@ -86,30 +86,8 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> {
         super.onDestroyView();
 
         if (disposable != null) {
-            disposable.dispose();
+            disposable.clear();
         }
-    }
-
-    private void handleNextButton(View v) {
-        ViewPager viewPager = getDataBinding().viewPager;
-
-        boolean isFinalPage = viewPager.getCurrentItem() == pagerAdapter.getCount() - 1;
-
-        if (isFinalPage) {
-            getViewModel(RestoreViewModel.class).doRestore();
-        } else {
-            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
-        }
-    }
-
-    private void handleBackButton(View v) {
-        requireActivity().onBackPressed();
-        /*if (getDataBinding().viewPager.getCurrentItem() <= 0) {
-            setResultAndLeave(RESULT_CANCELED);
-        } else {
-            //handleOnBackPressed();
-            requireActivity().onBackPressed();
-        }*/
     }
 
     private void handleRestoreComplete() {
@@ -126,34 +104,30 @@ public class RestoreFragment extends BaseFragment<RestoreFragmentBinding> {
     }
 
     private void handleRestoreEvents(@NonNull SingleEvent event) {
-        if (event.isHandled()) {
-            return;
-        }
-
-        switch (event.getId()) {
-            case RestoreViewModel.ACTION_RESTORE_PASSWORD_NEEDED:
-                RestorePasswordDialogFragment.show(getChildFragmentManager(), false);
-                event.handle();
-                break;
-            case RestoreViewModel.ACTION_RESTORE_WRONG_PASSWORD:
-                RestorePasswordDialogFragment.show(getChildFragmentManager(), true);
-                event.handle();
-                break;
-            case RestoreViewModel.ACTION_DATA_LOADED:
-                // TODO
-                Snackbar.make(getView(), "Restore data loaded", Snackbar.LENGTH_LONG).show();
-                break;
+        if (event.handle()) {
+            switch (event.getId()) {
+                case RestoreViewModel.ACTION_RESTORE_PASSWORD_NEEDED:
+                    RestorePasswordDialogFragment.show(getChildFragmentManager(), false);
+                    break;
+                case RestoreViewModel.ACTION_RESTORE_WRONG_PASSWORD:
+                    RestorePasswordDialogFragment.show(getChildFragmentManager(), true);
+                    break;
+                case RestoreViewModel.ACTION_DATA_LOADED:
+                    // TODO
+                    Snackbar.make(getView(), "Restore data loaded", Snackbar.LENGTH_LONG).show();
+                    break;
+            }
         }
     }
 
     private void handleRestoreError(Throwable throwable) {
         Timber.e(throwable, "Restore error");
-        // TODO
+
         if (throwable instanceof UserCanceledRestoreException) {
             setResultAndLeave(RESULT_CANCELED);
         }
 
-        Snackbar.make(getView(), "Restore error: " + throwable.getMessage(), Snackbar.LENGTH_LONG).show();
+        //Snackbar.make(getView(), "Restore error: " + throwable.getMessage(), Snackbar.LENGTH_LONG).show();
     }
 
     @Override

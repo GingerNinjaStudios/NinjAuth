@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">NinjAuth</string>
 
     <string name="splash_welcome_msg">Welcome to NinjAuth, the open-source authenticator app!\n\nPlease, continue with the setup where you can select the theme and enable authentication.</string>
@@ -230,6 +230,8 @@
     <string name="backup_complete">Backup complete</string>
     <string name="backup_error_generic">Could not create the backup file</string>
 
+    <string name="create_restore">Restore</string>
+
     <string name="all_selected">All selected</string>
 
     <string name="error_loading_items">Could not load items</string>
@@ -309,5 +311,11 @@
         <item quantity="one">%d Account</item>
         <item quantity="other">%d Accounts</item>
     </plurals>
+
+    <string name="restore_selected"><xliff:g name="count">%1$d</xliff:g> of <xliff:g name="total">%2$d</xliff:g> selected</string>
+    <string name="restore_error_title">Cannot open the file</string>
+    <string name="restore_error_invalid_zip">Invalid ZIP file</string>
+    <string name="restore_error_not_ninjauth">It doesn\'t look like a NinjAuth ZIP file</string>
+    <string name="restore_complete">Restore completed successfully</string>
 
 </resources>

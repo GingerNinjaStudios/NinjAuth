@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 
+import androidx.annotation.Nullable;
 import androidx.preference.Preference;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import javax.inject.Inject;
 
@@ -45,6 +48,13 @@ public class BackupRestoreSettingsFragment extends BaseSettingsFragment {
                 break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onFragmentResult(int requestCode, int resultCode, @Nullable Object data) {
+        if (requestCode == RequestCodes.RESTORE && resultCode == RESULT_OK) {
+            Snackbar.make(requireView(), R.string.restore_complete, Snackbar.LENGTH_SHORT).show();
         }
     }
 
