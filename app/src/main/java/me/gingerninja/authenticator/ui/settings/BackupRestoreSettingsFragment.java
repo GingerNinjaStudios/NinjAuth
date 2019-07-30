@@ -60,7 +60,7 @@ public class BackupRestoreSettingsFragment extends BaseSettingsFragment {
 
     @Override
     protected String getTitle() {
-        return "Backup & Restore"; // TODO
+        return getString(R.string.settings_main_backup_title);
     }
 
     @Override

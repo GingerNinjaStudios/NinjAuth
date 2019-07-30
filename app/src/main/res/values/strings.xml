@@ -317,5 +317,6 @@
     <string name="restore_error_invalid_zip">Invalid ZIP file</string>
     <string name="restore_error_not_ninjauth">It doesn\'t look like a NinjAuth ZIP file</string>
     <string name="restore_complete">Restore completed successfully</string>
+    <string name="restore_no_data">There is no data to be restored</string>
 
 </resources>

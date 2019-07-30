@@ -1,7 +1,6 @@
 package me.gingerninja.authenticator.ui.backup;
 
 import android.annotation.SuppressLint;
-import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.ObservableBoolean;
@@ -26,12 +25,13 @@ import me.gingerninja.authenticator.data.repo.TemporaryRepository;
 import me.gingerninja.authenticator.util.AutoClosingMutableLiveData;
 
 public class RestoreContentListViewModel extends ViewModel {
+    private final static Completable POISON = Completable.complete();
+
     @NonNull
     private final TemporaryRepository repo;
 
     public ObservableInt title = new ObservableInt();
     public ObservableBoolean hasLoaded = new ObservableBoolean(false);
-    public ObservableBoolean hasData = new ObservableBoolean(false);
 
     private AutoClosingMutableLiveData<ResultSetIterator<Tuple>> data = new AutoClosingMutableLiveData<>();
     private Disposable disposable;
@@ -50,9 +50,12 @@ public class RestoreContentListViewModel extends ViewModel {
         workDisposable = Observable
                 .<Completable>create(emitter -> {
                     try {
-                        //noinspection InfiniteLoopStatement
                         while (true) {
-                            emitter.onNext(workQueue.take());
+                            Completable item = workQueue.take();
+                            if (item == POISON) {
+                                break;
+                            }
+                            emitter.onNext(item);
                         }
                     } catch (InterruptedException ignored) {
                     }
@@ -62,6 +65,7 @@ public class RestoreContentListViewModel extends ViewModel {
                 .doOnTerminate(() -> {
                     workQueue.clear();
                     requestCounter.set(0);
+                    workDisposable.dispose();
                 })
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.newThread())
@@ -82,6 +86,8 @@ public class RestoreContentListViewModel extends ViewModel {
         if (data.getValue() != null) {
             data.getValue().close();
         }
+
+        workQueue.add(POISON);
     }
 
     void init(RestoreContentListFragment.Type type) {
@@ -106,7 +112,6 @@ public class RestoreContentListViewModel extends ViewModel {
     private void dataRetrieved(ReactiveResult<Tuple> tuples) throws Exception {
         ResultSetIterator<Tuple> it = (ResultSetIterator<Tuple>) tuples.iterator();
         hasLoaded.set(true);
-        hasData.set(it.unwrap(Cursor.class).getCount() > 0);
         data.postValue(it);
     }
 
@@ -129,14 +134,10 @@ public class RestoreContentListViewModel extends ViewModel {
     /**
      * Handles a database request, such as updating the restore mode or should-restore.
      *
-     * @param completable
+     * @param completable the DB work to be done
      */
-    public void handleRequest(@NonNull Completable completable) {
+    void handleRequest(@NonNull Completable completable) {
         workQueue.add(completable);
         requestCounter.incrementAndGet();
-        /*completable
-                .observeOn(Schedulers.single())
-                .doOnTerminate(() -> requestCounter.decrementAndGet())
-                .subscribe();*/
     }
 }

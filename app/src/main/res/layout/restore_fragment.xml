@@ -74,7 +74,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="@{viewModel.processingFile ? View.VISIBLE : View.GONE}"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:visibility="gone">
 
             <ProgressBar
                 android:id="@+id/progress_bar"
@@ -108,7 +109,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="@{!viewModel.processingFile &amp;&amp; viewModel.errorMsg != 0 ? View.VISIBLE : View.GONE}"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:visibility="gone">
 
             <ImageView
                 android:id="@+id/error_img"
@@ -150,6 +152,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView3"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fillViewport="true"
@@ -249,6 +252,7 @@
                     android:focusable="true"
                     android:padding="16dp"
                     android:transitionName="accounts"
+                    android:visibility="@{viewModel.accountTotal > 0 ? View.VISIBLE : View.GONE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/content_title">
@@ -298,6 +302,7 @@
                     android:focusable="true"
                     android:padding="16dp"
                     android:transitionName="labels"
+                    android:visibility="@{viewModel.labelTotal > 0 ? View.VISIBLE : View.GONE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/accounts_selector">
@@ -341,13 +346,26 @@
                     style="@style/Widget.MaterialComponents.Button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:enabled="@{viewModel.inputEnabled}"
+                    android:enabled="@{viewModel.inputEnabled &amp;&amp; (viewModel.accountSelected > 0 || viewModel.labelSelected > 0)}"
                     android:onClick="@{viewModel::onRestoreClick}"
                     android:text="@string/create_restore"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/labels_selector" />
+                    app:layout_constraintTop_toBottomOf="@id/no_data_tv" />
+
+                <TextView
+                    android:id="@+id/no_data_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:text="@string/restore_no_data"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                    android:visibility="@{(viewModel.accountTotal > 0 || viewModel.labelTotal > 0) ? View.GONE : View.VISIBLE}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/labels_selector" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
