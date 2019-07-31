@@ -31,6 +31,7 @@ import timber.log.Timber;
 public class StartupPasswordCheckViewModel extends ViewModel {
     static final String EVENT_CONFIRM = "event.confirm";
     static final String EVENT_BIO_AUTH = "event.bio";
+    static final String EVENT_USE_PASSWORD = "event.use_pass";
 
     public ObservableBoolean hasError = new ObservableBoolean(false);
     public ObservableInt errorText = new ObservableInt(0);
@@ -158,8 +159,10 @@ public class StartupPasswordCheckViewModel extends ViewModel {
                                                 case BiometricConstants.ERROR_NEGATIVE_BUTTON:
                                                 case BiometricConstants.ERROR_CANCELED:
                                                 case BiometricConstants.ERROR_USER_CANCELED:
+                                                    inputEnabled.set(true);
                                                     enableBioAuth.set(true);
                                                     bioErrorText.set(0);
+                                                    events.postValue(new SingleEvent(EVENT_USE_PASSWORD));
                                                     break;
                                                 default:
                                                     enableBioAuth.set(true);
