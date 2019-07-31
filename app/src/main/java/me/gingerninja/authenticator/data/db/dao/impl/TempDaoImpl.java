@@ -104,7 +104,22 @@ public class TempDaoImpl implements TempDao {
                                             db.insert(inserted);
 
                                             if (backupAccount.getLabelIds() != null) {
-                                                String[] labelIds = backupAccount.getLabelIds();
+                                                backupAccount.getLabelIds()
+                                                        .<String>getData()
+                                                        .blockingSubscribe(new io.reactivex.functions.Consumer<String>() {
+                                                            int i = 0;
+
+                                                            @Override
+                                                            public void accept(String labelUid) {
+                                                                db.insert(TempAccountHasLabel.class)
+                                                                        .value(TempAccountHasLabel.ACCOUNT_ID, inserted.getUid())
+                                                                        .value(TempAccountHasLabel.LABEL_ID, labelUid)
+                                                                        .value(TempAccountHasLabel.POSITION, i++)
+                                                                        .get()
+                                                                        .close();
+                                                            }
+                                                        });
+                                                /*String[] labelIds = backupAccount.getLabelIds();
                                                 for (int i = 0; i < labelIds.length; i++) {
                                                     String labelUid = labelIds[i];
                                                     // this should not fail because the defer_foreign_keys pragma is ON
@@ -114,7 +129,7 @@ public class TempDaoImpl implements TempDao {
                                                             .value(TempAccountHasLabel.POSITION, i)
                                                             .get()
                                                             .close();
-                                                }
+                                                }*/
                                             }
                                         }
 

@@ -186,7 +186,8 @@ public class Backup {
                 })
                 .doOnComplete(writer::endArray)
                 .collectInto(writer, (jsonWriter, account) -> {
-                    BackupAccount backupAccount = BackupAccount.fromEntity(account);
+                    BackupAccountLabelTypeAdapterFactory.DataHolder helper = new BackupAccountLabelTypeAdapterFactory.DataHolder(accountRepo.getLabelsByAccount(account));
+                    BackupAccount backupAccount = BackupAccount.fromEntity(account, helper);
                     gson.toJson(backupAccount, BackupAccount.class, jsonWriter);
                 })
                 .ignoreElement();
