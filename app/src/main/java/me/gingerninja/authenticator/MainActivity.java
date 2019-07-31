@@ -164,7 +164,8 @@ public class MainActivity extends AppCompatActivity {
             int id = current.getId();
 
             return id != R.id.splashFragment &&
-                    id != R.id.setupFragment &&
+                    id != R.id.setupPageTheme &&
+                    id != R.id.setupPageSecurity &&
                     id != R.id.startupPasswordCheckFragment;
         }
 

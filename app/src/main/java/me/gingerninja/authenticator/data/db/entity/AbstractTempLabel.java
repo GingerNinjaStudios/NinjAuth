@@ -20,17 +20,21 @@ import io.requery.Table;
 abstract class AbstractTempLabel extends AbstractLabel {
     @Key
     Long id;
+
     /**
      * Defines whether the label already has a matching pair in the normal database. This can help
      * setup the UI so the user can select to replace the existing or insert a new label.
      */
     @Nullable
     String restoreMatchingUid = null;
+
     @RestoreMode
     @Column(value = "" + RestoreMode.INSERT, nullable = false)
     int restoreMode = RestoreMode.INSERT;
+
     @Column(value = "true", nullable = false)
     boolean restore = true;
+
     @ManyToMany
     Set<TempAccount> accounts;
 

@@ -27,7 +27,7 @@ import me.gingerninja.authenticator.data.LabelIconLinker;
 
 @Superclass
 @Entity(propertyNameStyle = PropertyNameStyle.FLUENT_BEAN)
-abstract class AbstractLabel {
+public abstract class AbstractLabel {
     @Key
     @Generated
     long id;

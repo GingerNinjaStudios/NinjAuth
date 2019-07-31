@@ -1,5 +1,6 @@
 package me.gingerninja.authenticator.ui.backup;
 
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
@@ -43,7 +44,14 @@ public abstract class BaseRestoreCheckableAdapter<T extends ViewDataBinding> ext
     @Override
     public void onBindViewHolder(@NonNull BaseRestoreViewHolder<T> holder, int position) {
         Tuple item = getItem(position);
+
+        if (holder.tuple != null && getItemId(holder.tuple) == getItemId(item)) {
+            return;
+        }
+
         holder.bind(item);
+
+        holder.container.setOnClickListener(view -> holder.checkbox.setChecked(!holder.checkbox.isChecked()));
 
         holder.checkbox.setOnCheckedChangeListener(null);
         holder.spinner.setOnSpinnerChangeListener(null);
@@ -72,15 +80,20 @@ public abstract class BaseRestoreCheckableAdapter<T extends ViewDataBinding> ext
 
     public static class BaseRestoreViewHolder<T extends ViewDataBinding> extends BindingViewHolder<T> {
         protected CompoundButton checkbox;
+        protected View container;
         protected MaterialSpinner spinner;
+
+        private Tuple tuple;
 
         public BaseRestoreViewHolder(@NonNull T binding) {
             super(binding);
+            container = itemView.findViewById(R.id.card_container);
             checkbox = itemView.findViewById(R.id.restore_checkbox);
             spinner = itemView.findViewById(R.id.restore_mode_spinner);
         }
 
         public void bind(Tuple tuple) {
+            this.tuple = tuple;
             checkbox.setTag(tuple);
             spinner.setTag(tuple);
         }

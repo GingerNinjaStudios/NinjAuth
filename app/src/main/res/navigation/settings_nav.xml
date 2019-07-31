@@ -87,6 +87,13 @@
         <argument
             android:name="uri"
             app:argType="android.net.Uri" />
+        <action
+            android:id="@+id/openRestoreContentListAction"
+            app:destination="@id/restoreContentListFragment"
+            app:enterAnim="@anim/nav_slide_in"
+            app:exitAnim="@anim/nav_slide_out"
+            app:popEnterAnim="@anim/nav_pop_slide_in"
+            app:popExitAnim="@anim/nav_pop_slide_out" />
     </fragment>
     <fragment
         android:id="@+id/backupFragment"
@@ -117,7 +124,7 @@
     <fragment
         android:id="@+id/moduleSettingsFragment"
         android:name="me.gingerninja.authenticator.ui.settings.ModuleSettingsFragment"
-        android:label="ModuleSettingsFragment" >
+        android:label="ModuleSettingsFragment">
         <action
             android:id="@+id/openTimeCorrectorSettingsAction"
             app:destination="@id/timeCorrectorSettingsFragment"
@@ -130,4 +137,13 @@
         android:id="@+id/timeCorrectorSettingsFragment"
         android:name="me.gingerninja.authenticator.module.timecorrector.TimeCorrectorSettingsFragment"
         android:label="TimeCorrectorSettingsFragment" />
+    <fragment
+        android:id="@+id/restoreContentListFragment"
+        android:name="me.gingerninja.authenticator.ui.backup.RestoreContentListFragment"
+        android:label="RestoreContentListFragment"
+        tools:layout="@layout/restore_content_list_fragment">
+        <argument
+            android:name="type"
+            app:argType="me.gingerninja.authenticator.ui.backup.RestoreContentListFragment$Type" />
+    </fragment>
 </navigation>
