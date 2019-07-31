@@ -64,15 +64,19 @@ public class StartupPasswordCheckFragment extends BaseFragment<StartupPasswordCh
                     if (viewModel.enableBioAuth.get()) {
                         viewModel.bioAuthentication(this);
                     } else {
-                        getDataBinding().password.clearFocus();
-                        getDataBinding().password.requestFocus();
-                        InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        if (imm != null) {
-                            imm.showSoftInput(getDataBinding().password, InputMethodManager.SHOW_IMPLICIT);
-                        }
+                        showPasswordKeyboard();
                     }
                 }
             }
+        }
+    }
+
+    private void showPasswordKeyboard() {
+        getDataBinding().password.clearFocus();
+        getDataBinding().password.requestFocus();
+        InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.showSoftInput(getDataBinding().password, InputMethodManager.SHOW_IMPLICIT);
         }
     }
 
@@ -94,6 +98,9 @@ public class StartupPasswordCheckFragment extends BaseFragment<StartupPasswordCh
                     break;
                 case StartupPasswordCheckViewModel.EVENT_BIO_AUTH:
                     viewModel.bioAuthentication(this);
+                    break;
+                case StartupPasswordCheckViewModel.EVENT_USE_PASSWORD:
+                    getDataBinding().password.post(this::showPasswordKeyboard);
                     break;
             }
         }

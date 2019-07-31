@@ -6,12 +6,9 @@ import androidx.annotation.Nullable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Iterator;
-import java.util.Set;
-
 import me.gingerninja.authenticator.data.db.entity.Account;
-import me.gingerninja.authenticator.data.db.entity.Label;
 import me.gingerninja.authenticator.data.db.entity.TempAccount;
+import me.gingerninja.authenticator.util.backup.BackupAccountLabelTypeAdapterFactory;
 
 public class BackupAccount {
     @SerializedName("uid")
@@ -56,14 +53,14 @@ public class BackupAccount {
 
     @SerializedName("labels")
     @Expose
-    private String[] labelIds;
+    private BackupAccountLabelTypeAdapterFactory.DataHolder labelIds;
 
     @SerializedName("position")
     @Expose
     private int position = 0;
 
     @NonNull
-    public static BackupAccount fromEntity(@NonNull Account account) {
+    public static BackupAccount fromEntity(@NonNull Account account, @NonNull BackupAccountLabelTypeAdapterFactory.DataHolder labelsHelper) {
         BackupAccount backupAccount = new BackupAccount();
         backupAccount.uid = account.getUid();
         backupAccount.title = account.getTitle();
@@ -76,17 +73,7 @@ public class BackupAccount {
         backupAccount.digits = account.getDigits();
         backupAccount.typeSpecificData = account.getTypeSpecificData();
         backupAccount.position = account.getPosition();
-
-        Set<Label> labels = account.getLabels();
-        if (labels != null && !labels.isEmpty()) {
-            final int n = labels.size();
-            Iterator<Label> iterator = labels.iterator();
-            backupAccount.labelIds = new String[n];
-
-            for (int i = 0; iterator.hasNext(); i++) {
-                backupAccount.labelIds[i] = iterator.next().getUid();
-            }
-        }
+        backupAccount.labelIds = labelsHelper;
 
         return backupAccount;
     }
@@ -112,7 +99,7 @@ public class BackupAccount {
     }
 
     @Nullable
-    public String[] getLabelIds() {
+    public BackupAccountLabelTypeAdapterFactory.DataHolder getLabelIds() {
         return labelIds;
     }
 }

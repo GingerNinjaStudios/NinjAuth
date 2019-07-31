@@ -22,6 +22,7 @@ import me.gingerninja.authenticator.data.db.provider.DatabaseHandler;
 import me.gingerninja.authenticator.data.db.wrapper.AccountWrapper;
 import me.gingerninja.authenticator.util.AppSettings;
 import me.gingerninja.authenticator.util.GsonDateAdapter;
+import me.gingerninja.authenticator.util.backup.BackupAccountLabelTypeAdapterFactory;
 
 @Module
 public class DataModule {
@@ -54,6 +55,7 @@ public class DataModule {
     public Gson provideGson() {
         return new GsonBuilder()
                 .registerTypeAdapter(Date.class, new GsonDateAdapter())
+                .registerTypeAdapterFactory(new BackupAccountLabelTypeAdapterFactory())
                 .excludeFieldsWithoutExposeAnnotation()
                 .create();
     }
