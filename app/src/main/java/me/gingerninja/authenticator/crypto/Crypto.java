@@ -379,7 +379,7 @@ public class Crypto {
 
         final SecretKey biometricKeyFin = biometricKey;
 
-        authenticateBiometric(activity, biometricCipher, R.string.security_biometrics_prompt_title, android.R.string.cancel)
+        authenticateBiometric(activity, biometricCipher, R.string.security_biometrics_prompt_title, android.R.string.cancel, false)
                 .doAfterTerminate(() -> destroyKey(biometricKeyFin))
                 .flatMapCompletable(cryptoObject -> {
                     SecretKey master = null;
@@ -653,13 +653,13 @@ public class Crypto {
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    public Completable authenticate(@NonNull Fragment fragment) {
-        return authenticate(fragment.requireActivity());
+    public Completable authenticate(@NonNull Fragment fragment, boolean isIntermediate) {
+        return authenticate(fragment.requireActivity(), isIntermediate);
     }
 
     @SuppressLint("ApplySharedPref")
     @TargetApi(Build.VERSION_CODES.M)
-    public Completable authenticate(@NonNull FragmentActivity activity) {
+    public Completable authenticate(@NonNull FragmentActivity activity, boolean isIntermediate) {
         return Completable
                 .fromCallable(() -> {
                     if (sharedPrefs.getInt(SECURITY_VERSION_BIO_KEY, 0) != SECURITY_BIO_VERSION) {
@@ -688,7 +688,7 @@ public class Crypto {
                     try {
                         String encryptedDbPass = sharedPrefs.getString(KEY_DB_PASS, null);
 
-                        BiometricPrompt.CryptoObject cryptoObject = authenticateBiometric(activity, rawBioCipher, R.string.security_biometrics_prompt_title, R.string.security_biometrics_prompt_negative_btn).blockingGet();
+                        BiometricPrompt.CryptoObject cryptoObject = authenticateBiometric(activity, rawBioCipher, R.string.security_biometrics_prompt_title, R.string.security_biometrics_prompt_negative_btn, isIntermediate).blockingGet();
                         Cipher biometricCipher = cryptoObject.getCipher();
                         try {
                             master = unwrapKey(masterWrapped, biometricCipher);
@@ -720,13 +720,18 @@ public class Crypto {
                 .subscribeOn(Schedulers.computation());
     }
 
-    private Single<BiometricPrompt.CryptoObject> authenticateBiometric(@NonNull FragmentActivity activity, @NonNull Cipher cipher, @StringRes int title, @StringRes int negativeBtn) {
+    private Single<BiometricPrompt.CryptoObject> authenticateBiometric(@NonNull FragmentActivity activity, @NonNull Cipher cipher, @StringRes int title, @StringRes int negativeBtn, boolean isIntermediate) {
         SingleSubject<BiometricPrompt.CryptoObject> subject = SingleSubject.create();
 
-        BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
+        BiometricPrompt.PromptInfo.Builder promptInfoBuilder = new BiometricPrompt.PromptInfo.Builder()
                 .setTitle(context.getString(title))
-                .setNegativeButtonText(context.getString(negativeBtn))
-                .build();
+                .setNegativeButtonText(context.getString(negativeBtn));
+
+        if (isIntermediate) {
+            promptInfoBuilder.setDescription(context.getString(R.string.security_intermediate_message));
+        }
+
+        BiometricPrompt.PromptInfo promptInfo = promptInfoBuilder.build();
 
         BiometricPrompt.CryptoObject cryptoObject = new BiometricPrompt.CryptoObject(cipher);
 

@@ -55,17 +55,15 @@ public class StartupPasswordCheckFragment extends BaseFragment<StartupPasswordCh
 
         StartupPasswordCheckViewModel viewModel = getViewModel(StartupPasswordCheckViewModel.class);
 
-        if (!isIntermediate) {
-            if (!viewModel.hasLock()) {
-                viewModel.openUnlockedDatabase();
-                getNavController().navigate(StartupPasswordCheckFragmentDirections.loginCompleteAction());
-            } else {
-                if (savedInstanceState == null) {
-                    if (viewModel.enableBioAuth.get()) {
-                        viewModel.bioAuthentication(this);
-                    } else {
-                        showPasswordKeyboard();
-                    }
+        if (!viewModel.hasLock()) {
+            viewModel.openUnlockedDatabase();
+            getNavController().navigate(StartupPasswordCheckFragmentDirections.loginCompleteAction());
+        } else {
+            if (savedInstanceState == null) {
+                if (viewModel.enableBioAuth.get()) {
+                    viewModel.bioAuthentication(this);
+                } else {
+                    showPasswordKeyboard();
                 }
             }
         }
@@ -90,11 +88,6 @@ public class StartupPasswordCheckFragment extends BaseFragment<StartupPasswordCh
                     } else {
                         getNavController().navigate(StartupPasswordCheckFragmentDirections.closeLoginScreenAsShieldAction());
                     }
-                    /*if (viewModel.hasLock() && source == R.string.settings_security_bio_key) {
-                        getNavController().navigate(PasswordCheckFragmentDirections.passwordCheckToBiometricsSetupAction(viewModel.password.get()));
-                    } else {
-                        getNavController().navigate(PasswordCheckFragmentDirections.openLockTypeSelectorAction(source, viewModel.password.get()));
-                    }*/
                     break;
                 case StartupPasswordCheckViewModel.EVENT_BIO_AUTH:
                     viewModel.bioAuthentication(this);

@@ -120,7 +120,7 @@ public class StartupPasswordCheckViewModel extends ViewModel {
             inputEnabled.set(false);
             disposable.clear();
             disposable.add(
-                    crypto.authenticate(fragment)
+                    crypto.authenticate(fragment, isIntermediate)
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(() -> {
                                         events.setValue(new SingleEvent(EVENT_CONFIRM));
