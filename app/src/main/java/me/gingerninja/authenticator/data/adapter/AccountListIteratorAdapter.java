@@ -37,7 +37,9 @@ import me.gingerninja.authenticator.ui.home.list.AccountListItemViewModel;
 import me.gingerninja.authenticator.util.BindingHelpers;
 import me.gingerninja.authenticator.util.CodeGenerator;
 
-public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewHolder, Tuple> implements AccountListItemViewModel.AccountMenuItemClickListener {
+public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewHolder, Tuple> implements
+        AccountListItemViewModel.AccountItemClickListener,
+        AccountListItemViewModel.AccountMenuItemClickListener {
     @SuppressWarnings("WeakerAccess")
     public static final int TYPE_ACCOUNT_HOTP = 0;
     @SuppressWarnings("WeakerAccess")
@@ -47,6 +49,7 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
     private final CodeGenerator codeGenerator;
     private final AccountRepository accountRepository;
 
+    private AccountListItemViewModel.AccountItemClickListener itemClickListener;
     private AccountListItemViewModel.AccountMenuItemClickListener menuItemClickListener;
 
     private Disposable disposable;
@@ -76,6 +79,10 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
         moveTo = -1;
 
         return ret;
+    }
+
+    public void setItemClickListener(AccountListItemViewModel.AccountItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
     }
 
     public void setMenuItemClickListener(AccountListItemViewModel.AccountMenuItemClickListener menuItemClickListener) {
@@ -150,6 +157,7 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
         setupLabels(account, listItemBinding.labels);
 
         AccountListItemHotpViewModel viewModel = new AccountListItemHotpViewModel(account, codeGenerator, accountRepository);
+        viewModel.setItemClickListener(this);
         viewModel.setMenuItemClickListener(this);
         viewModel.setMode(dragEnabled ? AccountListItemViewModel.MODE_DRAG : AccountListItemViewModel.MODE_IDLE);
 
@@ -175,6 +183,7 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
         setupLabels(account, listItemBinding.labels);
 
         AccountListItemTotpViewModel viewModel = new AccountListItemTotpViewModel(account, codeGenerator);
+        viewModel.setItemClickListener(this);
         viewModel.setMenuItemClickListener(this);
         viewModel.setMode(dragEnabled ? AccountListItemViewModel.MODE_DRAG : AccountListItemViewModel.MODE_IDLE);
 
@@ -341,6 +350,13 @@ public class AccountListIteratorAdapter extends BaseIteratorAdapter<BindingViewH
         if (dragEnabled != enabled) {
             dragEnabled = enabled;
             notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onAccountItemClicked(Account account) {
+        if (itemClickListener != null) {
+            itemClickListener.onAccountItemClicked(account);
         }
     }
 

@@ -22,7 +22,10 @@ public class AccountListItemViewModel extends BaseObservable {
     protected final CodeGenerator codeGenerator;
     @NonNull
     protected Account account;
+
+    protected AccountItemClickListener itemClickListener;
     protected AccountMenuItemClickListener menuItemClickListener;
+
     @Mode
     protected int mode = MODE_IDLE;
 
@@ -31,8 +34,18 @@ public class AccountListItemViewModel extends BaseObservable {
         this.codeGenerator = codeGenerator;
     }
 
+    public void setItemClickListener(AccountItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
+    }
+
     public void setMenuItemClickListener(AccountMenuItemClickListener menuItemClickListener) {
         this.menuItemClickListener = menuItemClickListener;
+    }
+
+    public void onItemClick(View v) {
+        if (itemClickListener != null) {
+            itemClickListener.onAccountItemClicked(account);
+        }
     }
 
     public void onOverflowClick(View v) {
@@ -80,5 +93,9 @@ public class AccountListItemViewModel extends BaseObservable {
 
     public interface AccountMenuItemClickListener {
         void onAccountMenuItemClicked(MenuItem item, Account account);
+    }
+
+    public interface AccountItemClickListener {
+        void onAccountItemClicked(Account account);
     }
 }

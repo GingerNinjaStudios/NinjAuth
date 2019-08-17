@@ -29,7 +29,7 @@ import me.gingerninja.authenticator.ui.home.list.AccountListItemViewModel;
 import me.gingerninja.authenticator.util.RequestCodes;
 import timber.log.Timber;
 
-public class AccountListFragment extends BaseFragment<AccountListFragmentBinding> implements BottomNavigationFragment.BottomNavigationListener, AccountListItemViewModel.AccountMenuItemClickListener {
+public class AccountListFragment extends BaseFragment<AccountListFragmentBinding> implements BottomNavigationFragment.BottomNavigationListener, AccountListItemViewModel.AccountMenuItemClickListener, AccountListItemViewModel.AccountItemClickListener {
     public static final String ACCOUNT_OP_ADD = "accountAdded";
     public static final String ACCOUNT_OP_UPDATE = "accountUpdated";
     public static final String ACCOUNT_OP_DELETE = "accountDeleted";
@@ -81,6 +81,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        accountListAdapter.setItemClickListener(this);
         accountListAdapter.setMenuItemClickListener(this);
 
         AccountListViewModel viewModel = getViewModel(AccountListViewModel.class);
@@ -241,6 +242,11 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
                 getNavController().navigate(R.id.openSettingsFromHomeAction);
                 break;
         }
+    }
+
+    @Override
+    public void onAccountItemClicked(Account account) {
+        getNavController().navigate(AccountListFragmentDirections.viewAccountAction(account.getId()));
     }
 
     @Override
