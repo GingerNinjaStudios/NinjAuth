@@ -183,7 +183,7 @@ public abstract class BaseAccountViewModel extends ViewModel {
 
         private String source;
 
-        private void init(@NonNull Account account) {
+        protected void init(@NonNull Account account) {
             title.set(account.getTitle());
             accountName.set(account.getAccountName());
             issuer.set(account.getIssuer());

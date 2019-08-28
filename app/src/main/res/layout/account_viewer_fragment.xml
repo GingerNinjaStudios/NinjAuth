@@ -81,7 +81,8 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingBottom="16dp">
 
                 <TextView
                     android:id="@+id/title"
@@ -103,8 +104,8 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
-                    app:cardElevation="0dp"
                     app:cardCornerRadius="8dp"
+                    app:cardElevation="0dp"
                     app:layout_constraintEnd_toStartOf="@+id/progress_circular"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/title"
@@ -254,6 +255,156 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/account_issuer_hint"
                     tools:text="ACME" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_show_advanced"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:onClick="@{viewModel::toggleAdvancedClick}"
+                    android:text="@string/show_advanced"
+                    android:textSize="10sp"
+                    android:visibility="@{viewModel.showAdvanced ? View.GONE : View.VISIBLE}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/account_issuer" />
+
+                <View
+                    android:id="@+id/account_advanced_divider"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="?colorControlHighlight"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/account_issuer" />
+
+                <TextView
+                    android:id="@+id/account_type_hint"
+                    style="@style/TextAppearance.FakeHint"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/account_type_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/account_advanced_divider" />
+
+                <TextView
+                    android:id="@+id/account_type"
+                    style="@style/TextAppearance.MaterialComponents.Body1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@{viewModel.data.type}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/account_type_hint"
+                    tools:text="@string/account_type_hotp_long" />
+
+                <TextView
+                    android:id="@+id/account_type_spec_hint"
+                    style="@style/TextAppearance.FakeHint"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/account_type_spec_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/account_type" />
+
+                <TextView
+                    android:id="@+id/account_type_spec"
+                    style="@style/TextAppearance.MaterialComponents.Body1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@{viewModel.data.typeSpecificData}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/account_type_spec_hint"
+                    tools:text="@string/account_type_spec_hotp_detail_full" />
+
+                <TextView
+                    android:id="@+id/account_digits_hint"
+                    style="@style/TextAppearance.FakeHint"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/account_digits_text"
+                    app:layout_constraintEnd_toEndOf="@id/vertical_center_guideline"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/account_type_spec" />
+
+                <TextView
+                    android:id="@+id/account_digits"
+                    style="@style/TextAppearance.MaterialComponents.Body1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@{viewModel.data.digits}"
+                    app:layout_constraintEnd_toEndOf="@id/vertical_center_guideline"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/account_digits_hint"
+                    tools:text="6" />
+
+                <TextView
+                    android:id="@+id/account_algo_hint"
+                    style="@style/TextAppearance.FakeHint"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/account_algo_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/vertical_center_guideline"
+                    app:layout_constraintTop_toBottomOf="@id/account_type_spec" />
+
+                <TextView
+                    android:id="@+id/account_algo"
+                    style="@style/TextAppearance.MaterialComponents.Body1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@{viewModel.data.algorithm}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/vertical_center_guideline"
+                    app:layout_constraintTop_toBottomOf="@id/account_algo_hint"
+                    tools:text="SHA-256" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/vertical_center_guideline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.5" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/advanced_settings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="@{viewModel.showAdvanced ? View.VISIBLE : View.GONE}"
+                    app:constraint_referenced_ids="account_type,account_type_hint,account_algo,account_algo_hint,account_type_spec,account_type_spec_hint,account_digits,account_digits_hint,account_advanced_divider" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
