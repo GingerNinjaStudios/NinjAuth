@@ -34,7 +34,7 @@ buildscript {
         ]
 
         playVersion = [
-                core  : '1.6.5',
+                core  : '1.7.2',
                 vision: '19.0.0'
         ]
 
