@@ -17,7 +17,7 @@ import androidx.annotation.XmlRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.preference.Preference;
@@ -80,7 +80,7 @@ public abstract class BaseSettingsFragment extends PreferenceFragmentCompat impl
 
     @NonNull
     protected <U extends ViewModel> U getViewModel(@NonNull Class<U> modelClass) {
-        return ViewModelProviders.of(this, viewModelFactory).get(modelClass);
+        return new ViewModelProvider(this, viewModelFactory).get(modelClass);
     }
 
     public NavController getNavController() {

@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -122,7 +122,7 @@ public class AccountListFragment extends BaseFragment<AccountListFragmentBinding
     }
 
     private void subscribeToUi(AccountListFragmentBinding binding) {
-        AccountListViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountListViewModel.class);
+        AccountListViewModel viewModel = new ViewModelProvider(this, viewModelFactory).get(AccountListViewModel.class);
         binding.setViewModel(viewModel);
 
         /*viewModel

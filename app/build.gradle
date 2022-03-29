@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+//apply plugin: 'kotlin-android-extensions'
 apply plugin: 'androidx.navigation.safeargs'
 
 android {
@@ -9,8 +9,8 @@ android {
         applicationId "me.gingerninja.authenticator"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 11
-        versionName "0.12.1"
+        versionCode 12
+        versionName "0.12.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
@@ -28,8 +28,8 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    dataBinding {
-        enabled = true
+    buildFeatures {
+        dataBinding = true
     }
 
     dynamicFeatures = [":timecorrector"]
@@ -46,8 +46,8 @@ dependencies {
     api "androidx.core:core:${androidX.core}"
     api "androidx.appcompat:appcompat:${androidX.appcompat}"
     implementation "androidx.constraintlayout:constraintlayout:${androidX.contstraintlayout}"
-    api "androidx.arch.core:core-common:${androidX.archCore}"
-    api "androidx.arch.core:core-runtime:${androidX.archCore}"
+    //api "androidx.arch.core:core-common:${androidX.archCore}"
+    //api "androidx.arch.core:core-runtime:${androidX.archCore}"
     implementation "androidx.fragment:fragment:${androidX.fragment}"
     implementation "androidx.coordinatorlayout:coordinatorlayout:${androidX.coordinatorlayout}"
     implementation "androidx.drawerlayout:drawerlayout:${androidX.drawerlayout}"
@@ -61,7 +61,11 @@ dependencies {
     // Android Architecture
     implementation "androidx.lifecycle:lifecycle-runtime:${androidX.lifecycle}"
     implementation "androidx.lifecycle:lifecycle-common-java8:${androidX.lifecycle}"
-    implementation "androidx.lifecycle:lifecycle-extensions:${androidX.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:${androidX.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${androidX.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:${androidX.lifecycle}"
+
+    //implementation "androidx.lifecycle:lifecycle-extensions:${androidX.lifecycle}"
     //annotationProcessor "androidx.lifecycle:lifecycle-compiler:${androidX.lifecycle}"
     implementation "androidx.navigation:navigation-fragment:${androidX.navigation}"
     implementation "androidx.navigation:navigation-ui:${androidX.navigation}"

@@ -11,7 +11,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -37,7 +37,7 @@ public class AccountEditorFragment extends BaseFragment<AccountFormFragmentBindi
     }
 
     private void setupUi(AccountFormFragmentBinding binding, Bundle args) {
-        AccountEditorViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountEditorViewModel.class);
+        AccountEditorViewModel viewModel = new ViewModelProvider(this, viewModelFactory).get(AccountEditorViewModel.class);
         viewModel.init(args);
         viewModel.setMode(AccountEditorFragmentArgs.fromBundle(args).getId() == 0 ? AccountEditorViewModel.MODE_CREATE : AccountEditorViewModel.MODE_EDIT);
         binding.setViewModel(viewModel);

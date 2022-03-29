@@ -10,6 +10,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import javax.inject.Inject;
 
 import me.gingerninja.authenticator.R;
@@ -65,6 +69,7 @@ public class BackupFragment extends BaseFragment<BackupFragmentBinding> {
     }
 
     private void pickFile() {
-        backupUtils.createFile(this, RequestCodes.BACKUP, "ninjauth-backup.zip", false);
+        String datePart = new SimpleDateFormat("yyyyMMdd", Locale.US).format(new Date());
+        backupUtils.createFile(this, RequestCodes.BACKUP, "ninjauth-backup-" + datePart + ".zip", false);
     }
 }

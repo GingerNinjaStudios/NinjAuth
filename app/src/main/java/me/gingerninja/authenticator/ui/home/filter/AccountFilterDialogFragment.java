@@ -10,7 +10,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -35,7 +35,7 @@ public class AccountFilterDialogFragment extends BaseBottomSheetDialogFragment<A
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        AccountListViewModel parentViewModel = ViewModelProviders.of(requireParentFragment(), viewModelFactory).get(AccountListViewModel.class);
+        AccountListViewModel parentViewModel = new ViewModelProvider(requireParentFragment(), viewModelFactory).get(AccountListViewModel.class);
         AccountFilterViewModel viewModel = getViewModel(AccountFilterViewModel.class);
         viewModel.setFilterObject(parentViewModel.getFilterObject());
     }
@@ -93,7 +93,7 @@ public class AccountFilterDialogFragment extends BaseBottomSheetDialogFragment<A
             filterObject = null;
         }
 
-        AccountListViewModel parentViewModel = ViewModelProviders.of(requireParentFragment(), viewModelFactory).get(AccountListViewModel.class);
+        AccountListViewModel parentViewModel = new ViewModelProvider(requireParentFragment(), viewModelFactory).get(AccountListViewModel.class);
         parentViewModel.setFilterAndRetrieve(filterObject);
     }
 

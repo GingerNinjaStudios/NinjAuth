@@ -13,7 +13,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -52,7 +52,7 @@ public abstract class BaseBottomSheetDialogFragment<T extends ViewDataBinding> e
 
     @NonNull
     protected <U extends ViewModel> U getViewModel(@NonNull Class<U> modelClass) {
-        return ViewModelProviders.of(this, viewModelFactory).get(modelClass);
+        return new ViewModelProvider(this, viewModelFactory).get(modelClass);
     }
 
     @LayoutRes

@@ -735,7 +735,37 @@ public class Crypto {
 
         BiometricPrompt.CryptoObject cryptoObject = new BiometricPrompt.CryptoObject(cipher);
 
-        BiometricPrompt prompt = new BiometricPrompt(activity, Executors.newSingleThreadExecutor(), new BiometricPrompt.AuthenticationCallback() {
+        BiometricPrompt prompt = Single
+                .defer(() -> {
+                    BiometricPrompt deferredPrompt = new BiometricPrompt(activity, Executors.newSingleThreadExecutor(), new BiometricPrompt.AuthenticationCallback() {
+                        @Override
+                        public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+                            Timber.d("[AUTH] error: %d, str: %s", errorCode, errString);
+                            if (!subject.hasThrowable()) {
+                                subject.onError(new BiometricException(errorCode, errString));
+                            }
+                        }
+
+                        @Override
+                        public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+                            Timber.d("[AUTH] success: %s", result);
+
+                            //noinspection ConstantConditions
+                            subject.onSuccess(result.getCryptoObject());
+                        }
+
+                        @Override
+                        public void onAuthenticationFailed() {
+                            Timber.d("[AUTH] failed");
+                            //subject.onError(new AuthenticationFailedException());
+                        }
+                    });
+                    return Single.just(deferredPrompt);
+                })
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .blockingGet();
+
+        /*BiometricPrompt prompt = new BiometricPrompt(activity, Executors.newSingleThreadExecutor(), new BiometricPrompt.AuthenticationCallback() {
             @Override
             public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                 Timber.d("[AUTH] error: %d, str: %s", errorCode, errString);
@@ -757,7 +787,7 @@ public class Crypto {
                 Timber.d("[AUTH] failed");
                 //subject.onError(new AuthenticationFailedException());
             }
-        });
+        });*/
 
         final DefaultLifecycleObserver retryObserver = new DefaultLifecycleObserver() {
             @Override
@@ -785,6 +815,7 @@ public class Crypto {
 
 
         return subject
+                .observeOn(AndroidSchedulers.mainThread())
                 .doFinally(() -> activity.getLifecycle().removeObserver(retryObserver))
                 .doOnDispose(() -> {
                     prompt.cancelAuthentication();

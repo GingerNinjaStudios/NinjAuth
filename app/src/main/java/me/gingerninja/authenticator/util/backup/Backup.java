@@ -113,6 +113,7 @@ public class Backup {
                         internalExport(emitter, options);
                         emitter.onComplete();
                     } catch (Throwable t) {
+                        Timber.e(t, "Backup error");
                         emitter.tryOnError(t);
                     } finally {
                         if (tmpFile.exists()) {
@@ -177,7 +178,7 @@ public class Backup {
                     dataBis.close();
                     emitter.onComplete();
                 })
-                .subscribeOn(Schedulers.newThread());
+                .subscribeOn(Schedulers.io());
 
         Completable accountsWork = accounts
                 .doOnSubscribe(disposable -> {
@@ -236,9 +237,10 @@ public class Backup {
 
                     dataOSW.close();
                     dataBos.close();
-                });
+                })
+                .subscribeOn(Schedulers.newThread());
 
-        return Completable.mergeArray(dataWork, zipWork);
+        return Completable.mergeArray(zipWork, dataWork);
     }
 
     private void addImages(ObservableEmitter<Progress> emitter, Observable<Account> accountObservable, ZipFile zipFile, ZipParameters params) {

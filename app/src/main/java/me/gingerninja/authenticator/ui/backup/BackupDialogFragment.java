@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -19,7 +19,7 @@ public class BackupDialogFragment extends BaseDialogFragment<BackupDialogFragmen
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        BackupViewModel backupViewModel = ViewModelProviders.of(requireParentFragment(), viewModelFactory).get(BackupViewModel.class);
+        BackupViewModel backupViewModel = new ViewModelProvider(requireParentFragment(), viewModelFactory).get(BackupViewModel.class);
         BackupDialogViewModel viewModel = getViewModel(BackupDialogViewModel.class);
         viewModel.setupWithParentViewModel(backupViewModel);
 

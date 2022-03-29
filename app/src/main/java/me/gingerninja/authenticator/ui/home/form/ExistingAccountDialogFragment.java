@@ -10,7 +10,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -40,7 +40,7 @@ public class ExistingAccountDialogFragment extends BaseBottomSheetDialogFragment
         super.onCreate(savedInstanceState);
 
         ExistingAccountViewModel viewModel = getViewModel(ExistingAccountViewModel.class);
-        AccountEditorViewModel parentViewModel = ViewModelProviders.of(requireParentFragment()).get(AccountEditorViewModel.class);
+        AccountEditorViewModel parentViewModel = new ViewModelProvider(requireParentFragment()).get(AccountEditorViewModel.class);
         //noinspection ConstantConditions
         viewModel.setAccounts(parentViewModel.getExistingAccount(), parentViewModel.getNewAccount());
     }

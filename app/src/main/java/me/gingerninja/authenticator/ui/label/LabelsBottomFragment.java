@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -78,7 +78,7 @@ public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> im
         super.onCreate(savedInstanceState);
         labelListAdapter.setMenuItemClickListener(this);
 
-        LabelsViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(LabelsViewModel.class);
+        LabelsViewModel viewModel = new ViewModelProvider(this, viewModelFactory).get(LabelsViewModel.class);
 
         viewModel
                 .getNavigationAction()
@@ -105,7 +105,7 @@ public class LabelsBottomFragment extends BaseFragment<LabelsFragmentBinding> im
     }
 
     private void subscribeToUi(LabelsFragmentBinding binding) {
-        LabelsViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(LabelsViewModel.class);
+        LabelsViewModel viewModel = new ViewModelProvider(this, viewModelFactory).get(LabelsViewModel.class);
         binding.setViewModel(viewModel);
 
         binding.labelList.setAdapter(labelListAdapter);

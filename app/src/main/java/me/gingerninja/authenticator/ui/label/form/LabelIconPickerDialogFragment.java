@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
@@ -62,7 +62,7 @@ public class LabelIconPickerDialogFragment extends BaseDialogFragment<LabelIconS
 
     @Override
     public void onIconSelected(String icon) {
-        LabelEditorViewModel parentViewModel = ViewModelProviders.of(requireParentFragment()).get(LabelEditorViewModel.class);
+        LabelEditorViewModel parentViewModel = new ViewModelProvider(requireParentFragment()).get(LabelEditorViewModel.class);
         parentViewModel.setIcon(icon);
         dismiss();
     }

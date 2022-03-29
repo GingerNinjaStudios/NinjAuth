@@ -9,7 +9,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.takisoft.colorpicker.ColorPickerDialog;
 import com.takisoft.colorpicker.ColorPickerDialogFragment;
@@ -29,7 +29,7 @@ public class LabelEditorFragment extends BaseFragment<LabelFormFragmentBinding> 
     }
 
     private void setupUi(LabelFormFragmentBinding binding, Bundle args) {
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(LabelEditorViewModel.class);
+        viewModel = new ViewModelProvider(this, viewModelFactory).get(LabelEditorViewModel.class);
         viewModel.init(args);
         viewModel.setMode(LabelEditorFragmentArgs.fromBundle(args).getId() == 0 ? LabelEditorViewModel.MODE_CREATE : LabelEditorViewModel.MODE_EDIT);
         binding.setViewModel(viewModel);

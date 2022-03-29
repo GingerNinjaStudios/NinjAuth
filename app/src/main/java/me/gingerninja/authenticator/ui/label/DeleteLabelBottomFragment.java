@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -61,7 +61,7 @@ public class DeleteLabelBottomFragment extends BottomSheetDialogFragment {
         Bundle args = getArguments();
         assert args != null;
 
-        DeleteLabelViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(DeleteLabelViewModel.class);
+        DeleteLabelViewModel viewModel = new ViewModelProvider(this, viewModelFactory).get(DeleteLabelViewModel.class);
         viewModel.setData(args);
         binding.setViewModel(viewModel);
 

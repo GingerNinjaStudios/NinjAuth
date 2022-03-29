@@ -1,1 +1,1 @@
-include ':app', ':timecorrector'
+include ':app', ':timecorrector', ':codegenerator'

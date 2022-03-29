@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -62,7 +62,7 @@ public class DeleteAccountBottomFragment extends BottomSheetDialogFragment {
         Bundle args = getArguments();
         assert args != null;
 
-        DeleteAccountViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(DeleteAccountViewModel.class);
+        DeleteAccountViewModel viewModel = new ViewModelProvider(this, viewModelFactory).get(DeleteAccountViewModel.class);
         viewModel.setData(args);
         binding.setViewModel(viewModel);
 

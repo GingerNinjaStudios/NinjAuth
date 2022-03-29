@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
@@ -50,7 +50,7 @@ public class RestorePasswordDialogFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         AndroidSupportInjection.inject(this);
         super.onCreate(savedInstanceState);
-        settingsViewModel = ViewModelProviders.of(getParentFragment(), viewModelFactory).get(RestoreViewModel.class);
+        settingsViewModel = new ViewModelProvider(getParentFragment(), viewModelFactory).get(RestoreViewModel.class);
     }
 
     @Override

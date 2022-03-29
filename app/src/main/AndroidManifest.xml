@@ -30,6 +30,7 @@
 
         <activity
             android:name=".MainActivity"
+            android:exported="true"
             android:resizeableActivity="true"
             android:windowSoftInputMode="adjustResize"
             tools:targetApi="n">

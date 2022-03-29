@@ -14,7 +14,7 @@ import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -59,7 +59,7 @@ public abstract class BaseDialogFragment<T extends ViewDataBinding> extends Dial
 
     @NonNull
     protected <U extends ViewModel> U getViewModel(@NonNull Class<U> modelClass) {
-        return ViewModelProviders.of(this, viewModelFactory).get(modelClass);
+        return new ViewModelProvider(this, viewModelFactory).get(modelClass);
     }
 
     @NonNull
