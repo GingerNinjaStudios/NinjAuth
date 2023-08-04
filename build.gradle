@@ -6,7 +6,7 @@ buildscript {
         minSdkVersion = 21
         targetSdkVersion = 31
 
-        kotlinVersion = '1.6.0'
+        kotlinVersion = '1.6.21'
 
         junitVersion = '4.13-beta-2'
         testRunnerVersion = '1.2.0-beta01'
@@ -55,7 +55,7 @@ buildscript {
                 timber                   : '4.7.1',
                 dotsindicator            : '3.0.3',
                 circularProgressIndicator: '1.3.0',
-                zip4j                    : '1.3.3',
+                zip4j                    : '2.11.2',
                 zxing                    : '3.3.3',
                 gson                     : '2.8.6',
                 licensesdialog           : '2.1.0'
@@ -67,7 +67,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.0-alpha07'
+        classpath 'com.android.tools.build:gradle:7.3.1'
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:${androidX.navigation}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 

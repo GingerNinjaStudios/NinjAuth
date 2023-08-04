@@ -14,9 +14,8 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
-import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
-import net.lingala.zip4j.exception.ZipExceptionConstants;
 import net.lingala.zip4j.model.FileHeader;
 
 import java.io.File;
@@ -99,7 +98,7 @@ public class Restore {
                         if (zipFile.isValidZipFile()) {
                             emitter.onSuccess(Restore.this);
                         } else {
-                            emitter.tryOnError(new ZipException("Not a ZIP file", ZipExceptionConstants.notZipFile));
+                            emitter.tryOnError(new ZipException("Not a ZIP file", ZipException.Type.UNKNOWN));
                         }
                     } catch (Throwable t) {
                         emitter.tryOnError(t);
@@ -142,7 +141,7 @@ public class Restore {
                         if (!emitter.tryOnError(t)) {
                             dispose();
                         } else {
-                            if (t instanceof ZipException && ((ZipException) t).getCode() != ZipExceptionConstants.WRONG_PASSWORD) {
+                            if (t instanceof ZipException && ((ZipException) t).getType() != ZipException.Type.WRONG_PASSWORD) {
                                 dispose();
                             }
                         }
@@ -156,10 +155,10 @@ public class Restore {
     }
 
     @WorkerThread
-    private Single<BackupMeta> internalRestore(@Nullable char[] password) throws ZipException {
+    private Single<BackupMeta> internalRestore(@Nullable char[] password) throws IOException {
         if (zipFile.isEncrypted()) {
             if (password == null || password.length == 0) {
-                throw new ZipException("", ZipExceptionConstants.WRONG_PASSWORD);
+                throw new ZipException("", ZipException.Type.WRONG_PASSWORD);
             }
 
             zipFile.setPassword(password);
@@ -187,7 +186,7 @@ public class Restore {
     }
 
     @NonNull
-    private BackupMeta getMeta(ZipFile zipFile, FileHeader fileHeader) throws ZipException, NotNinjAuthZipFile {
+    private BackupMeta getMeta(ZipFile zipFile, FileHeader fileHeader) throws IOException, NotNinjAuthZipFile {
         Reader in = new InputStreamReader(zipFile.getInputStream(fileHeader), StandardCharsets.UTF_8);
         try (JsonReader jsonReader = new JsonReader(in)) {
             JsonToken token;
@@ -195,7 +194,8 @@ public class Restore {
             while ((token = jsonReader.peek()) != JsonToken.END_DOCUMENT) {
                 switch (token) {
                     case NAME:
-                        if ("meta".equals(jsonReader.nextName()) && jsonReader.peek() == JsonToken.BEGIN_OBJECT) {
+                        String name = jsonReader.nextName();
+                        if ("meta".equals(name) && jsonReader.peek() == JsonToken.BEGIN_OBJECT) {
                             return gson.fromJson(jsonReader, BackupMeta.class);
                         } else {
                             jsonReader.skipValue();

@@ -18,7 +18,6 @@ import androidx.databinding.ObservableInt;
 import androidx.lifecycle.ViewModel;
 
 import net.lingala.zip4j.exception.ZipException;
-import net.lingala.zip4j.exception.ZipExceptionConstants;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -183,9 +182,9 @@ public class RestoreViewModel extends ViewModel {
                             Timber.e(throwable, "Cannot restore: %s", throwable.getMessage());
                             // TODO
                             if (throwable instanceof ZipException) {
-                                int code = ((ZipException) throwable).getCode();
+                                ZipException.Type code = ((ZipException) throwable).getType();
                                 switch (code) {
-                                    case ZipExceptionConstants.notZipFile:
+                                    case UNKNOWN:
                                         errorMsg.set(R.string.restore_error_invalid_zip);
                                         break;
                                     default:
@@ -218,7 +217,7 @@ public class RestoreViewModel extends ViewModel {
                             //restoreSubject.onComplete();
                             //restoreInProgress = null;
                         }, throwable -> {
-                            if (throwable instanceof ZipException && ((ZipException) throwable).getCode() == ZipExceptionConstants.WRONG_PASSWORD) {
+                            if (throwable instanceof ZipException && ((ZipException) throwable).getType() == ZipException.Type.WRONG_PASSWORD) {
                                 restoreSubject.onNext(new SingleEvent<>(ACTION_RESTORE_WRONG_PASSWORD));
                             } else {
                                 if (throwable instanceof NotNinjAuthZipFile) {

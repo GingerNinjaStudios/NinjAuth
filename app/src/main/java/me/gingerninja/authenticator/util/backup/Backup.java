@@ -19,10 +19,13 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
-import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.util.Zip4jConstants;
+import net.lingala.zip4j.model.enums.AesKeyStrength;
+import net.lingala.zip4j.model.enums.CompressionLevel;
+import net.lingala.zip4j.model.enums.CompressionMethod;
+import net.lingala.zip4j.model.enums.EncryptionMethod;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -127,20 +130,26 @@ public class Backup {
     private void internalExport(ObservableEmitter<Progress> emitter, @NonNull final Options options) throws ZipException, IOException {
         deletePrevious();
 
-        ZipFile zipFile = new ZipFile(tmpFile);
+        ZipFile zipFile;
+        if (options.password != null && options.password.length > 0) {
+            zipFile = new ZipFile(tmpFile, options.password);
+        } else {
+            zipFile = new ZipFile(tmpFile);
+        }
+
         // Setting parameters
         ZipParameters zipParameters = new ZipParameters();
-        zipParameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
-        zipParameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
+        zipParameters.setCompressionMethod(CompressionMethod.DEFLATE);
+        zipParameters.setCompressionLevel(CompressionLevel.NORMAL);
 
         if (options.password != null && options.password.length > 0) {
             zipParameters.setEncryptFiles(true);
-            zipParameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES);
-            zipParameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
-            zipParameters.setPassword(options.password);
+            zipParameters.setEncryptionMethod(EncryptionMethod.AES);
+            zipParameters.setAesKeyStrength(AesKeyStrength.KEY_STRENGTH_256);
+            //zipParameters.setPassword(options.password);
         }
 
-        zipParameters.isSourceExternalStream();
+        //zipParameters.isSourceExternalStream();
 
         Observable<Account> accountObservable = accountRepo.getAccounts(); // TODO filter accounts
         Observable<Label> labelObservable = accountRepo.getAllLabel(); // TODO filter labels
@@ -167,7 +176,7 @@ public class Backup {
 
         //ByteArrayInputStream dataBis = new ByteArrayInputStream(dataBos.toByteArray());
         PipedInputStream dataBis = new PipedInputStream(dataBos, 8096);
-        zipParameters.setSourceExternalStream(true);
+        //zipParameters.setSourceExternalStream(true);
         zipParameters.setFileNameInZip(BackupUtils.DATA_FILE_NAME);
         // zipFile.addStream(dataBis, zipParameters);
 
@@ -257,8 +266,8 @@ public class Backup {
                     String url = Parser.createUrl(account);
                     Bitmap bitmap = createQrCode(url);
                     InputStream is = bitmapToInputStream(bitmap);
-                    ZipParameters zipParameters = (ZipParameters) params.clone();
-                    zipParameters.setSourceExternalStream(true);
+                    ZipParameters zipParameters = new ZipParameters(params);
+                    //zipParameters.setSourceExternalStream(true);
                     zipParameters.setFileNameInZip(account.getPosition() + "-" + URLEncoder.encode(account.getAccountName(), "UTF-8") + ".png");
                     zipFile.addStream(is, zipParameters);
 
