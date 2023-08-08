@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <item name="restore_checkbox" type="id" />
-    <item name="restore_mode_spinner" type="id" />
-</resources>

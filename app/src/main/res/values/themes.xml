@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- android:Theme.Material.Light.NoActionBar -->
+    <!-- Theme.Material3.DayNight.NoActionBar -->
+    <style name="Theme.NinjAuth" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges
+        </item>
+    </style>
+</resources>
