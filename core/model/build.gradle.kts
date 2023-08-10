@@ -4,13 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "me.gingerninja.authenticator.codegen"
+    namespace = "me.gingerninja.authenticator.model"
 }
 
 dependencies {
+    implementation(libs.kotlinx.collections.immutable)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.datetime)
-    implementation(project(":core:model"))
-
-    testImplementation(libs.junit)
 }

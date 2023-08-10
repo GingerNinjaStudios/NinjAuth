@@ -54,7 +54,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             NinjAuthTheme {
                 SystemBars()
-
                 val ctx = LocalContext.current
 
                 val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
