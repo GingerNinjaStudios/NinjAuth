@@ -1,4 +1,4 @@
-package me.gingerninja.authenticator.data
+package me.gingerninja.authenticator.database
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

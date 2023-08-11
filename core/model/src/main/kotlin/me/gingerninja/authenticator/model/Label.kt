@@ -6,5 +6,6 @@ data class Label(
     val name: String,
     val color: Long,
     val icon: String? = null,
-    val position: Int = -1
+    val position: Int = -1,
+    val numberOfAccounts: Int? = null
 )

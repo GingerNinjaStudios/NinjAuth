@@ -8,13 +8,13 @@ class HiltPlugin : Plugin<Project> {
         with(target) {
             with(pluginManager) {
                 apply("dagger.hilt.android.plugin")
-                apply("org.jetbrains.kotlin.kapt")
+                apply("com.google.devtools.ksp")
             }
 
             dependencies {
                 "implementation"(findLibrary("hilt.android"))
-                "kapt"(findLibrary("hilt.compiler"))
-                "kaptAndroidTest"(findLibrary("hilt.compiler"))
+                "ksp"(findLibrary("hilt.compiler"))
+                "kspAndroidTest"(findLibrary("hilt.compiler"))
             }
 
         }
