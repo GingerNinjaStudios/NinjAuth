@@ -8,21 +8,20 @@ import me.gingerninja.authenticator.core.database.model.AccountLabelEntity
 
 @Dao
 interface AccountLabelDao {
-
     @Query(
         value = """
         DELETE FROM AccountHasLabel
         WHERE account = :accountId AND label NOT IN (:labelIds)
         """
     )
-    fun deleteNotInLabels(accountId: Long, labelIds: Set<Long>)
+    fun deleteAccountLabelsNotInSet(accountId: Long, labelIds: Set<Long>)
 
     @Upsert
     fun saveAccountLabels(accountLabels: List<AccountLabelEntity>)
 
     @Transaction
     fun update(accountId: Long, labelIds: Set<Long>) {
-        deleteNotInLabels(accountId, labelIds)
+        deleteAccountLabelsNotInSet(accountId, labelIds)
 
         val entities = labelIds.mapIndexed { index, labelId ->
             AccountLabelEntity(accountId, labelId, index)
