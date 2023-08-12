@@ -21,5 +21,6 @@ include(":core:codegen")
 include(":core:data")
 include(":core:database")
 include(":core:model")
+include(":core:testing")
 
 include(":feature:account")

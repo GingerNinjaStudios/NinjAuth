@@ -5,6 +5,10 @@ plugins {
 }
 
 android {
+    defaultConfig {
+        testInstrumentationRunner = "me.gingerninja.authenticator.core.testing.NinjAuthTestRunner"
+    }
+
     namespace = "me.gingerninja.authenticator.database"
 }
 
@@ -15,7 +19,5 @@ dependencies {
     implementation(libs.sqlcipher)
     implementation(project(":core:model"))
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(project(":core:testing"))
 }

@@ -15,7 +15,7 @@ class FeaturePlugin : Plugin<Project> {
 
             extensions.configure<LibraryExtension> {
                 defaultConfig {
-                    // TODO set testInstrumentationRunner
+                    testInstrumentationRunner = "me.gingerninja.authenticator.core.testing.NinjAuthTestRunner"
                 }
             }
 
