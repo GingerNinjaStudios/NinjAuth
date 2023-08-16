@@ -9,7 +9,7 @@ android {
         testInstrumentationRunner = "me.gingerninja.authenticator.core.testing.NinjAuthTestRunner"
     }
 
-    namespace = "me.gingerninja.authenticator.database"
+    namespace = "me.gingerninja.authenticator.core.database"
 }
 
 dependencies {

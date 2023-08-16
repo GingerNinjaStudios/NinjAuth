@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "me.gingerninja.authenticator.auth"
+    namespace = "me.gingerninja.authenticator.core.auth"
 }
 
 dependencies {
