@@ -18,8 +18,10 @@ rootProject.name = "NinjAuth"
 include(":app")
 include(":core:auth")
 include(":core:codegen")
+include(":core:common")
 include(":core:data")
 include(":core:database")
+include(":core:datastore")
 include(":core:model")
 include(":core:testing")
 
