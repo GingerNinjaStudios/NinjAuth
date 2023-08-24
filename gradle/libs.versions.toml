@@ -3,31 +3,31 @@ agp = "8.2.0-alpha16"
 kotlin = "1.9.0"
 ksp = "1.9.0-1.0.13"
 junit = "4.13.2"
-material-android = "1.11.0-alpha01"
 accompanist = "0.33.0-alpha"
 android-desugar-jdk-libs = "2.0.3"
 androidx-activity-compose = "1.7.2"
 androidx-appcompat = "1.6.1"
+androidx-biometric = "1.2.0-alpha05"
 # androidx-compose-bom = "2023.06.01"
-androidx-compose-compiler = "1.5.1"
-androidx-compose = "1.6.0-alpha03"
-androidx-compose-material3 = "1.2.0-alpha05"
+androidx-compose-compiler = "1.5.2"
+androidx-compose = "1.6.0-alpha04"
+androidx-compose-material3 = "1.2.0-alpha06"
 androidx-core-ktx = "1.12.0-rc01"
 androidx-datastore = "1.1.0-alpha04"
 androidx-lifecycle = "2.7.0-alpha01"
-androidx-navigation = "2.7.0"
-androidx-room = "2.6.0-alpha03"
+androidx-navigation = "2.7.1"
+androidx-room = "2.6.0-beta01"
 androidx-security = "1.1.0-alpha06"
 androidx-test-core = "1.6.0-alpha01"
 androidx-test-espresso-core = "3.5.1"
 androidx-test-ext-junit = "1.1.5"
 androidx-test-rules = "1.6.0-alpha01"
-androidx-test-runner = "1.6.0-alpha03"
+androidx-test-runner = "1.6.0-alpha04"
 androidx-test-uiautomator = "2.3.0-alpha04"
 kotlinx-collections-immutable = "0.3.5"
 kotlinx-coroutines = "1.7.3"
 kotlinx-datetime = "0.4.0"
-kotlinx-serialization-json = "1.5.1"
+kotlinx-serialization-json = "1.6.0"
 androidx-hilt-nav-compose = "1.1.0-alpha02"
 hilt = "2.47"
 hilt-extensions = "1.1.0-alpha01"
@@ -38,6 +38,7 @@ turbine = "1.0.0"
 android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "android-desugar-jdk-libs" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity-compose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
+androidx-biometric = { group = "androidx.biometric", name = "biometric-ktx", version.ref = "androidx-biometric" }
 # Compose
 # androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidx-compose-bom" }
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "androidx-compose" }
@@ -65,7 +66,6 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidx-room" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
 androidx-security-crypto = { group = "androidx.security", name = "security-crypto-ktx", version.ref = "androidx-security" }
-material-android = { group = "com.google.android.material", name = "material", version.ref = "material-android" }
 
 # AndroidX tests
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-test-espresso-core" }

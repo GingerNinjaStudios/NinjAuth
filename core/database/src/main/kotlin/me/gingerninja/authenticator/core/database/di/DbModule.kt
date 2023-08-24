@@ -1,21 +1,17 @@
 package me.gingerninja.authenticator.core.database.di
 
-import android.content.Context
-import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import me.gingerninja.authenticator.core.database.NinjAuthDatabase
-import net.sqlcipher.database.SQLiteDatabase
-import net.sqlcipher.database.SupportFactory
+import me.gingerninja.authenticator.core.database.NinjAuthDatabaseAuthenticator
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object DbModule {
-    @Singleton
+    /*@Singleton
     @Provides
     fun provideDatabase(@ApplicationContext context: Context): NinjAuthDatabase {
         val defaultPass = "fakepass".toCharArray()
@@ -30,5 +26,11 @@ object DbModule {
             )
             .openHelperFactory(factory)
             .build()
-    }
+    }*/
+
+    /*@Singleton
+    @Provides
+    fun provideDatabase(handler: NinjAuthDatabaseAuthenticator): NinjAuthDatabase {
+        return handler.database.value!!
+    }*/
 }

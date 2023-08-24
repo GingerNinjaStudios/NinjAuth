@@ -41,6 +41,8 @@ abstract class NinjAuthDatabase : RoomDatabase() {
         // as we created the database with the SQL Cipher factory, we can retrieve the encrypted DB
         val db = openHelper.writableDatabase as SQLiteDatabase
         db.changePassword(charArray)
+
+        charArray.fill(0.toChar())
     }
 }
 
