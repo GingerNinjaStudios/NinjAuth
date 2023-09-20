@@ -22,4 +22,7 @@ dependencies {
     implementation(project(":core:datastore"))
     implementation(project(":core:model"))
     implementation(project(":core:testing"))
+
+    androidTestImplementation(project(":core:database-test"))
+    androidTestImplementation(project(":core:datastore-test"))
 }

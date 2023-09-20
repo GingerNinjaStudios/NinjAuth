@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import me.gingerninja.authenticator.core.datastore.test.createTestDataStore
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule

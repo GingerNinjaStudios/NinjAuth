@@ -51,6 +51,7 @@ class NinjAuthSettings @Inject constructor(
         dataStore.edit {
             if (data == null) {
                 it -= Keys.authBiometricKey
+                it -= Keys.securityBioVersion
                 it += Keys.securityBioEnabled to false
             } else {
                 it += Keys.authBiometricKey to data
@@ -61,6 +62,20 @@ class NinjAuthSettings @Inject constructor(
 
     suspend fun getEncryptedDatabasePass() = dataStore.data.first()[Keys.authDbPass]
 
+    suspend fun setSecurityWithDatabasePass(lockType: SecurityConfig.LockType, encrypted: String?) {
+        if (lockType != SecurityConfig.LockType.NONE) {
+            requireNotNull(encrypted)
+        }
+
+        dataStore.edit {
+            it[Keys.securityLockType] = lockType.value
+            if (encrypted == null) {
+                it -= Keys.authDbPass
+            } else {
+                it[Keys.authDbPass] = encrypted
+            }
+        }
+    }
 
     suspend fun setEncryptedDatabasePass(data: String?) {
         dataStore.edit {
@@ -77,6 +92,7 @@ class NinjAuthSettings @Inject constructor(
      */
     suspend fun disableBiometrics() {
         setBiometricKey(null)
+        setBiometricVersion(null)
     }
 
     suspend fun setFirstRunComplete() {
@@ -99,9 +115,17 @@ class NinjAuthSettings @Inject constructor(
         saveValue(Keys.securityHideRecent, value)
     }
 
-    private suspend fun <T> saveValue(key: Preferences.Key<T>, value: T) {
+    suspend fun setBiometricVersion(version: Int?) {
+        saveValue(Keys.securityBioVersion, version)
+    }
+
+    private suspend fun <T> saveValue(key: Preferences.Key<T>, value: T?) {
         dataStore.edit {
-            it[key] = value
+            if (value == null) {
+                it.remove(key)
+            } else {
+                it[key] = value
+            }
         }
     }
 

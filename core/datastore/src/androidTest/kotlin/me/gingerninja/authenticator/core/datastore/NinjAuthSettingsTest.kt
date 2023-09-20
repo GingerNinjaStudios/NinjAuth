@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import me.gingerninja.authenticator.core.datastore.test.createTestDataStore
 import me.gingerninja.authenticator.core.model.settings.AppearanceConfig
 import me.gingerninja.authenticator.core.model.settings.SecurityConfig
 import org.junit.Before
@@ -145,5 +146,26 @@ class NinjAuthSettingsTest {
         settings.data.first().also {
             assertEquals(SecurityConfig.LockType.PASSWORD, it.security.lockType)
         }
+    }
+
+    @Test
+    fun securitySetLockTypeWithPass() = testScope.runTest {
+        settings.setSecurityWithDatabasePass(SecurityConfig.LockType.NONE, null)
+        settings.data.first().also {
+            assertEquals(SecurityConfig.LockType.NONE, it.security.lockType)
+        }
+        assertNull(settings.getEncryptedDatabasePass())
+
+        settings.setSecurityWithDatabasePass(SecurityConfig.LockType.PIN, "EjRWeJA=")
+        settings.data.first().also {
+            assertEquals(SecurityConfig.LockType.PIN, it.security.lockType)
+        }
+        assertEquals("EjRWeJA=", settings.getEncryptedDatabasePass())
+
+        settings.setSecurityWithDatabasePass(SecurityConfig.LockType.PASSWORD, "AjRWeJA=")
+        settings.data.first().also {
+            assertEquals(SecurityConfig.LockType.PASSWORD, it.security.lockType)
+        }
+        assertEquals("AjRWeJA=", settings.getEncryptedDatabasePass())
     }
 }

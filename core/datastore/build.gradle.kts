@@ -19,4 +19,5 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:model"))
     implementation(project(":core:testing"))
+    androidTestImplementation(project(":core:datastore-test"))
 }

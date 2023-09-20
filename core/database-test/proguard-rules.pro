@@ -20,5 +20,6 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep,includedescriptorclasses class net.sqlcipher.** { *; }
--keep,includedescriptorclasses interface net.sqlcipher.** { *; }
+-keepclassmembers class * extends androidx.datastore.preferences.protobuf.GeneratedMessageLite {
+    <fields>;
+}

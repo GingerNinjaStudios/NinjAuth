@@ -138,6 +138,8 @@ interface LegacyKeyDatabase {
         } else {
             null
         }
+
+        fun get(context: Context): LegacyKeyDatabase = LegacyKeyDatabaseImpl(context)
     }
 }
 

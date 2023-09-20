@@ -1,4 +1,4 @@
-package me.gingerninja.authenticator.core.auth
+package me.gingerninja.authenticator.core.auth.biometric
 
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
@@ -22,7 +22,7 @@ import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.inject.Inject
 
-class BiometricAuthenticator @Inject constructor(
+internal class BiometricKeyHandler @Inject constructor(
     @ApplicationContext private val context: Context,
     private val settings: NinjAuthSettings,
 ) {
@@ -74,7 +74,7 @@ class BiometricAuthenticator @Inject constructor(
         NoSuchAlgorithmException::class,
         InvalidAlgorithmParameterException::class
     )
-    private fun createKey(): SecretKey? {
+    fun createKey(): SecretKey? {
         val specBuilder = KeyGenParameterSpec.Builder(
             KEY_ALIAS_BIOMETRIC,
             KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
@@ -94,7 +94,7 @@ class BiometricAuthenticator @Inject constructor(
     }
 
     suspend fun remove(){
-        settings.setBiometricKey(null)
+        settings.disableBiometrics()
         deleteKey()
     }
 
@@ -188,14 +188,14 @@ class BiometricException(val code: Int, override val message: String?) : Runtime
  */
 class NoCipherException : RuntimeException()
 
-private val Int.asStatus: BiometricAuthenticator.Status
+private val Int.asStatus: BiometricKeyHandler.Status
     get() = when (this) {
-        BiometricManager.BIOMETRIC_SUCCESS -> BiometricAuthenticator.Status.AVAILABLE
-        BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED -> BiometricAuthenticator.Status.UNSUPPORTED
-        BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> BiometricAuthenticator.Status.UNAVAILABLE_HARDWARE_BUSY
-        BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> BiometricAuthenticator.Status.NO_BIOMETRICS
-        BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> BiometricAuthenticator.Status.UNAVAILABLE_NO_HARDWARE
-        BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED -> BiometricAuthenticator.Status.UPDATE_REQUIRED
-        BiometricManager.BIOMETRIC_STATUS_UNKNOWN -> BiometricAuthenticator.Status.UNKNOWN
-        else -> BiometricAuthenticator.Status.UNKNOWN
+        BiometricManager.BIOMETRIC_SUCCESS -> BiometricKeyHandler.Status.AVAILABLE
+        BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED -> BiometricKeyHandler.Status.UNSUPPORTED
+        BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> BiometricKeyHandler.Status.UNAVAILABLE_HARDWARE_BUSY
+        BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> BiometricKeyHandler.Status.NO_BIOMETRICS
+        BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> BiometricKeyHandler.Status.UNAVAILABLE_NO_HARDWARE
+        BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED -> BiometricKeyHandler.Status.UPDATE_REQUIRED
+        BiometricManager.BIOMETRIC_STATUS_UNKNOWN -> BiometricKeyHandler.Status.UNKNOWN
+        else -> BiometricKeyHandler.Status.UNKNOWN
     }

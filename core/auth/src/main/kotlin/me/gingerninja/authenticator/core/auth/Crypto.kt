@@ -32,6 +32,20 @@ class Crypto {
         return SecretKeySpec(key, "AES")
     }
 
+    fun generateDbPass(): CharArray {
+        val bytes = ByteArray(24)
+        secureRandom.nextBytes(bytes)
+
+        val encoded = Base64.encode(bytes, Base64.NO_PADDING or Base64.NO_WRAP)
+        bytes.fill(0)
+
+        val charBuffer = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(encoded))
+        val data = charBuffer.array().copyOf(charBuffer.limit())
+
+        encoded.fill(0)
+        return data
+    }
+
     @Throws(IllegalBlockSizeException::class, BadPaddingException::class)
     fun encrypt(cipher: Cipher, chars: CharArray): String {
         val byteBuffer = StandardCharsets.UTF_8.encode(CharBuffer.wrap(chars))

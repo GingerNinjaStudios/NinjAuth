@@ -13,7 +13,6 @@ import me.gingerninja.authenticator.core.database.util.AccountAlgorithmConverter
 import me.gingerninja.authenticator.core.database.util.AccountSourceConverter
 import me.gingerninja.authenticator.core.database.util.AccountTypeConverter
 import me.gingerninja.authenticator.core.database.util.InstantConverter
-import net.sqlcipher.database.SQLiteDatabase
 
 @Database(
     entities = [
@@ -36,13 +35,5 @@ abstract class NinjAuthDatabase : RoomDatabase() {
     abstract fun labelDao(): LabelDao
 
     abstract fun accountLabelDao(): AccountLabelDao
-
-    fun changePassword(charArray: CharArray) {
-        // as we created the database with the SQL Cipher factory, we can retrieve the encrypted DB
-        val db = openHelper.writableDatabase as SQLiteDatabase
-        db.changePassword(charArray)
-
-        charArray.fill(0.toChar())
-    }
 }
 
