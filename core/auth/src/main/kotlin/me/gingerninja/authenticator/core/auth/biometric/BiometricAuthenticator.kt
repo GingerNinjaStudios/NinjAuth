@@ -69,7 +69,11 @@ class BiometricAuthenticator @Inject internal constructor(
 
                         // wrap the cipher with biometrics
                         val bioCipher =
-                            biometricKeyHandler.authenticate(config.activity, cipher).await()
+                            biometricKeyHandler.authenticate(
+                                activity = config.activity,
+                                cipher = cipher,
+                                descriptor = config.descriptor
+                            ).await()
 
                         // wrap the master key with the biometrics-enabled cipher
                         crypto.wrapKeyAndEncode(masterKey, bioCipher)
@@ -116,7 +120,11 @@ class BiometricAuthenticator @Inject internal constructor(
             val masterWrapped = settings.getBiometricKey() ?: return
 
             val cipher = crypto.getCipher(Crypto.CipherRead.UNWRAP, bioKey, masterWrapped).let {
-                biometricKeyHandler.authenticate(config.activity, it).await()
+                biometricKeyHandler.authenticate(
+                    activity = config.activity,
+                    cipher = it,
+                    descriptor = config.descriptor
+                ).await()
             }
 
             crypto.unwrapKey(masterWrapped, cipher).apply {
@@ -139,8 +147,23 @@ class BiometricAuthenticator @Inject internal constructor(
 
     suspend fun disable() = disable(Unit)
 
-    class EnableConfig(internal val activity: FragmentActivity, internal val password: CharArray)
-    class AuthConfig(internal val activity: FragmentActivity)
+    class EnableConfig(
+        internal val activity: FragmentActivity,
+        internal val password: CharArray,
+        internal val descriptor: PromptDescriptor
+    )
+
+    class AuthConfig(
+        internal val activity: FragmentActivity,
+        internal val descriptor: PromptDescriptor
+    )
+
+    data class PromptDescriptor(
+        val title: String,
+        val negativeButton: String,
+        val subtitle: String? = null,
+        val description: String? = null
+    )
 
     companion object {
         private const val SECURITY_BIO_VERSION = 1

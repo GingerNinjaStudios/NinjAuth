@@ -39,7 +39,11 @@ internal class BiometricKeyHandler @Inject constructor(
         get() = biometricManager.canAuthenticate(AUTHENTICATORS).asStatus
 
     @MainThread
-    fun authenticate(activity: FragmentActivity, cipher: Cipher): CompletableDeferred<Cipher> {
+    fun authenticate(
+        activity: FragmentActivity,
+        cipher: Cipher,
+        descriptor: BiometricAuthenticator.PromptDescriptor
+    ): CompletableDeferred<Cipher> {
         val completable = CompletableDeferred<Cipher>()
 
         val prompt = BiometricPrompt(activity, object : BiometricPrompt.AuthenticationCallback() {
@@ -62,6 +66,10 @@ internal class BiometricKeyHandler @Inject constructor(
         })
 
         val info = BiometricPrompt.PromptInfo.Builder()
+            .setTitle(descriptor.title)
+            .setSubtitle(descriptor.subtitle)
+            .setDescription(descriptor.description)
+            .setNegativeButtonText(descriptor.negativeButton)
             .setAllowedAuthenticators(AUTHENTICATORS)
             .build()
 
