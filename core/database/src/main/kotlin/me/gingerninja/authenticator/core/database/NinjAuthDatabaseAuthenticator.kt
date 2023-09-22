@@ -1,11 +1,7 @@
 package me.gingerninja.authenticator.core.database
 
-import android.content.Context
 import android.database.sqlite.SQLiteException
-import androidx.annotation.VisibleForTesting
-import androidx.room.Room
 import androidx.room.RoomDatabase
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

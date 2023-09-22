@@ -9,8 +9,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import me.gingerninja.authenticator.core.database.NinjAuthDatabase
-import me.gingerninja.authenticator.core.database.NinjAuthDatabaseAuthenticator
-import javax.inject.Singleton
+import me.gingerninja.authenticator.core.database.util.RequeryToRoomMigration
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -23,6 +22,8 @@ object DbModule {
                 NinjAuthDatabase::class.java,
                 "ninjauth.db"
             )
+            .addMigrations(RequeryToRoomMigration())
+
     }
     /*@Singleton
     @Provides

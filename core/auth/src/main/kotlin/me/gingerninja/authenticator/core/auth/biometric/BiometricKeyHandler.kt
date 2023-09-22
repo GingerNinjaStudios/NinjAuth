@@ -10,6 +10,7 @@ import androidx.biometric.BiometricPrompt.CryptoObject
 import androidx.fragment.app.FragmentActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CompletableDeferred
+import me.gingerninja.authenticator.core.auth.biometric.BiometricException.Error.Companion.asError
 import me.gingerninja.authenticator.core.datastore.NinjAuthSettings
 import java.security.InvalidAlgorithmParameterException
 import java.security.KeyStore
@@ -93,7 +94,7 @@ internal class BiometricKeyHandler @Inject constructor(
         return keyGenerator.generateKey()
     }
 
-    suspend fun remove(){
+    suspend fun remove() {
         settings.disableBiometrics()
         deleteKey()
     }
@@ -108,7 +109,7 @@ internal class BiometricKeyHandler @Inject constructor(
         NoSuchAlgorithmException::class,
         UnrecoverableKeyException::class
     )
-    fun getKey(): SecretKey = keyStore.getKey(KEY_ALIAS_BIOMETRIC, null) as SecretKey
+    fun getKey(): SecretKey? = keyStore.getKey(KEY_ALIAS_BIOMETRIC, null) as SecretKey?
 
     enum class Status {
         /**
@@ -173,11 +174,37 @@ internal class BiometricKeyHandler @Inject constructor(
  *
  * @see [BiometricPrompt.AuthenticationError]
  */
-class BiometricException(val code: Int, override val message: String?) : RuntimeException(message) {
-    companion object {
-        const val ERROR_KEY_INVALIDATED = -1
-        const val ERROR_SHOULD_RETRY = -2
-        const val ERROR_KEY_SECURITY_UPDATE = -3
+class BiometricException(val code: Error, override val message: String?) :
+    RuntimeException(message) {
+
+    constructor(code: Int, message: String?) : this(
+        code = code.asError,
+        message = message
+    )
+
+    enum class Error(internal val code: Int) {
+        SEC_KEY_INVALIDATED(-1),
+        SEC_SHOULD_RETRY(-2),
+        SEC_KEY_SECURITY_UPDATE(-3),
+        HW_UNAVAILABLE(BiometricPrompt.ERROR_HW_UNAVAILABLE),
+        UNABLE_TO_PROCESS(BiometricPrompt.ERROR_UNABLE_TO_PROCESS),
+        TIMEOUT(BiometricPrompt.ERROR_TIMEOUT),
+        NO_SPACE(BiometricPrompt.ERROR_NO_SPACE),
+        CANCELED(BiometricPrompt.ERROR_CANCELED),
+        LOCKOUT(BiometricPrompt.ERROR_LOCKOUT),
+        VENDOR(BiometricPrompt.ERROR_VENDOR),
+        LOCKOUT_PERMANENT(BiometricPrompt.ERROR_LOCKOUT_PERMANENT),
+        USER_CANCELED(BiometricPrompt.ERROR_USER_CANCELED),
+        NO_BIOMETRICS(BiometricPrompt.ERROR_NO_BIOMETRICS),
+        HW_NOT_PRESENT(BiometricPrompt.ERROR_HW_NOT_PRESENT),
+        NEGATIVE_BUTTON(BiometricPrompt.ERROR_NEGATIVE_BUTTON),
+        NO_DEVICE_CREDENTIAL(BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL),
+        UNKNOWN(-999);
+
+        internal companion object {
+            val Int.asError: Error
+                get() = entries.firstOrNull { it.code == this } ?: UNKNOWN
+        }
     }
 }
 

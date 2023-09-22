@@ -89,16 +89,19 @@ class BiometricAuthenticator @Inject internal constructor(
                         e2.message
                     )
                 } else {
-                    throw BiometricException(BiometricException.ERROR_KEY_INVALIDATED, e2.message)
+                    throw BiometricException(
+                        BiometricException.Error.SEC_KEY_INVALIDATED,
+                        e2.message
+                    )
                 }
             } catch (e: KeyPermanentlyInvalidatedException) {
                 //Timber.e(e, "Cannot use bio key")
                 disable()
-                throw BiometricException(BiometricException.ERROR_KEY_INVALIDATED, e.message)
+                throw BiometricException(BiometricException.Error.SEC_KEY_INVALIDATED, e.message)
             } catch (e: IllegalBlockSizeException) {
                 //Timber.e(e, "Cannot use bio key")
                 disable()
-                throw BiometricException(BiometricException.ERROR_KEY_INVALIDATED, e.message)
+                throw BiometricException(BiometricException.Error.SEC_KEY_INVALIDATED, e.message)
             }
         } finally {
             destroyKey(masterKey)
@@ -108,7 +111,7 @@ class BiometricAuthenticator @Inject internal constructor(
     override suspend fun authenticate(config: AuthConfig) {
         var bioKey: SecretKey? = null
         try {
-            bioKey = biometricKeyHandler.getKey()
+            bioKey = biometricKeyHandler.getKey() ?: return
 
             val masterWrapped = settings.getBiometricKey() ?: return
 
@@ -121,10 +124,10 @@ class BiometricAuthenticator @Inject internal constructor(
             }
         } catch (e: InvalidKeyException) {
             biometricKeyHandler.remove()
-            throw BiometricException(BiometricException.ERROR_KEY_INVALIDATED, e.message)
+            throw BiometricException(BiometricException.Error.SEC_KEY_INVALIDATED, e.message)
         } catch (e: UnrecoverableKeyException) {
             biometricKeyHandler.remove()
-            throw BiometricException(BiometricException.ERROR_KEY_INVALIDATED, e.message)
+            throw BiometricException(BiometricException.Error.SEC_KEY_INVALIDATED, e.message)
         } finally {
             destroyKey(bioKey)
         }

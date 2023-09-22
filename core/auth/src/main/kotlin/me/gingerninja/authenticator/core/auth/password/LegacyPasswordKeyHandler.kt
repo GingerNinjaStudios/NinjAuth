@@ -35,7 +35,7 @@ internal class LegacyPasswordKeyHandler(
     }
 
     override fun close() {
-        requireNotNull(db).close()
+        db?.close()
         db = null
     }
 

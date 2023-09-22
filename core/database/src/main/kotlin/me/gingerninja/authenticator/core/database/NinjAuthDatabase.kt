@@ -20,7 +20,7 @@ import me.gingerninja.authenticator.core.database.util.InstantConverter
         AccountLabelEntity::class,
         LabelEntity::class,
     ],
-    version = 11,
+    version = 12,
     exportSchema = true,
 )
 @TypeConverters(
