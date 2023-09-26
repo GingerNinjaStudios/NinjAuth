@@ -46,7 +46,7 @@ class BiometricAuthTest {
             scope = testScope
         )
 
-        settings = NinjAuthSettings(dataSource)
+        settings = NinjAuthSettings(testScope.backgroundScope, dataSource)
 
         val dbAuthenticator = NinjAuthDatabaseAuthenticator {
             createInMemoryTestDatabaseBuilder(context)

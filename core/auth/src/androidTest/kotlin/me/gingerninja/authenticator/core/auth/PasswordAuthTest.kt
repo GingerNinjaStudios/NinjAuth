@@ -7,8 +7,8 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import me.gingerninja.authenticator.core.auth.biometric.BiometricKeyHandler
+import me.gingerninja.authenticator.core.auth.password.PasswordAuthException
 import me.gingerninja.authenticator.core.auth.password.PasswordAuthenticator
-import me.gingerninja.authenticator.core.database.InvalidKeyPasswordException
 import me.gingerninja.authenticator.core.database.LegacyKeyDatabase
 import me.gingerninja.authenticator.core.database.NinjAuthDatabaseAuthenticator
 import me.gingerninja.authenticator.core.database.test.createInMemoryTestDatabaseBuilder
@@ -47,7 +47,7 @@ class PasswordAuthTest {
             scope = testScope
         )
 
-        settings = NinjAuthSettings(dataSource)
+        settings = NinjAuthSettings(testScope.backgroundScope, dataSource)
 
         val dbAuthenticator = NinjAuthDatabaseAuthenticator {
             createInMemoryTestDatabaseBuilder(context)
@@ -115,7 +115,7 @@ class PasswordAuthTest {
         authenticator.authenticate(config)
     }
 
-    @Test(expected = InvalidKeyPasswordException::class)
+    @Test(expected = PasswordAuthException::class)
     fun authenticateWithPassword_invalid() = testScope.runTest {
         preparePassAuth()
 
@@ -142,7 +142,7 @@ class PasswordAuthTest {
         authenticator.authenticate(config2)
     }
 
-    @Test(expected = InvalidKeyPasswordException::class)
+    @Test(expected = PasswordAuthException::class)
     fun update_withPassword_invalid() = testScope.runTest {
         preparePassAuth()
 
@@ -170,7 +170,7 @@ class PasswordAuthTest {
         authenticator.disable(config)
     }
 
-    @Test(expected = InvalidKeyPasswordException::class)
+    @Test(expected = PasswordAuthException::class)
     fun disable_withPassword_invalid() = testScope.runTest {
         preparePassAuth()
 
@@ -198,7 +198,7 @@ class PasswordAuthTest {
         authenticator.authenticate(config)
     }
 
-    @Test(expected = InvalidKeyPasswordException::class)
+    @Test(expected = PasswordAuthException::class)
     fun authenticateWithPIN_invalid() = testScope.runTest {
         preparePINAuth()
 
@@ -225,7 +225,7 @@ class PasswordAuthTest {
         authenticator.authenticate(config2)
     }
 
-    @Test(expected = InvalidKeyPasswordException::class)
+    @Test(expected = PasswordAuthException::class)
     fun update_withPIN_invalid() = testScope.runTest {
         preparePINAuth()
 
@@ -253,7 +253,7 @@ class PasswordAuthTest {
         authenticator.disable(config)
     }
 
-    @Test(expected = InvalidKeyPasswordException::class)
+    @Test(expected = PasswordAuthException::class)
     fun disable_withPIN_invalid() = testScope.runTest {
         preparePINAuth()
 

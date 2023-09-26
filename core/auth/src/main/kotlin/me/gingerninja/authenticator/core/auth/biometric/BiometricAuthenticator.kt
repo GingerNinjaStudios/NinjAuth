@@ -21,7 +21,9 @@ import java.security.UnrecoverableKeyException
 import javax.crypto.IllegalBlockSizeException
 import javax.crypto.SecretKey
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class BiometricAuthenticator @Inject internal constructor(
     @ApplicationContext context: Context,
     @Dispatcher(DispatcherType.IO) dispatcher: CoroutineDispatcher,

@@ -22,7 +22,9 @@ import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 internal class BiometricKeyHandler @Inject constructor(
     @ApplicationContext private val context: Context,
     private val settings: NinjAuthSettings,

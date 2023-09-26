@@ -17,11 +17,15 @@ class PasswordKeyHandler(
     }
 
     /**
-     * @throws InvalidKeyPasswordException if the password is invalid
+     * @throws PasswordAuthException if the password is invalid
      */
-    @Throws(InvalidKeyPasswordException::class)
+    @Throws(PasswordAuthException::class)
     suspend fun authenticate(password: CharArray) = withContext(dispatcher) {
-        legacyHandler.authenticate(password)
+        try {
+            legacyHandler.authenticate(password)
+        } catch (e: InvalidKeyPasswordException) {
+            throw PasswordAuthException(PasswordAuthException.Reason.WRONG_PASSWORD)
+        }
     }
 
     suspend fun changePassword(password: CharArray) = withContext(dispatcher) {

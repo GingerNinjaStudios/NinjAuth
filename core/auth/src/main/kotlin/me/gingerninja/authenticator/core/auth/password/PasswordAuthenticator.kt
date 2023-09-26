@@ -9,12 +9,13 @@ import me.gingerninja.authenticator.core.auth.Crypto
 import me.gingerninja.authenticator.core.auth.biometric.BiometricKeyHandler
 import me.gingerninja.authenticator.core.common.Dispatcher
 import me.gingerninja.authenticator.core.common.DispatcherType
-import me.gingerninja.authenticator.core.database.InvalidKeyPasswordException
 import me.gingerninja.authenticator.core.database.NinjAuthDatabaseAuthenticator
 import me.gingerninja.authenticator.core.datastore.NinjAuthSettings
 import me.gingerninja.authenticator.core.model.settings.SecurityConfig
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class PasswordAuthenticator @Inject internal constructor(
     @ApplicationContext private val context: Context,
     @Dispatcher(DispatcherType.IO) private val dispatcher: CoroutineDispatcher,
@@ -57,12 +58,12 @@ class PasswordAuthenticator @Inject internal constructor(
         }
     }
 
-    @Throws(InvalidKeyPasswordException::class)
+    @Throws(PasswordAuthException::class)
     override suspend fun authenticate(config: AuthConfig) {
         authenticate(config.password)
     }
 
-    @Throws(InvalidKeyPasswordException::class)
+    @Throws(PasswordAuthException::class)
     override suspend fun update(config: UpdateConfig) {
         PasswordKeyHandler(context, dispatcher).use {
             it.authenticate(config.oldPassword)
@@ -70,7 +71,7 @@ class PasswordAuthenticator @Inject internal constructor(
         }
     }
 
-    @Throws(InvalidKeyPasswordException::class)
+    @Throws(PasswordAuthException::class)
     override suspend fun disable(config: DisableConfig) {
         val encryptedPass = settings.getEncryptedDatabasePass() ?: return
 

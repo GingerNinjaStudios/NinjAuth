@@ -51,7 +51,7 @@ class SharedPrefsMigrationTest {
             scope = testScope
         )
 
-        settings = NinjAuthSettings(dataSource)
+        settings = NinjAuthSettings(testScope.backgroundScope, dataSource)
     }
 
     @After

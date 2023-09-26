@@ -36,7 +36,7 @@ class NinjAuthSettingsTest {
             scope = testScope
         )
 
-        settings = NinjAuthSettings(dataSource)
+        settings = NinjAuthSettings(testScope.backgroundScope, dataSource)
     }
 
     @Test

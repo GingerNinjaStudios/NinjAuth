@@ -10,17 +10,24 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
+import me.gingerninja.authenticator.core.common.ApplicationScope
 import me.gingerninja.authenticator.core.model.settings.AppearanceConfig
 import me.gingerninja.authenticator.core.model.settings.SecurityConfig
 import me.gingerninja.authenticator.core.model.settings.UserSettings
 import java.io.IOException
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
+@Singleton
 class NinjAuthSettings @Inject constructor(
+    @ApplicationScope private val scope: CoroutineScope,
     private val dataStore: DataStore<Preferences>,
 ) {
     val data = dataStore.data.map {
@@ -44,6 +51,7 @@ class NinjAuthSettings @Inject constructor(
             firstRunComplete = it[Keys.firstRunComplete] ?: Defaults.firstRunComplete
         )
     }
+        .shareIn(scope, SharingStarted.Eagerly, 1)
 
     suspend fun getBiometricKey() = dataStore.data.first()[Keys.authBiometricKey]
 
