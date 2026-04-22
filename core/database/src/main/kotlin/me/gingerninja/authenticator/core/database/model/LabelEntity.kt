@@ -10,6 +10,8 @@ import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import kotlin.random.Random
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 @Entity(
     tableName = "Label",
@@ -34,8 +36,24 @@ data class LabelEntity(
     @ColumnInfo(name = "position", defaultValue = "-1")
     val position: Int = -1,
 
+    @ColumnInfo(
+        name = "createdAt",
+        defaultValue = "(CAST((strftime('%s', 'now') + strftime('%f','now') - strftime('%S','now')) * 1000 AS INTEGER))"
+    )
+    val createdAt: Instant = Clock.System.now(),
+
+    @ColumnInfo(
+        name = "updatedAt",
+        defaultValue = "(CAST((strftime('%s', 'now') + strftime('%f','now') - strftime('%S','now')) * 1000 AS INTEGER))"
+    )
+    val updatedAt: Instant = Clock.System.now(),
+
     @ColumnInfo(name = "uid")
-    val uid: String = generateLabelUID(name = name, icon = icon, color = color),
+    val uid: String = generateLabelUID(
+        name = name,
+        icon = icon,
+        color = color
+    ),
 ) {
     fun withNewUid() = copy(uid = generateUID(Random.nextBytes(8)))
 
@@ -58,7 +76,9 @@ fun LabelEntity.asModel() = Label(
     name = name,
     color = color,
     icon = icon,
-    position = position
+    position = position,
+    createdAt = createdAt,
+    updatedAt = updatedAt,
 )
 
 private fun generateLabelUID(

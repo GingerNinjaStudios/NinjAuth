@@ -7,21 +7,13 @@ import javax.crypto.spec.SecretKeySpec
 import javax.security.auth.DestroyFailedException
 import javax.security.auth.Destroyable
 
-abstract class Authenticator<EnableConfig, DisableConfig, AuthConfig, UpdateConfig>(
+abstract class Authenticator<AuthConfig>(
     private val settings: NinjAuthSettings,
     private val dbAuthenticator: NinjAuthDatabaseAuthenticator
 ) {
     protected val crypto: Crypto = Crypto()
 
-    abstract suspend fun enable(config: EnableConfig)
-
     abstract suspend fun authenticate(config: AuthConfig)
-
-    open suspend fun update(config: UpdateConfig) {
-        throw UnsupportedOperationException()
-    }
-
-    abstract suspend fun disable(config: DisableConfig)
 
     protected val ByteArray.asSecretKey: SecretKey get() = SecretKeySpec(this, "AES")
 
@@ -63,4 +55,14 @@ abstract class Authenticator<EnableConfig, DisableConfig, AuthConfig, UpdateConf
             }
         }
     }
+}
+
+interface EnableAuthenticator<EnableConfig, DisableConfig> {
+    suspend fun enable(config: EnableConfig)
+
+    suspend fun disable(config: DisableConfig)
+}
+
+interface UpdatableAuthenticator<UpdateConfig> {
+    suspend fun update(config: UpdateConfig)
 }

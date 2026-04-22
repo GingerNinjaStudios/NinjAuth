@@ -1,23 +1,14 @@
 package me.gingerninja.authenticator
 
 import android.annotation.SuppressLint
+import android.icu.util.Measure
+import android.icu.util.MeasureUnit
 import android.os.Bundle
-import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Key
-import androidx.compose.material.icons.outlined.Label
-import androidx.compose.material.icons.outlined.MoreHoriz
-import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
@@ -29,29 +20,51 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowCompat
+import androidx.fragment.app.FragmentActivity
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
-import me.gingerninja.authenticator.ui.theme.NinjAuthTheme
-import java.time.LocalDateTime
+import me.gingerninja.authenticator.core.design.anim.motionEnterTransition
+import me.gingerninja.authenticator.core.design.anim.motionExitTransition
+import me.gingerninja.authenticator.core.design.anim.motionPopEnterTransition
+import me.gingerninja.authenticator.core.design.anim.motionPopExitTransition
+import me.gingerninja.authenticator.core.design.theme.NinjAuthTheme
+import me.gingerninja.authenticator.feature.auth.authScreen
+import me.gingerninja.authenticator.feature.auth.navigateToAuth
+import me.gingerninja.authenticator.core.ui.design.R as commonR
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-    @OptIn(ExperimentalMaterial3Api::class)
+    @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        enableEdgeToEdge()
 
         super.onCreate(savedInstanceState)
+
         setContent {
+            val navController = rememberNavController()
+            val sizeClass = calculateWindowSizeClass(this)
+
+            LaunchedEffect(Unit) {
+                Measure(1, MeasureUnit.PINT)
+            }
+
             NinjAuthTheme {
                 SystemBars()
                 val ctx = LocalContext.current
@@ -79,7 +92,7 @@ class MainActivity : ComponentActivity() {
                                 onClick = { /*TODO*/ },
                                 icon = {
                                     Icon(
-                                        Icons.Filled.Key,
+                                        painter = painterResource(commonR.drawable.ic_key_filled),
                                         contentDescription = "Accounts"
                                     )
                                 },
@@ -93,7 +106,7 @@ class MainActivity : ComponentActivity() {
                                 onClick = { /*TODO*/ },
                                 icon = {
                                     Icon(
-                                        Icons.Outlined.Label,
+                                        painter = painterResource(commonR.drawable.ic_label),
                                         contentDescription = "Labels"
                                     )
                                 },
@@ -107,8 +120,8 @@ class MainActivity : ComponentActivity() {
                                 onClick = { /*TODO*/ },
                                 icon = {
                                     Icon(
-                                        Icons.Outlined.MoreHoriz,
-                                        contentDescription = "More"
+                                        painter = painterResource(commonR.drawable.ic_more_horizontal),
+                                        contentDescription = "More",
                                     )
                                 },
                                 label = {
@@ -150,14 +163,46 @@ class MainActivity : ComponentActivity() {
                     },
                     floatingActionButton = {
                         FloatingActionButton(
-                            onClick = { /*TODO*/ },
+                            onClick = {
+                                // TODO
+                                navController.navigateToAuth(true)
+                            },
                         ) {
-                            Icon(Icons.Filled.Add, contentDescription = "")
+                            Icon(
+                                painter = painterResource(commonR.drawable.ic_add),
+                                contentDescription = ""
+                            )
                         }
                     },
                     floatingActionButtonPosition = FabPosition.End
                 ) { padding ->
-                    LazyColumn(contentPadding = padding) {
+                    val density = LocalDensity.current
+
+                    val animOffset = remember(density) {
+                        with(density) {
+                            30.dp.roundToPx()
+                        }
+                    }
+
+                    NavHost(
+                        navController = navController,
+                        startDestination = "auth",
+                        enterTransition = { motionEnterTransition(animOffset) },
+                        exitTransition = { motionExitTransition(animOffset) },
+                        popEnterTransition = { motionPopEnterTransition(animOffset) },
+                        popExitTransition = { motionPopExitTransition(animOffset) }
+                    ) {
+                        authScreen(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(padding),
+                            onAuthComplete = {
+                                // TODO
+                            }
+                        )
+                    }
+
+                    /*LazyColumn(contentPadding = padding) {
                         items(20) {
                             Card(
                                 modifier = Modifier
@@ -178,19 +223,11 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         }
-                    }
+                    }*/
                 }
             }
         }
     }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
 }
 
 @Composable
@@ -213,6 +250,6 @@ private fun SystemBars() {
 @Composable
 fun GreetingPreview() {
     NinjAuthTheme {
-        Greeting("Android")
+        //Greeting("Android")
     }
 }

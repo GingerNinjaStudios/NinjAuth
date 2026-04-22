@@ -2,6 +2,7 @@ package me.gingerninja.authenticator.core.model
 
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlin.time.Instant
 
 sealed interface Account {
     val id: Long
@@ -15,6 +16,8 @@ sealed interface Account {
     val title: String?
     val issuer: String?
     val position: Int
+    val createdAt: Instant
+    val updatedAt: Instant
 
     enum class Source {
         URI, MANUAL
@@ -37,10 +40,12 @@ data class TotpAccount(
     override val digits: Int,
     override val source: Account.Source,
     override val algorithm: Account.Algorithm,
+    override val createdAt: Instant,
+    override val updatedAt: Instant,
     override val labels: ImmutableSet<Label> = persistentSetOf(),
     override val title: String? = null,
     override val issuer: String? = null,
-    override val position: Int = -1
+    override val position: Int = -1,
 ) : Account
 
 /**
@@ -55,8 +60,10 @@ data class HotpAccount(
     override val digits: Int,
     override val source: Account.Source,
     override val algorithm: Account.Algorithm,
+    override val createdAt: Instant,
+    override val updatedAt: Instant,
     override val labels: ImmutableSet<Label> = persistentSetOf(),
     override val title: String? = null,
     override val issuer: String? = null,
-    override val position: Int = -1
+    override val position: Int = -1,
 ) : Account

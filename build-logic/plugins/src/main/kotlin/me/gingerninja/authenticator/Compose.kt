@@ -2,21 +2,16 @@ package me.gingerninja.authenticator
 
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.io.File
+import org.gradle.api.provider.Provider
+import org.gradle.kotlin.dsl.configure
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 
 internal fun Project.configureAndroidCompose(
-    commonExtension: CommonExtension<*, *, *, *, *>,
+    commonExtension: CommonExtension<*, *, *, *, *, *>,
 ) {
     commonExtension.apply {
         buildFeatures {
             compose = true
-        }
-
-        composeOptions {
-            kotlinCompilerExtensionVersion =
-                libs.findVersion("androidx-compose-compiler").get().toString()
         }
 
         /* we use bleeding edge libs instead
@@ -28,34 +23,23 @@ internal fun Project.configureAndroidCompose(
         */
     }
 
-    tasks.withType<KotlinCompile>().configureEach {
-        kotlinOptions {
-            freeCompilerArgs = freeCompilerArgs + buildComposeMetricsParameters()
-        }
+    extensions.configure<ComposeCompilerGradlePluginExtension> {
+        fun Provider<String>.onlyIfTrue() = flatMap { provider { it.takeIf(String::toBoolean) } }
+        fun Provider<*>.relativeToRootProject(dir: String) = map {
+            isolated.rootProject.projectDirectory
+                .dir("build")
+                .dir(projectDir.toRelativeString(rootDir))
+        }.map { it.dir(dir) }
+
+        project.providers.gradleProperty("enableComposeCompilerMetrics").onlyIfTrue()
+            .relativeToRootProject("compose-metrics")
+            .let(metricsDestination::set)
+
+        project.providers.gradleProperty("enableComposeCompilerReports").onlyIfTrue()
+            .relativeToRootProject("compose-reports")
+            .let(reportsDestination::set)
+
+        stabilityConfigurationFiles
+            .add(isolated.rootProject.projectDirectory.file("compose_compiler_config.conf"))
     }
-}
-
-private fun Project.buildComposeMetricsParameters(): List<String> {
-    val params = mutableListOf<String>()
-    val metricsFolder = File(project.buildDir, "compose_metrics")
-
-    val enableMetrics =
-        project.providers.gradleProperty("enableComposeCompilerMetrics").orNull == "true"
-    if (enableMetrics) {
-        params += listOf(
-            "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" + metricsFolder.absolutePath
-        )
-    }
-
-    val enableReports =
-        project.providers.gradleProperty("enableComposeCompilerReports").orNull == "true"
-    if (enableReports) {
-        params += listOf(
-            "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" + metricsFolder.absolutePath
-        )
-    }
-
-    return params.toList()
 }

@@ -1,13 +1,11 @@
 package me.gingerninja.authenticator.core.codegen
 
-import kotlinx.datetime.Instant
-import me.gingerninja.authenticator.core.codegen.OtpGenerator
-import me.gingerninja.authenticator.core.codegen.TimeProvider
 import me.gingerninja.authenticator.core.model.Account
 import me.gingerninja.authenticator.core.model.HotpAccount
 import me.gingerninja.authenticator.core.model.TotpAccount
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import kotlin.time.Instant
 
 class OtpGeneratorTest {
     private val fixedTimeProvider = object : TimeProvider {
@@ -28,7 +26,9 @@ class OtpGeneratorTest {
             secret = "HSKN2IACERBAAU6LLETC6RFJL7LZOUY3XW5ASF4M5TEHBCJQNE577JP3MMTXVP4B27OK2TURZIFNQ36GQGH4YPSAKR3HER6WOR2JWFQ",
             digits = 6,
             source = Account.Source.MANUAL,
-            algorithm = Account.Algorithm.SHA1
+            algorithm = Account.Algorithm.SHA1,
+            createdAt = Instant.fromEpochSeconds(0),
+            updatedAt = Instant.fromEpochSeconds(0),
         )
 
         assertEquals("269990", otpGenerator.getCode(account))
@@ -46,7 +46,9 @@ class OtpGeneratorTest {
             secret = "HSKN2IACERBAAU6LLETC6RFJL7LZOUY3XW5ASF4M5TEHBCJQNE577JP3MMTXVP4B27OK2TURZIFNQ36GQGH4YPSAKR3HER6WOR2JWFQ",
             digits = 6,
             source = Account.Source.MANUAL,
-            algorithm = Account.Algorithm.SHA256
+            algorithm = Account.Algorithm.SHA256,
+            createdAt = Instant.fromEpochSeconds(0),
+            updatedAt = Instant.fromEpochSeconds(0),
         )
 
         assertEquals("418204", otpGenerator.getCode(account))
@@ -64,7 +66,9 @@ class OtpGeneratorTest {
             secret = "HSKN2IACERBAAU6LLETC6RFJL7LZOUY3XW5ASF4M5TEHBCJQNE577JP3MMTXVP4B27OK2TURZIFNQ36GQGH4YPSAKR3HER6WOR2JWFQ",
             digits = 6,
             source = Account.Source.MANUAL,
-            algorithm = Account.Algorithm.SHA256
+            algorithm = Account.Algorithm.SHA256,
+            createdAt = Instant.fromEpochSeconds(0),
+            updatedAt = Instant.fromEpochSeconds(0),
         )
 
         val remaining = otpGenerator.getRemainingTime(account)

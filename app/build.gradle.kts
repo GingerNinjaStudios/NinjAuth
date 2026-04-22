@@ -1,9 +1,18 @@
 plugins {
     id("ninjauth.android.app")
     id("ninjauth.android.app.compose")
+    id("ninjauth.android.hilt")
 }
 
 android {
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("G:\\My Drive\\GingerNinja\\Android\\debug_keystore.jks")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
     namespace = "me.gingerninja.authenticator"
     // compileSdk is set by the "ninjauth.android.app" plugin
 
@@ -42,6 +51,11 @@ android {
 
 dependencies {
     implementation(project(":core:data"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:ui-design"))
+
+    implementation(project(":feature:account"))
+    implementation(project(":feature:auth"))
 
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
@@ -52,7 +66,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     //implementation(libs.material.android)
-    implementation(libs.androidx.compose.material.icons)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material3.windowSizeClass)
     implementation(libs.accompanist.systemuicontroller)

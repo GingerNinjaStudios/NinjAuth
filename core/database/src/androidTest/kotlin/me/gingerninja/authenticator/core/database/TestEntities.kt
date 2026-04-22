@@ -7,6 +7,7 @@ import me.gingerninja.authenticator.core.database.dao.LabelDao
 import me.gingerninja.authenticator.core.database.model.AccountEntity
 import me.gingerninja.authenticator.core.database.model.LabelEntity
 import kotlin.test.assertEquals
+import kotlin.time.Instant
 
 val testTotpAccounts = listOf(
     AccountEntity(
@@ -18,7 +19,9 @@ val testTotpAccounts = listOf(
         typeSpecificData = 30,
         type = AccountEntity.Type.TOTP,
         digits = 6,
-        position = 0
+        position = 0,
+        createdAt = Instant.fromEpochMilliseconds(0),
+        updatedAt = Instant.fromEpochMilliseconds(0),
     ),
     AccountEntity(
         id = 0,
@@ -29,7 +32,9 @@ val testTotpAccounts = listOf(
         typeSpecificData = 30,
         type = AccountEntity.Type.TOTP,
         digits = 6,
-        position = 1
+        position = 1,
+        createdAt = Instant.fromEpochMilliseconds(0),
+        updatedAt = Instant.fromEpochMilliseconds(0),
     ),
     AccountEntity(
         id = 0,
@@ -40,7 +45,9 @@ val testTotpAccounts = listOf(
         typeSpecificData = 30,
         type = AccountEntity.Type.TOTP,
         digits = 6,
-        position = 2
+        position = 2,
+        createdAt = Instant.fromEpochMilliseconds(0),
+        updatedAt = Instant.fromEpochMilliseconds(0),
     )
 )
 
@@ -55,7 +62,9 @@ val testTotpAccountsWithId = listOf(
         typeSpecificData = 30,
         type = AccountEntity.Type.TOTP,
         digits = 6,
-        position = 0
+        position = 0,
+        createdAt = Instant.fromEpochMilliseconds(0),
+        updatedAt = Instant.fromEpochMilliseconds(0),
     ),
     AccountEntity(
         id = 2,
@@ -67,7 +76,9 @@ val testTotpAccountsWithId = listOf(
         typeSpecificData = 30,
         type = AccountEntity.Type.TOTP,
         digits = 6,
-        position = 1
+        position = 1,
+        createdAt = Instant.fromEpochMilliseconds(0),
+        updatedAt = Instant.fromEpochMilliseconds(0),
     ),
     AccountEntity(
         id = 3,
@@ -79,7 +90,9 @@ val testTotpAccountsWithId = listOf(
         typeSpecificData = 30,
         type = AccountEntity.Type.TOTP,
         digits = 6,
-        position = 2
+        position = 2,
+        createdAt = Instant.fromEpochMilliseconds(0),
+        updatedAt = Instant.fromEpochMilliseconds(0),
     )
 )
 
@@ -88,19 +101,25 @@ val testLabels = listOf(
         id = 0,
         name = "Red",
         color = 0xff0000,
-        position = 0
+        position = 0,
+        createdAt = Instant.fromEpochMilliseconds(0),
+        updatedAt = Instant.fromEpochMilliseconds(0),
     ),
     LabelEntity(
         id = 0,
         name = "Green",
         color = 0x00ff00,
-        position = 1
+        position = 1,
+        createdAt = Instant.fromEpochMilliseconds(0),
+        updatedAt = Instant.fromEpochMilliseconds(0),
     ),
     LabelEntity(
         id = 0,
         name = "Blue",
         color = 0x0000ff,
-        position = 2
+        position = 2,
+        createdAt = Instant.fromEpochMilliseconds(0),
+        updatedAt = Instant.fromEpochMilliseconds(0),
     )
 )
 
@@ -110,21 +129,27 @@ val testLabelsWithId = listOf(
         uid = "label1",
         name = "Red",
         color = 0xff0000,
-        position = 0
+        position = 0,
+        createdAt = Instant.fromEpochMilliseconds(0),
+        updatedAt = Instant.fromEpochMilliseconds(0),
     ),
     LabelEntity(
         id = 2,
         uid = "label2",
         name = "Green",
         color = 0x00ff00,
-        position = 1
+        position = 1,
+        createdAt = Instant.fromEpochMilliseconds(0),
+        updatedAt = Instant.fromEpochMilliseconds(0),
     ),
     LabelEntity(
         id = 3,
         uid = "label3",
         name = "Blue",
         color = 0x0000ff,
-        position = 2
+        position = 2,
+        createdAt = Instant.fromEpochMilliseconds(0),
+        updatedAt = Instant.fromEpochMilliseconds(0),
     )
 )
 

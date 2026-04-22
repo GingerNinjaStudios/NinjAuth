@@ -10,6 +10,7 @@ import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import me.gingerninja.authenticator.core.database.model.LabelEntity
 import me.gingerninja.authenticator.core.model.Label
+import kotlin.time.Clock
 
 @Dao
 interface LabelDao {
@@ -50,7 +51,9 @@ interface LabelDao {
 
         do {
             if (entity.id != 0L || getLabelIdByUid(entity.uid) == null) {
-                return saveLabelWithoutRetry(entity)
+                return saveLabelWithoutRetry(
+                    label = entity.copy(updatedAt = Clock.System.now())
+                )
             } else {
                 retryCount++
                 entity = entity.withNewUid()
@@ -97,5 +100,7 @@ fun LabelWithAccountCount.asModel() = Label(
     color = label.color,
     icon = label.icon,
     position = label.position,
-    numberOfAccounts = count
+    numberOfAccounts = count,
+    createdAt = label.createdAt,
+    updatedAt = label.updatedAt,
 )

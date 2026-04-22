@@ -1,17 +1,14 @@
 package me.gingerninja.authenticator.core.database.dao
 
-import android.database.sqlite.SQLiteConstraintException
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
-import me.gingerninja.authenticator.core.database.NinjAuthDatabase
 import me.gingerninja.authenticator.core.database.model.AccountEntity
 import me.gingerninja.authenticator.core.database.model.AccountWithLabels
-import java.util.concurrent.Callable
-import kotlin.random.Random
+import kotlin.time.Clock
 
 @Dao
 interface AccountDao {
@@ -82,7 +79,9 @@ interface AccountDao {
 
         do {
             if (entity.id != 0L || getAccountIdByUid(entity.uid) == null) {
-                return saveAccountWithoutRetry(entity)
+                return saveAccountWithoutRetry(
+                    account = entity.copy(updatedAt = Clock.System.now())
+                )
             } else {
                 retryCount++
                 entity = entity.withNewUid()

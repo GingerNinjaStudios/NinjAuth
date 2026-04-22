@@ -1,8 +1,8 @@
 package me.gingerninja.authenticator.core.database.util
 
 import androidx.room.TypeConverter
-import kotlinx.datetime.Instant
 import me.gingerninja.authenticator.core.database.model.AccountEntity
+import kotlin.time.Instant
 
 class InstantConverter {
     @TypeConverter

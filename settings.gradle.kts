@@ -6,6 +6,9 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.10.0"
+}
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -26,5 +29,8 @@ include(":core:datastore")
 include(":core:datastore-test")
 include(":core:model")
 include(":core:testing")
+include(":core:ui")
+include(":core:ui-design")
 
 include(":feature:account")
+include(":feature:auth")

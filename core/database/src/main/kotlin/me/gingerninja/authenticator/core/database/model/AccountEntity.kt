@@ -13,6 +13,8 @@ import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import kotlin.random.Random
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 @Entity(
     tableName = "Account",
@@ -43,8 +45,6 @@ data class AccountEntity(
     @ColumnInfo(name = "algorithm", defaultValue = "sha1")
     val algorithm: Algorithm = Algorithm.SHA1,
 
-    // TODO val labels: ImmutableSet<Label>,
-
     @ColumnInfo(name = "typeSpecificData", defaultValue = "0")
     val typeSpecificData: Long = 0,
 
@@ -56,6 +56,18 @@ data class AccountEntity(
 
     @ColumnInfo(name = "position", defaultValue = "-1")
     val position: Int = -1,
+
+    @ColumnInfo(
+        name = "createdAt",
+        defaultValue = "(CAST((strftime('%s', 'now') + strftime('%f','now') - strftime('%S','now')) * 1000 AS INTEGER))"
+    )
+    val createdAt: Instant = Clock.System.now(),
+
+    @ColumnInfo(
+        name = "updatedAt",
+        defaultValue = "(CAST((strftime('%s', 'now') + strftime('%f','now') - strftime('%S','now')) * 1000 AS INTEGER))"
+    )
+    val updatedAt: Instant = Clock.System.now(),
 
     @ColumnInfo(name = "uid")
     val uid: String = generateAccountUID(
@@ -118,6 +130,8 @@ fun AccountEntity.asModel() {
             title = title,
             issuer = issuer,
             position = position,
+            createdAt = createdAt,
+            updatedAt = updatedAt,
             // labels are intentionally empty; AccountWithLabels is used for that
         )
 
@@ -133,6 +147,8 @@ fun AccountEntity.asModel() {
             title = title,
             issuer = issuer,
             position = position,
+            createdAt = createdAt,
+            updatedAt = updatedAt,
             // labels are intentionally empty; AccountWithLabels is used for that
         )
     }
@@ -153,6 +169,8 @@ fun AccountWithLabels.asModel() {
                 title = title,
                 issuer = issuer,
                 position = position,
+                createdAt = createdAt,
+                updatedAt = updatedAt,
                 labels = labels.map { it.asModel() }.toImmutableSet(),
             )
 
@@ -168,6 +186,8 @@ fun AccountWithLabels.asModel() {
                 title = title,
                 issuer = issuer,
                 position = position,
+                createdAt = createdAt,
+                updatedAt = updatedAt,
                 labels = labels.map { it.asModel() }.toImmutableSet(),
             )
         }

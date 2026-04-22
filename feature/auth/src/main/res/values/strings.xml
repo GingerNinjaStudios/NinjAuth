@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="auth_bio_title">NinjAuth authentication</string>
+    <string name="auth_use_pin">Use PIN</string>
+    <string name="auth_use_password">Use password</string>
+    <string name="auth_use_biometric">Use biometrics</string>
+
+    <string name="btn_login">Login</string>
+    <string name="separator_or">or</string>
+
+    <string name="auth_error_wrong_pin">Wrong PIN</string>
+    <string name="auth_error_wrong_password">Wrong password</string>
+
+    <string name="auth_intermediate_message">The app has been locked due to inactivity. Please, re-authenticate.</string>
+    <string name="auth_confirm_exit_dialog_title">Would you like to leave the app?</string>
+    <string name="auth_confirm_exit_dialog_message">If you don\'t re-authenticate, NinjAuth will be closed.</string>
+    <string name="auth_confirm_exit_dialog_confirm">Leave app</string>
+
+</resources>

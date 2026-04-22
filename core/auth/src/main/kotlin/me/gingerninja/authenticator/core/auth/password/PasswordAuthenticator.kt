@@ -6,6 +6,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
 import me.gingerninja.authenticator.core.auth.Authenticator
 import me.gingerninja.authenticator.core.auth.Crypto
+import me.gingerninja.authenticator.core.auth.EnableAuthenticator
+import me.gingerninja.authenticator.core.auth.UpdatableAuthenticator
 import me.gingerninja.authenticator.core.auth.biometric.BiometricKeyHandler
 import me.gingerninja.authenticator.core.common.Dispatcher
 import me.gingerninja.authenticator.core.common.DispatcherType
@@ -22,10 +24,12 @@ class PasswordAuthenticator @Inject internal constructor(
     private val settings: NinjAuthSettings,
     private val dbAuthenticator: NinjAuthDatabaseAuthenticator,
     private val biometricKeyHandler: BiometricKeyHandler,
-) : Authenticator<PasswordAuthenticator.EnableConfig, PasswordAuthenticator.DisableConfig, PasswordAuthenticator.AuthConfig, PasswordAuthenticator.UpdateConfig>(
+) : Authenticator<PasswordAuthenticator.AuthConfig>(
     settings,
     dbAuthenticator
-) {
+),
+    EnableAuthenticator<PasswordAuthenticator.EnableConfig, PasswordAuthenticator.DisableConfig>,
+    UpdatableAuthenticator<PasswordAuthenticator.UpdateConfig> {
     /* TODO MasterKey.Builder(context, "baseKey")
             .setUserAuthenticationRequired(false)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
@@ -147,7 +151,7 @@ class PasswordAuthenticator @Inject internal constructor(
     companion object {
         private const val DEFAULT_PASS = "fakepass"
 
-        val defaultPassBytes = DEFAULT_PASS.toByteArray(Charsets.UTF_8)
-        val defaultPassChars = DEFAULT_PASS.toCharArray()
+        val defaultPassBytes: ByteArray get() = DEFAULT_PASS.toByteArray(Charsets.UTF_8)
+        val defaultPassChars: CharArray get() = DEFAULT_PASS.toCharArray()
     }
 }

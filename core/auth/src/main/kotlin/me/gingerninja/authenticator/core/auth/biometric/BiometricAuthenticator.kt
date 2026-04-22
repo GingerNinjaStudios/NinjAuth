@@ -10,6 +10,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
 import me.gingerninja.authenticator.core.auth.Authenticator
 import me.gingerninja.authenticator.core.auth.Crypto
+import me.gingerninja.authenticator.core.auth.EnableAuthenticator
 import me.gingerninja.authenticator.core.auth.password.PasswordKeyHandler
 import me.gingerninja.authenticator.core.common.Dispatcher
 import me.gingerninja.authenticator.core.common.DispatcherType
@@ -30,10 +31,11 @@ class BiometricAuthenticator @Inject internal constructor(
     private val settings: NinjAuthSettings,
     private val dbAuthenticator: NinjAuthDatabaseAuthenticator,
     private val biometricKeyHandler: BiometricKeyHandler,
-) : Authenticator<BiometricAuthenticator.EnableConfig, Unit, BiometricAuthenticator.AuthConfig, Nothing>(
+) : Authenticator<BiometricAuthenticator.AuthConfig>(
     settings,
     dbAuthenticator
-) {
+),
+    EnableAuthenticator<BiometricAuthenticator.EnableConfig, Unit> {
     private val passwordKeyHandler: PasswordKeyHandler = PasswordKeyHandler(context, dispatcher)
 
     private val keyguardManager by lazy {

@@ -47,15 +47,6 @@ class NinjAuthDatabaseAuthenticator @Inject constructor(
                 }
             }
 
-        /*val db = Room
-            .databaseBuilder(
-                context,
-                NinjAuthDatabase::class.java,
-                "ninjauth.db"
-            )
-            .openHelperFactory(factory)
-            .build()*/
-
         internalDatabase.value = db
     }
 
