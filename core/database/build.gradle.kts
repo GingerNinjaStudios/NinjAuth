@@ -1,7 +1,7 @@
 plugins {
-    id("ninjauth.android.lib")
-    id("ninjauth.android.hilt")
-    id("ninjauth.android.room")
+    alias(libs.plugins.ninjauth.android.lib)
+    alias(libs.plugins.ninjauth.android.hilt)
+    alias(libs.plugins.ninjauth.android.room)
 }
 
 android {

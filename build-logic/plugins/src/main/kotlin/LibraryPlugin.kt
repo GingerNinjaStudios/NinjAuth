@@ -1,4 +1,4 @@
-import com.android.build.gradle.LibraryExtension
+import com.android.build.api.dsl.LibraryExtension
 import me.gingerninja.authenticator.SdkVersions
 import me.gingerninja.authenticator.configureKotlinAndroid
 import me.gingerninja.authenticator.findLibrary
@@ -18,7 +18,10 @@ class LibraryPlugin : Plugin<Project> {
 
             extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this)
-                defaultConfig.targetSdk = SdkVersions.target
+                testOptions.targetSdk = SdkVersions.target
+                lint.targetSdk = SdkVersions.target
+
+                defaultConfig.testInstrumentationRunner = "me.gingerninja.authenticator.core.testing.NinjAuthTestRunner"
             }
 
             configurations.configureEach {

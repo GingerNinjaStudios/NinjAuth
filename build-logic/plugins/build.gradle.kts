@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `kotlin-dsl`
@@ -29,42 +28,42 @@ dependencies {
 gradlePlugin {
     plugins {
         register("appCompose") {
-            id = "ninjauth.android.app.compose"
+            id = libs.plugins.ninjauth.android.app.compose.get().pluginId
             implementationClass = "AppComposePlugin"
         }
 
         register("app") {
-            id = "ninjauth.android.app"
+            id = libs.plugins.ninjauth.android.app.asProvider().get().pluginId
             implementationClass = "AppPlugin"
         }
 
         register("libCompose") {
-            id = "ninjauth.android.lib.compose"
+            id = libs.plugins.ninjauth.android.lib.compose.get().pluginId
             implementationClass = "LibraryComposePlugin"
         }
 
         register("lib") {
-            id = "ninjauth.android.lib"
+            id = libs.plugins.ninjauth.android.lib.asProvider().get().pluginId
             implementationClass = "LibraryPlugin"
         }
 
         register("feature") {
-            id = "ninjauth.android.feature"
+            id = libs.plugins.ninjauth.android.feature.get().pluginId
             implementationClass = "FeaturePlugin"
         }
 
         register("hilt") {
-            id = "ninjauth.android.hilt"
+            id = libs.plugins.ninjauth.android.hilt.get().pluginId
             implementationClass = "HiltPlugin"
         }
 
         register("room") {
-            id = "ninjauth.android.room"
+            id = libs.plugins.ninjauth.android.room.get().pluginId
             implementationClass = "RoomPlugin"
         }
 
         register("androidTest") {
-            id = "ninjauth.android.test"
+            id = libs.plugins.ninjauth.android.test.get().pluginId
             implementationClass = "TestPlugin"
         }
     }

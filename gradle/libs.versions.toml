@@ -1,7 +1,7 @@
 [versions]
-agp = "8.11.0"
-kotlin = "2.2.0"
-ksp = "2.2.0-2.0.2"
+agp = "9.2.0"
+kotlin = "2.2.10"
+ksp = "2.3.2"
 junit = "4.13.2"
 accompanist = "0.36.0"
 android-desugar-jdk-libs = "2.1.5"
@@ -112,3 +112,13 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "androidx-room" }
+
+# project-provided plugins
+ninjauth-android-app = { id = "ninjauth.android.app" }
+ninjauth-android-app-compose = { id = "ninjauth.android.app.compose" }
+ninjauth-android-lib = { id = "ninjauth.android.lib" }
+ninjauth-android-lib-compose = { id = "ninjauth.android.lib.compose" }
+ninjauth-android-feature = { id = "ninjauth.android.feature" }
+ninjauth-android-hilt = { id = "ninjauth.android.hilt" }
+ninjauth-android-room = { id = "ninjauth.android.room" }
+ninjauth-android-test = { id = "ninjauth.android.test" }
