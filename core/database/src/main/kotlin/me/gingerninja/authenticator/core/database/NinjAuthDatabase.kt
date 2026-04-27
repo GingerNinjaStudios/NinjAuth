@@ -35,5 +35,9 @@ abstract class NinjAuthDatabase : RoomDatabase() {
     abstract fun labelDao(): LabelDao
 
     abstract fun accountLabelDao(): AccountLabelDao
+
+    companion object {
+        const val DB_NAME = "ninjauth.db"
+    }
 }
 

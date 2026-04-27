@@ -14,7 +14,7 @@ internal class LegacyPasswordKeyHandler(
 
     val exists: Boolean get() = LegacyKeyDatabase.exists(context)
 
-    suspend fun create(password: CharArray) = withContext(dispatcher) {
+    suspend fun create(password: ByteArray) = withContext(dispatcher) {
         delete()
         authenticate(password)
     }
@@ -22,7 +22,7 @@ internal class LegacyPasswordKeyHandler(
     /**
      * @throws InvalidKeyPasswordException if the password is invalid
      */
-    suspend fun authenticate(password: CharArray) = withContext(dispatcher) {
+    suspend fun authenticate(password: ByteArray) = withContext(dispatcher) {
         require(db == null) { "DB is already open and close() was not called before" }
 
         db = LegacyKeyDatabase.get(context).apply { // TODO should be getIfExists instead of get
@@ -30,7 +30,7 @@ internal class LegacyPasswordKeyHandler(
         }
     }
 
-    suspend fun changePassword(password: CharArray) = withContext(dispatcher) {
+    suspend fun changePassword(password: ByteArray) = withContext(dispatcher) {
         requireNotNull(db).changePassword(password)
     }
 

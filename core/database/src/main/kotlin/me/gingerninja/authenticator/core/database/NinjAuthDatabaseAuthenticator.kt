@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import net.sqlcipher.database.SQLiteDatabase
-import net.sqlcipher.database.SupportFactory
+import net.zetetic.database.sqlcipher.SQLiteDatabase
+import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
@@ -18,6 +18,10 @@ class NinjAuthDatabaseAuthenticator @Inject constructor(
     //@ApplicationContext private val context: Context,
     private val dbBuilder: Provider<RoomDatabase.Builder<NinjAuthDatabase>>
 ) {
+    init {
+        System.loadLibrary("sqlcipher")
+    }
+
     private val internalDatabase = MutableStateFlow<NinjAuthDatabase?>(null)
 
     internal val database: StateFlow<NinjAuthDatabase?> = internalDatabase.asStateFlow()
@@ -33,7 +37,7 @@ class NinjAuthDatabaseAuthenticator @Inject constructor(
 
         internalDatabase.value?.close()
 
-        val factory = SupportFactory(passphrase, null, clearPassphrase)
+        val factory = SupportOpenHelperFactory(passphrase)
 
         val db = dbBuilder.get()
             .openHelperFactory(factory)
@@ -42,6 +46,12 @@ class NinjAuthDatabaseAuthenticator @Inject constructor(
                 try {
                     // force opening the database
                     openHelper.writableDatabase
+
+                    if (clearPassphrase) {
+                        for (i in passphrase.indices) {
+                            passphrase[i] = 0
+                        }
+                    }
                 } catch (e: SQLiteException) {
                     throw InvalidDatabasePassword(e)
                 }
@@ -50,15 +60,15 @@ class NinjAuthDatabaseAuthenticator @Inject constructor(
         internalDatabase.value = db
     }
 
-    fun changePassword(charArray: CharArray) {
+    fun changePassword(password: ByteArray) {
         val dbOjb =
             internalDatabase.value ?: throw IllegalStateException("The database is not open")
 
         // as we created the database with the SQL Cipher factory, we can retrieve the encrypted DB
         val db = dbOjb.openHelper.writableDatabase as SQLiteDatabase
-        db.changePassword(charArray)
+        db.changePassword(password)
 
-        charArray.fill(0.toChar())
+        password.fill(0)
     }
 
     fun close() {

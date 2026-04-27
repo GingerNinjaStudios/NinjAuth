@@ -121,6 +121,8 @@ internal class BiometricKeyHandler @Inject constructor(
     )
     fun getKey(): SecretKey? = keyStore.getKey(KEY_ALIAS_BIOMETRIC, null) as SecretKey?
 
+    fun hasKey(): Boolean = keyStore.containsAlias(KEY_ALIAS_BIOMETRIC)
+
     enum class Status {
         /**
          * The user can successfully authenticate.

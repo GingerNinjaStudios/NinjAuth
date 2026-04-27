@@ -11,6 +11,7 @@ import me.gingerninja.authenticator.core.auth.UpdatableAuthenticator
 import me.gingerninja.authenticator.core.auth.biometric.BiometricKeyHandler
 import me.gingerninja.authenticator.core.common.Dispatcher
 import me.gingerninja.authenticator.core.common.DispatcherType
+import me.gingerninja.authenticator.core.common.toDatabaseByteArray
 import me.gingerninja.authenticator.core.database.NinjAuthDatabaseAuthenticator
 import me.gingerninja.authenticator.core.datastore.NinjAuthSettings
 import me.gingerninja.authenticator.core.model.settings.SecurityConfig
@@ -57,7 +58,7 @@ class PasswordAuthenticator @Inject internal constructor(
             dbAuthenticator.changePassword(pass)
 
         } finally {
-            pass.fill(0.toChar())
+            pass.fill(0)
             destroyKey(masterKey)
         }
     }
@@ -93,7 +94,7 @@ class PasswordAuthenticator @Inject internal constructor(
         try {
             // dbAuthenticator.close() // TODO do we want to close the DB?
             dbAuthenticator.openDatabase(decrypted)
-            dbAuthenticator.changePassword(defaultPassChars) // TODO is this good? do we want to change the password of the main database?
+            dbAuthenticator.changePassword(defaultPassBytes) // TODO is this good? do we want to change the password of the main database?
 
             biometricKeyHandler.remove()
             settings.setSecurityWithDatabasePass(SecurityConfig.LockType.NONE, null)
@@ -105,7 +106,7 @@ class PasswordAuthenticator @Inject internal constructor(
         }
     }
 
-    private suspend fun authenticate(password: CharArray) {
+    private suspend fun authenticate(password: ByteArray) {
         when (settings.data.first().security.lockType) {
             SecurityConfig.LockType.NONE -> throw RuntimeException("No lock")
             SecurityConfig.LockType.PIN -> authenticatePIN(password)
@@ -113,15 +114,15 @@ class PasswordAuthenticator @Inject internal constructor(
         }
     }
 
-    private suspend fun authenticatePIN(password: CharArray) {
+    private suspend fun authenticatePIN(password: ByteArray) {
         authenticateLegacy(password)
     }
 
-    private suspend fun authenticatePassword(password: CharArray) {
+    private suspend fun authenticatePassword(password: ByteArray) {
         authenticateLegacy(password)
     }
 
-    private suspend fun authenticateLegacy(password: CharArray) {
+    private suspend fun authenticateLegacy(password: ByteArray) {
         val key = PasswordKeyHandler(context, dispatcher).use {
             it.authenticate(password)
             it.getMasterKey()
@@ -131,27 +132,26 @@ class PasswordAuthenticator @Inject internal constructor(
     }
 
     class EnableConfig(
-        internal val password: CharArray,
+        internal val password: ByteArray,
         internal val type: SecurityConfig.LockType
     )
 
     class DisableConfig(
-        internal val password: CharArray
+        internal val password: ByteArray
     )
 
     class AuthConfig(
-        internal val password: CharArray
+        internal val password: ByteArray
     )
 
     class UpdateConfig(
-        internal val oldPassword: CharArray,
-        internal val newPassword: CharArray
+        internal val oldPassword: ByteArray,
+        internal val newPassword: ByteArray
     )
 
     companion object {
         private const val DEFAULT_PASS = "fakepass"
 
-        val defaultPassBytes: ByteArray get() = DEFAULT_PASS.toByteArray(Charsets.UTF_8)
-        val defaultPassChars: CharArray get() = DEFAULT_PASS.toCharArray()
+        val defaultPassBytes: ByteArray get() = DEFAULT_PASS.toDatabaseByteArray()
     }
 }

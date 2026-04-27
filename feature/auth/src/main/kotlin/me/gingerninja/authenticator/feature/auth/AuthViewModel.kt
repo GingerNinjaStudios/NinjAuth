@@ -28,6 +28,7 @@ import me.gingerninja.authenticator.core.auth.biometric.BiometricException
 import me.gingerninja.authenticator.core.auth.password.PasswordAuthException
 import me.gingerninja.authenticator.core.auth.password.PasswordAuthenticator
 import me.gingerninja.authenticator.core.auth.unlocked.UnlockedAuthenticator
+import me.gingerninja.authenticator.core.common.toDatabaseByteArray
 import me.gingerninja.authenticator.core.datastore.NinjAuthSettings
 import me.gingerninja.authenticator.core.design.component.NinjaSecretTextFieldState
 import me.gingerninja.authenticator.core.model.settings.SecurityConfig
@@ -124,11 +125,11 @@ class AuthViewModel @Inject constructor(
         // --- end of remove ---
 
         val config = PasswordAuthenticator.AuthConfig(
-            password = passwordState.value.toCharArray()
+            password = passwordState.value.toDatabaseByteArray()
         )
 
         runAuthentication {
-            passwordAuthenticator.authenticate(PasswordAuthenticator.AuthConfig("".toCharArray())) // TODO remove
+            //passwordAuthenticator.authenticate(PasswordAuthenticator.AuthConfig("".toCharArray())) // TODO remove
             passwordAuthenticator.authenticate(config)
         }
     }

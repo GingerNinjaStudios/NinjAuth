@@ -31,7 +31,7 @@ kotlinx-serialization-json = "1.8.1"
 androidx-hilt-nav-compose = "1.2.0"
 hilt = "2.56.2"
 hilt-extensions = "1.2.0"
-sqlcipher = "4.5.4"
+sqlcipher = "4.14.1"
 turbine = "1.2.1"
 
 [libraries]
@@ -92,7 +92,7 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 
 accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
-sqlcipher = { group = "net.zetetic", name = "android-database-sqlcipher", version.ref = "sqlcipher" }
+sqlcipher = { group = "net.zetetic", name = "sqlcipher-android", version.ref = "sqlcipher" }
 
 # gradle plugins
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }

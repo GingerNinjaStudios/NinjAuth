@@ -5,7 +5,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import net.sqlcipher.database.SQLiteDatabase
+import me.gingerninja.authenticator.core.common.toDatabaseByteArray
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -40,7 +40,7 @@ class DatabaseAuthenticatorTest {
 
     @Test
     fun openDatabase_isOpenTrue() = runTest {
-        db.openDatabase(SQLiteDatabase.getBytes("test".toCharArray()))
+        db.openDatabase("test".toDatabaseByteArray())
         assertTrue(db.isOpen.first())
     }
 
@@ -52,13 +52,13 @@ class DatabaseAuthenticatorTest {
     @Test
     fun changeDatabasePassword_rightPass() = runTest {
         db.apply {
-            openDatabase(SQLiteDatabase.getBytes("test".toCharArray()))
-            changePassword("newpass".toCharArray())
+            openDatabase("test".toDatabaseByteArray())
+            changePassword("newpass".toDatabaseByteArray())
             database.first()!!.accountDao().saveAccount(testTotpAccountsWithId[0])
             close()
         }
 
-        db.openDatabase(SQLiteDatabase.getBytes("newpass".toCharArray()))
+        db.openDatabase("newpass".toDatabaseByteArray())
         val accounts = db.database.first()!!.accountDao().getAccounts().first()
 
         assertEquals(1, accounts.size)
@@ -67,12 +67,12 @@ class DatabaseAuthenticatorTest {
     @Test(expected = InvalidDatabasePassword::class)
     fun changeDatabasePassword_wrongPass() = runTest {
         db.apply {
-            openDatabase(SQLiteDatabase.getBytes("test".toCharArray()))
-            changePassword("newpass".toCharArray())
+            openDatabase("test".toDatabaseByteArray())
+            changePassword("newpass".toDatabaseByteArray())
             database.first()!!.accountDao().saveAccount(testTotpAccountsWithId[0])
             close()
         }
 
-        db.openDatabase(SQLiteDatabase.getBytes("wrongpass".toCharArray()))
+        db.openDatabase("wrongpass".toDatabaseByteArray())
     }
 }

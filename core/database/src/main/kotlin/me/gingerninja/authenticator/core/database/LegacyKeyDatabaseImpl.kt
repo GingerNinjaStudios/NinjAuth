@@ -3,37 +3,57 @@ package me.gingerninja.authenticator.core.database
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteException
-import net.sqlcipher.database.SQLiteDatabase
-import net.sqlcipher.database.SQLiteOpenHelper
+import net.zetetic.database.sqlcipher.SQLiteDatabase
+import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 
-internal class LegacyKeyDatabaseImpl(private val context: Context) :
-    SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION), LegacyKeyDatabase {
+internal class LegacyKeyDatabaseImpl(private val context: Context) : LegacyKeyDatabase {
     init {
-        SQLiteDatabase.loadLibs(context)
+        System.loadLibrary("sqlcipher")
+    }
+
+    var openHelper: SQLiteOpenHelper? = null
+
+    private fun openOpenHelper(password: ByteArray) {
+        openHelper = object :
+            SQLiteOpenHelper(context, DB_NAME, password, null, DB_VERSION, 0, null, null, false) {
+            override fun onCreate(db: SQLiteDatabase?) {
+                db?.execSQL(CREATE_TABLE)
+            }
+
+            override fun onUpgrade(
+                db: SQLiteDatabase?,
+                oldVersion: Int,
+                newVersion: Int
+            ) {
+                // do not care
+            }
+        }
     }
 
     private val db: SQLiteDatabase
-        get() = getWritableDatabase(null as ByteArray?)
+        get() = openHelper?.writableDatabase
+            ?: error("DB not open") //getWritableDatabase(null as ByteArray?)
 
-    override fun onCreate(db: SQLiteDatabase?) {
-        db?.execSQL(CREATE_TABLE)
-    }
-
-    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        // do not care
-    }
-
-    override fun open(password: CharArray) {
+    override fun open(password: ByteArray) {
         // this opens the database and caches its state inside
         try {
-            getWritableDatabase(password)
+            //getWritableDatabase(password)
+            openOpenHelper(password) // TODO not the best thing to do to concat the array
+            openHelper?.writableDatabase
+            println("[VV] db open")
         } catch (e: SQLiteException) {
+            println("[VV] error: ${e.message}")
             throw InvalidKeyPasswordException()
         }
     }
 
-    override fun changePassword(password: CharArray) {
+    override fun changePassword(password: ByteArray) {
         db.changePassword(password)
+    }
+
+    override fun close() {
+        openHelper?.close()
+        openHelper = null
     }
 
     override fun delete() {
@@ -120,9 +140,9 @@ interface LegacyKeyDatabase {
         remove(entry.name)
     }
 
-    fun open(password: CharArray)
+    fun open(password: ByteArray)
 
-    fun changePassword(password: CharArray)
+    fun changePassword(password: ByteArray)
 
     fun close()
 

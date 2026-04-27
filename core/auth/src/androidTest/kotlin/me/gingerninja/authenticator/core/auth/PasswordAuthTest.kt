@@ -9,9 +9,12 @@ import kotlinx.coroutines.test.runTest
 import me.gingerninja.authenticator.core.auth.biometric.BiometricKeyHandler
 import me.gingerninja.authenticator.core.auth.password.PasswordAuthException
 import me.gingerninja.authenticator.core.auth.password.PasswordAuthenticator
+import me.gingerninja.authenticator.core.common.toDatabaseByteArray
 import me.gingerninja.authenticator.core.database.LegacyKeyDatabase
 import me.gingerninja.authenticator.core.database.NinjAuthDatabaseAuthenticator
+import me.gingerninja.authenticator.core.database.test.TEST_DATABASE_NAME
 import me.gingerninja.authenticator.core.database.test.createInMemoryTestDatabaseBuilder
+import me.gingerninja.authenticator.core.database.test.createTestDatabaseBuilder
 import me.gingerninja.authenticator.core.datastore.NinjAuthSettings
 import me.gingerninja.authenticator.core.datastore.test.createTestDataStore
 import me.gingerninja.authenticator.core.model.settings.SecurityConfig
@@ -50,8 +53,10 @@ class PasswordAuthTest {
         settings = NinjAuthSettings(testScope.backgroundScope, dataSource)
 
         val dbAuthenticator = NinjAuthDatabaseAuthenticator {
-            createInMemoryTestDatabaseBuilder(context)
+            createTestDatabaseBuilder(context)
         }
+
+        dbAuthenticator.close()
 
         authenticator = PasswordAuthenticator(
             context = context,
@@ -65,6 +70,8 @@ class PasswordAuthTest {
     @After
     @Throws(IOException::class)
     fun closeDb() {
+        context.deleteDatabase(TEST_DATABASE_NAME)
+
         LegacyKeyDatabase
             .getIfExists(context)
             ?.delete() // FIXME this should not be called, instead the using class should use an in-memory DB
@@ -72,7 +79,7 @@ class PasswordAuthTest {
 
     private suspend fun preparePassAuth() {
         val config = PasswordAuthenticator.EnableConfig(
-            password = "testpass".toCharArray(),
+            password = "testpass".toDatabaseByteArray(),
             type = SecurityConfig.LockType.PASSWORD
         )
 
@@ -81,7 +88,7 @@ class PasswordAuthTest {
 
     private suspend fun preparePINAuth() {
         val config = PasswordAuthenticator.EnableConfig(
-            password = "12345678".toCharArray(),
+            password = "12345678".toDatabaseByteArray(),
             type = SecurityConfig.LockType.PIN
         )
 
@@ -91,7 +98,7 @@ class PasswordAuthTest {
     @Test(expected = IllegalArgumentException::class)
     fun enable_invalidConfig() = testScope.runTest {
         val config = PasswordAuthenticator.EnableConfig(
-            password = "testpass".toCharArray(),
+            password = "testpass".toDatabaseByteArray(),
             type = SecurityConfig.LockType.NONE
         )
 
@@ -110,7 +117,7 @@ class PasswordAuthTest {
         preparePassAuth()
 
         val config = PasswordAuthenticator.AuthConfig(
-            password = "testpass".toCharArray()
+            password = "testpass".toDatabaseByteArray()
         )
         authenticator.authenticate(config)
     }
@@ -120,7 +127,7 @@ class PasswordAuthTest {
         preparePassAuth()
 
         val config = PasswordAuthenticator.AuthConfig(
-            password = "wrongpass".toCharArray()
+            password = "wrongpass".toDatabaseByteArray()
         )
         authenticator.authenticate(config)
     }
@@ -130,14 +137,14 @@ class PasswordAuthTest {
         preparePassAuth()
 
         val config = PasswordAuthenticator.UpdateConfig(
-            oldPassword = "testpass".toCharArray(),
-            newPassword = "newpass".toCharArray()
+            oldPassword = "testpass".toDatabaseByteArray(),
+            newPassword = "newpass".toDatabaseByteArray()
         )
         authenticator.update(config)
 
         // test the new password
         val config2 = PasswordAuthenticator.AuthConfig(
-            password = "newpass".toCharArray()
+            password = "newpass".toDatabaseByteArray()
         )
         authenticator.authenticate(config2)
     }
@@ -147,14 +154,14 @@ class PasswordAuthTest {
         preparePassAuth()
 
         val config = PasswordAuthenticator.UpdateConfig(
-            oldPassword = "wrongpass".toCharArray(),
-            newPassword = "newpass".toCharArray()
+            oldPassword = "wrongpass".toDatabaseByteArray(),
+            newPassword = "newpass".toDatabaseByteArray()
         )
         authenticator.update(config)
 
         // test the new password
         val config2 = PasswordAuthenticator.AuthConfig(
-            password = "newpass".toCharArray()
+            password = "newpass".toDatabaseByteArray()
         )
         authenticator.authenticate(config2)
     }
@@ -164,7 +171,7 @@ class PasswordAuthTest {
         preparePassAuth()
 
         val config = PasswordAuthenticator.DisableConfig(
-            password = "testpass".toCharArray()
+            password = "testpass".toDatabaseByteArray()
         )
 
         authenticator.disable(config)
@@ -175,7 +182,7 @@ class PasswordAuthTest {
         preparePassAuth()
 
         val config = PasswordAuthenticator.DisableConfig(
-            password = "wrongpass".toCharArray()
+            password = "wrongpass".toDatabaseByteArray()
         )
 
         authenticator.disable(config)
@@ -193,7 +200,7 @@ class PasswordAuthTest {
         preparePINAuth()
 
         val config = PasswordAuthenticator.AuthConfig(
-            password = "12345678".toCharArray()
+            password = "12345678".toDatabaseByteArray()
         )
         authenticator.authenticate(config)
     }
@@ -203,7 +210,7 @@ class PasswordAuthTest {
         preparePINAuth()
 
         val config = PasswordAuthenticator.AuthConfig(
-            password = "12211221".toCharArray()
+            password = "12211221".toDatabaseByteArray()
         )
         authenticator.authenticate(config)
     }
@@ -213,14 +220,14 @@ class PasswordAuthTest {
         preparePINAuth()
 
         val config = PasswordAuthenticator.UpdateConfig(
-            oldPassword = "12345678".toCharArray(),
-            newPassword = "87654321".toCharArray()
+            oldPassword = "12345678".toDatabaseByteArray(),
+            newPassword = "87654321".toDatabaseByteArray()
         )
         authenticator.update(config)
 
         // test the new password
         val config2 = PasswordAuthenticator.AuthConfig(
-            password = "87654321".toCharArray()
+            password = "87654321".toDatabaseByteArray()
         )
         authenticator.authenticate(config2)
     }
@@ -230,14 +237,14 @@ class PasswordAuthTest {
         preparePINAuth()
 
         val config = PasswordAuthenticator.UpdateConfig(
-            oldPassword = "12211221".toCharArray(),
-            newPassword = "87654321".toCharArray()
+            oldPassword = "12211221".toDatabaseByteArray(),
+            newPassword = "87654321".toDatabaseByteArray()
         )
         authenticator.update(config)
 
         // test the new password
         val config2 = PasswordAuthenticator.AuthConfig(
-            password = "87654321".toCharArray()
+            password = "87654321".toDatabaseByteArray()
         )
         authenticator.authenticate(config2)
     }
@@ -247,7 +254,7 @@ class PasswordAuthTest {
         preparePINAuth()
 
         val config = PasswordAuthenticator.DisableConfig(
-            password = "12345678".toCharArray()
+            password = "12345678".toDatabaseByteArray()
         )
 
         authenticator.disable(config)
@@ -258,7 +265,7 @@ class PasswordAuthTest {
         preparePINAuth()
 
         val config = PasswordAuthenticator.DisableConfig(
-            password = "12211221".toCharArray()
+            password = "12211221".toDatabaseByteArray()
         )
 
         authenticator.disable(config)

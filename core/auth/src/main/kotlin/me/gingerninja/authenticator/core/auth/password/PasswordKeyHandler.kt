@@ -12,7 +12,7 @@ class PasswordKeyHandler(
     private var legacyHandler: LegacyPasswordKeyHandler =
         LegacyPasswordKeyHandler(context, dispatcher)
 
-    suspend fun create(password: CharArray) = withContext(dispatcher) {
+    suspend fun create(password: ByteArray) = withContext(dispatcher) {
         legacyHandler.create(password)
     }
 
@@ -20,7 +20,7 @@ class PasswordKeyHandler(
      * @throws PasswordAuthException if the password is invalid
      */
     @Throws(PasswordAuthException::class)
-    suspend fun authenticate(password: CharArray) = withContext(dispatcher) {
+    suspend fun authenticate(password: ByteArray) = withContext(dispatcher) {
         try {
             legacyHandler.authenticate(password)
         } catch (e: InvalidKeyPasswordException) {
@@ -28,7 +28,7 @@ class PasswordKeyHandler(
         }
     }
 
-    suspend fun changePassword(password: CharArray) = withContext(dispatcher) {
+    suspend fun changePassword(password: ByteArray) = withContext(dispatcher) {
         legacyHandler.changePassword(password)
     }
 

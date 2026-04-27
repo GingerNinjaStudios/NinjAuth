@@ -20,7 +20,7 @@ object DbModule {
             .databaseBuilder(
                 context,
                 NinjAuthDatabase::class.java,
-                "ninjauth.db"
+                NinjAuthDatabase.DB_NAME,
             )
             .addMigrations(RequeryToRoomMigration())
 

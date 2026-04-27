@@ -18,6 +18,7 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.sqlcipher)
     implementation(project(":core:model"))
+    implementation(project(":core:common"))
 
     androidTestImplementation(project(":core:testing"))
 }

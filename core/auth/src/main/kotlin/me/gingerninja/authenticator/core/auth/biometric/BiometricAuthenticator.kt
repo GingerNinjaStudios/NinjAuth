@@ -116,10 +116,11 @@ class BiometricAuthenticator @Inject internal constructor(
         }
     }
 
+    @Throws(BiometricException::class, IllegalStateException::class)
     override suspend fun authenticate(config: AuthConfig) {
         var bioKey: SecretKey? = null
         try {
-            bioKey = biometricKeyHandler.getKey() ?: return
+            bioKey = biometricKeyHandler.getKey() ?: throw IllegalStateException()
 
             val masterWrapped = settings.getBiometricKey() ?: return
 
@@ -140,6 +141,9 @@ class BiometricAuthenticator @Inject internal constructor(
         } catch (e: UnrecoverableKeyException) {
             biometricKeyHandler.remove()
             throw BiometricException(BiometricException.Error.SEC_KEY_INVALIDATED, e.message)
+        } catch (e: IllegalStateException){
+            biometricKeyHandler.remove()
+            throw BiometricException(BiometricException.Error.SEC_KEY_INVALIDATED, e.message)
         } finally {
             destroyKey(bioKey)
         }
@@ -153,7 +157,7 @@ class BiometricAuthenticator @Inject internal constructor(
 
     class EnableConfig(
         internal val activity: FragmentActivity,
-        internal val password: CharArray,
+        internal val password: ByteArray,
         internal val descriptor: PromptDescriptor
     )
 
