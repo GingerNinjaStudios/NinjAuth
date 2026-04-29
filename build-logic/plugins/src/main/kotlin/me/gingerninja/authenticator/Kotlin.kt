@@ -16,8 +16,8 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
  * Sets the SDK levels. This is used by multiple plugins as well.
  */
 internal object SdkVersions {
-    const val compile = 36
-    const val target = 36
+    const val compile = 37
+    const val target = 37
     const val min = 26
 }
 

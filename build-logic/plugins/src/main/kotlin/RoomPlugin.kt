@@ -18,7 +18,6 @@ class RoomPlugin : Plugin<Project> {
 
             dependencies {
                 add("implementation", findLibrary("androidx.room.runtime"))
-                add("implementation", findLibrary("androidx.room.ktx"))
                 add("ksp", findLibrary("androidx.room.compiler"))
             }
         }

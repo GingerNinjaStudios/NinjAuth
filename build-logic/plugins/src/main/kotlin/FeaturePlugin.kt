@@ -32,6 +32,7 @@ class FeaturePlugin : Plugin<Project> {
                 //add("implementation", project(":core:domain"))
 
                 add("implementation", findLibrary("androidx.hilt.navigation.compose"))
+                add("implementation", findLibrary("androidx.hilt.lifecycle.viewmodel.compose"))
                 add("implementation", findLibrary("androidx.lifecycle.runtime.compose"))
                 add("implementation", findLibrary("androidx.lifecycle.runtime.ktx"))
                 add("implementation", findLibrary("androidx.lifecycle.viewmodel.compose"))

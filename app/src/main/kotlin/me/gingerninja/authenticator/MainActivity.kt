@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import android.icu.util.Measure
 import android.icu.util.MeasureUnit
 import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -14,20 +16,23 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationItemIconPosition
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ShortNavigationBar
+import androidx.compose.material3.ShortNavigationBarArrangement
+import androidx.compose.material3.ShortNavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -37,13 +42,14 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import androidx.window.core.layout.WindowSizeClass
 import dagger.hilt.android.AndroidEntryPoint
 import me.gingerninja.authenticator.core.design.anim.motionEnterTransition
 import me.gingerninja.authenticator.core.design.anim.motionExitTransition
 import me.gingerninja.authenticator.core.design.anim.motionPopEnterTransition
 import me.gingerninja.authenticator.core.design.anim.motionPopExitTransition
 import me.gingerninja.authenticator.core.design.theme.NinjAuthTheme
+import me.gingerninja.authenticator.core.design.theme.isAppInDarkTheme
 import me.gingerninja.authenticator.feature.auth.authScreen
 import me.gingerninja.authenticator.feature.auth.navigateToAuth
 import me.gingerninja.authenticator.core.ui.design.R as commonR
@@ -59,7 +65,7 @@ class MainActivity : FragmentActivity() {
 
         setContent {
             val navController = rememberNavController()
-            val sizeClass = calculateWindowSizeClass(this)
+            val sizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
 
             LaunchedEffect(Unit) {
                 Measure(1, MeasureUnit.PINT)
@@ -86,8 +92,25 @@ class MainActivity : FragmentActivity() {
                         )
                     },
                     bottomBar = {
-                        NavigationBar {
-                            NavigationBarItem(
+                        val isMedium =
+                            sizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
+
+                        val iconPosition = if (isMedium) {
+                            NavigationItemIconPosition.Start
+                        } else {
+                            NavigationItemIconPosition.Top
+                        }
+
+                        val arrangement = if (isMedium) {
+                            ShortNavigationBarArrangement.Centered
+                        } else {
+                            ShortNavigationBarArrangement.EqualWeight
+                        }
+
+                        ShortNavigationBar(
+                            arrangement = arrangement,
+                        ) {
+                            ShortNavigationBarItem(
                                 selected = true,
                                 onClick = { /*TODO*/ },
                                 icon = {
@@ -98,10 +121,11 @@ class MainActivity : FragmentActivity() {
                                 },
                                 label = {
                                     Text("Accounts")
-                                }
+                                },
+                                iconPosition = iconPosition,
                             )
 
-                            NavigationBarItem(
+                            ShortNavigationBarItem(
                                 selected = false,
                                 onClick = { /*TODO*/ },
                                 icon = {
@@ -112,10 +136,11 @@ class MainActivity : FragmentActivity() {
                                 },
                                 label = {
                                     Text("Labels")
-                                }
+                                },
+                                iconPosition = iconPosition,
                             )
 
-                            NavigationBarItem(
+                            ShortNavigationBarItem(
                                 selected = false,
                                 onClick = { /*TODO*/ },
                                 icon = {
@@ -126,7 +151,8 @@ class MainActivity : FragmentActivity() {
                                 },
                                 label = {
                                     Text("More")
-                                }
+                                },
+                                iconPosition = iconPosition,
                             )
                         }
                         /*BottomAppBar(
@@ -232,17 +258,24 @@ class MainActivity : FragmentActivity() {
 
 @Composable
 private fun SystemBars() {
-    val systemUiController = rememberSystemUiController()
-    val useDarkIcons = !isSystemInDarkTheme()
+    val activity = LocalActivity.current as? ComponentActivity
+    val isDark = isAppInDarkTheme()
 
-    DisposableEffect(systemUiController, useDarkIcons) {
-        systemUiController.setSystemBarsColor(
-            color = Color.Transparent,
-            darkIcons = useDarkIcons,
-            isNavigationBarContrastEnforced = false
+    SideEffect {
+        val navbar = if (isDark) {
+            SystemBarStyle.dark(
+                scrim = Color.Transparent.toArgb(),
+            )
+        } else {
+            SystemBarStyle.light(
+                scrim = Color.Transparent.toArgb(),
+                darkScrim = Color.Transparent.toArgb(),
+            )
+        }
+
+        activity?.enableEdgeToEdge(
+            navigationBarStyle = navbar,
         )
-
-        onDispose {}
     }
 }
 

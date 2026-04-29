@@ -1,36 +1,35 @@
 [versions]
 agp = "9.2.0"
-kotlin = "2.2.10"
-ksp = "2.3.2"
+kotlin = "2.3.21"
+ksp = "2.3.7"
 junit = "4.13.2"
-accompanist = "0.36.0"
 android-desugar-jdk-libs = "2.1.5"
-androidx-activity-compose = "1.10.1"
-androidx-appcompat = "1.7.1"
-androidx-biometric = "1.4.0-alpha04"
+androidx-activity-compose = "1.13.0"
+androidx-appcompat = "1.8.0-alpha01"
+androidx-biometric = "1.4.0-alpha07"
 # androidx-compose-bom = "2023.06.01"
 # androidx-compose-compiler = "1.5.5"
-androidx-compose = "1.9.0-beta01"
-androidx-compose-material3 = "1.4.0-alpha16"
-androidx-core-ktx = "1.16.0"
-androidx-datastore = "1.1.7"
-androidx-lifecycle = "2.9.1"
-androidx-navigation = "2.9.0"
-androidx-room = "2.7.2"
-androidx-security = "1.1.0-beta01"
-androidx-test-core = "1.6.1"
-androidx-test-espresso-core = "3.6.1"
-androidx-test-ext-junit = "1.2.1"
-androidx-test-rules = "1.6.1"
-androidx-test-runner = "1.6.2"
+androidx-compose = "1.12.0-alpha01"
+androidx-compose-material3 = "1.5.0-alpha18"
+androidx-compose-material3-adaptive = "1.3.0-alpha10"
+androidx-core-ktx = "1.19.0-alpha01"
+androidx-datastore = "1.3.0-alpha08"
+androidx-lifecycle = "2.11.0-beta01"
+androidx-navigation = "2.10.0-alpha03"
+androidx-room = "2.8.4"
+androidx-security = "1.1.0"
+androidx-test-core = "1.7.0"
+androidx-test-espresso-core = "3.7.0"
+androidx-test-ext-junit = "1.3.0"
+androidx-test-rules = "1.7.0"
+androidx-test-runner = "1.7.0"
 androidx-test-uiautomator = "2.3.0"
 kotlinx-collections-immutable = "0.4.0"
 kotlinx-coroutines = "1.10.2"
-kotlinx-datetime = "0.7.0"
-kotlinx-serialization-json = "1.8.1"
-androidx-hilt-nav-compose = "1.2.0"
-hilt = "2.56.2"
-hilt-extensions = "1.2.0"
+kotlinx-datetime = "0.7.1"
+kotlinx-serialization-json = "1.11.0"
+hilt = "2.59.2"
+hilt-extensions = "1.4.0-beta01"
 sqlcipher = "4.14.1"
 turbine = "1.2.1"
 
@@ -39,6 +38,7 @@ android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity-compose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "androidx-biometric" }
+androidx-biometric-compose = { group = "androidx.biometric", name = "biometric-compose", version.ref = "androidx-biometric" }
 # Compose
 # androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidx-compose-bom" }
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "androidx-compose" }
@@ -48,22 +48,23 @@ androidx-compose-foundation = { group = "androidx.compose.foundation", name = "f
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "androidx-compose" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "androidx-compose-material3" }
 androidx-compose-material3-windowSizeClass = { group = "androidx.compose.material3", name = "material3-window-size-class", version.ref = "androidx-compose-material3" }
+androidx-compose-material3-adaptive = {group = "androidx.compose.material3.adaptive", name = "adaptive-navigation3", version.ref="androidx-compose-material3-adaptive"}
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "androidx-compose" }
 androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "androidx-compose" }
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version.ref = "androidx-compose" }
 androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "androidx-compose" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "androidx-compose" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "androidx-compose" }
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
+androidx-core-ktx = { group = "androidx.core", name = "core", version.ref = "androidx-core-ktx" }
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidx-datastore" }
-androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidx-hilt-nav-compose" }
+androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-extensions" }
+androidx-hilt-lifecycle-viewmodel-compose = { group = "androidx.hilt", name = "hilt-lifecycle-viewmodel-compose", version.ref = "hilt-extensions" }
 androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidx-navigation" }
 androidx-navigation-testing = { group = "androidx.navigation", name = "navigation-testing", version.ref = "androidx-navigation" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
-androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidx-room" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
 androidx-security-crypto = { group = "androidx.security", name = "security-crypto-ktx", version.ref = "androidx-security" }
 
@@ -90,7 +91,6 @@ kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 
-accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 sqlcipher = { group = "net.zetetic", name = "sqlcipher-android", version.ref = "sqlcipher" }
 
@@ -107,7 +107,6 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 android-test = { id = "com.android.test", version.ref = "agp" }
 compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
