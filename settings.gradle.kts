@@ -1,3 +1,6 @@
+@file:Suppress("UnstableApiUsage")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
     includeBuild("build-logic")
     repositories {
@@ -28,6 +31,7 @@ include(":core:database-test")
 include(":core:datastore")
 include(":core:datastore-test")
 include(":core:model")
+include(":core:navigation")
 include(":core:testing")
 include(":core:ui")
 include(":core:ui-design")

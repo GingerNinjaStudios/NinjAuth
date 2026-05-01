@@ -52,6 +52,7 @@ import me.gingerninja.authenticator.core.design.theme.NinjAuthTheme
 import me.gingerninja.authenticator.core.design.theme.isAppInDarkTheme
 import me.gingerninja.authenticator.feature.auth.authScreen
 import me.gingerninja.authenticator.feature.auth.navigateToAuth
+import me.gingerninja.authenticator.navigation.NinjaNavDisplay
 import me.gingerninja.authenticator.core.ui.design.R as commonR
 
 @AndroidEntryPoint
@@ -73,6 +74,10 @@ class MainActivity : FragmentActivity() {
 
             NinjAuthTheme {
                 SystemBars()
+
+                NinjaNavDisplay()
+
+                /*
                 val ctx = LocalContext.current
 
                 val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
@@ -250,7 +255,7 @@ class MainActivity : FragmentActivity() {
                             }
                         }
                     }*/
-                }
+                }*/
             }
         }
     }

@@ -17,11 +17,13 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -59,7 +61,13 @@ import me.gingerninja.authenticator.core.ui.design.R as commonR
 @Composable
 fun AuthScreen(
     modifier: Modifier = Modifier,
-    viewModel: AuthViewModel = hiltViewModel(),
+    isReauthenticating: Boolean = false,
+    viewModel: AuthViewModel = hiltViewModel(
+        key = "$isReauthenticating",
+        creationCallback = { factory: AuthViewModel.Factory ->
+            factory.create(isReauthenticating)
+        },
+    ),
     onAuthComplete: () -> Unit,
 ) {
     val activity = LocalActivity.current as FragmentActivity
@@ -147,68 +155,84 @@ private fun AuthScreen(
 
     val scrollState = rememberScrollState()
 
-    Column(
-        modifier = modifier
-            .padding(20.dp)
-            .verticalScroll(scrollState),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        if (isReauthenticating) {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 10.dp),
-                text = stringResource(id = R.string.auth_intermediate_message),
-                style = MaterialTheme.typography.titleMedium
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text("NinjAuth") // TODO use string resource
+                }
             )
         }
-
-        PasswordField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequester),
-            state = passwordState,
-            enabled = enabled,
-            isError = error?.wrongPass ?: false,
-            lockType = lockType,
-            focusRequester = focusRequester,
-            onSubmit = onPasswordSubmit
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
+    ) { innerPadding ->
         Column(
-            modifier = Modifier.width(IntrinsicSize.Max)
+            modifier = modifier
+                .padding(innerPadding)
+                .verticalScroll(scrollState)
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    passwordState.showSecret = false
-                    onPasswordSubmit(/*passwordFieldState.value*/)
-                },
-                enabled = enabled && passwordState.value.isNotEmpty(),
-            ) {
-                Text(text = stringResource(id = R.string.btn_login))
+            if (isReauthenticating) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 10.dp),
+                    text = stringResource(id = R.string.auth_intermediate_message),
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
 
-            if (isBiometricAvailable) {
-                ButtonSeparator()
+            PasswordField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
+                state = passwordState,
+                enabled = enabled,
+                isError = error?.wrongPass ?: false,
+                lockType = lockType,
+                focusRequester = focusRequester,
+                onSubmit = onPasswordSubmit
+            )
 
-                OutlinedButton(
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Column(
+                modifier = Modifier.width(IntrinsicSize.Max)
+            ) {
+                Button(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = onBiometricClick,
-                    enabled = enabled,
+                    onClick = {
+                        passwordState.showSecret = false
+                        onPasswordSubmit(/*passwordFieldState.value*/)
+                    },
+                    enabled = enabled && passwordState.value.isNotEmpty(),
                 ) {
-                    Icon(
-                        modifier = Modifier.padding(end = 8.dp),
-                        painter = painterResource(commonR.drawable.ic_fingerprint),
-                        contentDescription = null
-                    )
-                    Text(text = stringResource(id = R.string.auth_use_biometric), softWrap = false)
+                    Text(text = stringResource(id = R.string.btn_login))
+                }
+
+                if (isBiometricAvailable) {
+                    ButtonSeparator()
+
+                    OutlinedButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = onBiometricClick,
+                        enabled = enabled,
+                    ) {
+                        Icon(
+                            modifier = Modifier.padding(end = 8.dp),
+                            painter = painterResource(commonR.drawable.ic_fingerprint),
+                            contentDescription = null
+                        )
+                        Text(
+                            text = stringResource(id = R.string.auth_use_biometric),
+                            softWrap = false
+                        )
+                    }
                 }
             }
         }
     }
+
 }
 
 @Composable

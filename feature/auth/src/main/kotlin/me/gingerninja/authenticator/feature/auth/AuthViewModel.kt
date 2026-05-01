@@ -8,6 +8,9 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.BufferOverflow
@@ -37,8 +40,9 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
 @SuppressLint("StaticFieldLeak")
-@HiltViewModel
-class AuthViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = AuthViewModel.Factory::class)
+class AuthViewModel @AssistedInject constructor(
+    @Assisted private val isReauthenticating: Boolean,
     @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle,
     private val settings: NinjAuthSettings,
@@ -46,7 +50,7 @@ class AuthViewModel @Inject constructor(
     private val passwordAuthenticator: PasswordAuthenticator,
     private val biometricAuthenticator: BiometricAuthenticator,
 ) : ViewModel() {
-    private val args: AuthArgs = AuthArgs(savedStateHandle)
+    //private val args: AuthArgs = AuthArgs(savedStateHandle)
 
     /**
      * Holds the password state.
@@ -59,7 +63,7 @@ class AuthViewModel @Inject constructor(
 
     private val internalState = MutableStateFlow(
         AuthUiState(
-            isReauthenticating = args.isReauthenticating,
+            isReauthenticating = isReauthenticating,
             enabled = true,
             isBiometricAvailable = false,
             lockType = SecurityConfig.LockType.NONE
@@ -262,6 +266,11 @@ class AuthViewModel @Inject constructor(
             BiometricException.Error.UNKNOWN -> { /* TODO */
             }
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(isReauthenticating: Boolean): AuthViewModel
     }
 }
 
