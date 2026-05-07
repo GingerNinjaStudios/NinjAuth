@@ -42,7 +42,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -54,6 +54,7 @@ import kotlinx.coroutines.flow.collectLatest
 import me.gingerninja.authenticator.core.design.component.NinjaSecretTextField
 import me.gingerninja.authenticator.core.design.component.NinjaSecretTextFieldState
 import me.gingerninja.authenticator.core.design.component.rememberSecretTextFieldState
+import me.gingerninja.authenticator.core.design.utils.ThemeWrapper
 import me.gingerninja.authenticator.core.model.settings.SecurityConfig
 import me.gingerninja.authenticator.core.ui.DevicePreviews
 import me.gingerninja.authenticator.core.ui.design.R as commonR
@@ -239,7 +240,7 @@ private fun AuthScreen(
 private fun ConfirmExitDialog(
     onConfirm: () -> Unit
 ) {
-    val (showDialog, setShowDialog) = rememberSaveable { mutableStateOf(false) }
+    val [showDialog, setShowDialog] = rememberSaveable { mutableStateOf(false) }
 
     BackHandler {
         setShowDialog(true)
@@ -288,7 +289,7 @@ private fun PasswordField(
         KeyboardOptions(keyboardType = keyboardType, imeAction = ImeAction.Done)
     }
 
-    val (showError, setShowError) = rememberSaveable(isError) {
+    val [showError, setShowError] = rememberSaveable(isError) {
         mutableStateOf(isError)
     }
 
@@ -354,7 +355,7 @@ private fun ButtonSeparator(
 }
 
 @DevicePreviews
-@PreviewLightDark
+@PreviewWrapper(ThemeWrapper::class)
 @Composable
 private fun AuthScreenPreview() {
     AuthScreen(

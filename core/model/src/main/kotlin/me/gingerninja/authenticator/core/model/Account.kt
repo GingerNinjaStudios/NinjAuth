@@ -1,9 +1,9 @@
 package me.gingerninja.authenticator.core.model
 
-import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.persistentSetOf
+import javax.annotation.concurrent.Immutable
 import kotlin.time.Instant
 
+@Immutable
 sealed interface Account {
     val id: Long
     val uid: String
@@ -12,7 +12,7 @@ sealed interface Account {
     val digits: Int
     val source: Source
     val algorithm: Algorithm
-    val labels: ImmutableSet<Label>
+    val labels: Set<Label>
     val title: String?
     val issuer: String?
     val position: Int
@@ -31,6 +31,7 @@ sealed interface Account {
 /**
  * Time-Based One-Time Password (TOTP) account
  */
+@Immutable
 data class TotpAccount(
     override val id: Long,
     override val uid: String,
@@ -42,7 +43,7 @@ data class TotpAccount(
     override val algorithm: Account.Algorithm,
     override val createdAt: Instant,
     override val updatedAt: Instant,
-    override val labels: ImmutableSet<Label> = persistentSetOf(),
+    override val labels: Set<Label> = setOf(),
     override val title: String? = null,
     override val issuer: String? = null,
     override val position: Int = -1,
@@ -51,6 +52,7 @@ data class TotpAccount(
 /**
  * HMAC-Based One-Time Password (HOTP) account
  */
+@Immutable
 data class HotpAccount(
     override val id: Long,
     override val uid: String,
@@ -62,7 +64,7 @@ data class HotpAccount(
     override val algorithm: Account.Algorithm,
     override val createdAt: Instant,
     override val updatedAt: Instant,
-    override val labels: ImmutableSet<Label> = persistentSetOf(),
+    override val labels: Set<Label> = setOf(),
     override val title: String? = null,
     override val issuer: String? = null,
     override val position: Int = -1,

@@ -64,6 +64,8 @@ private inline fun <reified T : KotlinBaseExtension> Project.configureKotlin() =
             "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
             "-opt-in=kotlinx.coroutines.FlowPreview",
             "-opt-in=kotlin.time.ExperimentalTime",
+            "-Xexplicit-backing-fields",
+            "-Xname-based-destructuring=complete"
             // "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
         )
         freeCompilerArgs.add(

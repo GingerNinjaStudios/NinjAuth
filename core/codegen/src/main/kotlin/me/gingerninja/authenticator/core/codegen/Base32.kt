@@ -13,9 +13,9 @@ object Base32 {
         val raw = data.uppercase().let {
             val paddingIdx = it.indexOf('=')
             if (paddingIdx > -1) {
-                data.substring(0, paddingIdx)
+                it.substring(0, paddingIdx)
             } else {
-                data
+                it
             }
         }
 

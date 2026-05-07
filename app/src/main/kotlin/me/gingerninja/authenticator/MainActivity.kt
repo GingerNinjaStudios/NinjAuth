@@ -9,51 +9,20 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationItemIconPosition
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ShortNavigationBar
-import androidx.compose.material3.ShortNavigationBarArrangement
-import androidx.compose.material3.ShortNavigationBarItem
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.rememberNavController
-import androidx.window.core.layout.WindowSizeClass
 import dagger.hilt.android.AndroidEntryPoint
-import me.gingerninja.authenticator.core.design.anim.motionEnterTransition
-import me.gingerninja.authenticator.core.design.anim.motionExitTransition
-import me.gingerninja.authenticator.core.design.anim.motionPopEnterTransition
-import me.gingerninja.authenticator.core.design.anim.motionPopExitTransition
 import me.gingerninja.authenticator.core.design.theme.NinjAuthTheme
 import me.gingerninja.authenticator.core.design.theme.isAppInDarkTheme
-import me.gingerninja.authenticator.feature.auth.authScreen
-import me.gingerninja.authenticator.feature.auth.navigateToAuth
 import me.gingerninja.authenticator.navigation.NinjaNavDisplay
-import me.gingerninja.authenticator.core.ui.design.R as commonR
 
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
@@ -65,7 +34,6 @@ class MainActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val navController = rememberNavController()
             val sizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
 
             LaunchedEffect(Unit) {

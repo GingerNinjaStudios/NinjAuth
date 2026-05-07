@@ -73,6 +73,6 @@ class OtpGeneratorTest {
 
         val remaining = otpGenerator.getRemainingTime(account)
 
-        assertEquals(20, remaining.inWholeSeconds)
+        assertEquals(20, remaining?.inWholeSeconds)
     }
 }

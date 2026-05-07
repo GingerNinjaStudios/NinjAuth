@@ -15,6 +15,8 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.android)
 
+    implementation(libs.androidx.compose.material3)
+
     api(libs.androidx.navigation3.runtime)
     api(libs.androidx.navigation3.ui)
     api(libs.androidx.lifecycle.viewmodel.navigation3)

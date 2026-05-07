@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.ninjauth.android.lib)
+    alias(libs.plugins.ninjauth.android.lib.compose)
     alias(libs.plugins.ninjauth.android.hilt)
 }
 
@@ -11,6 +12,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.datetime)
     implementation(project(":core:model"))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.animation)
 
     testImplementation(libs.junit)
 }

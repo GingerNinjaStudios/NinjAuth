@@ -35,7 +35,6 @@ import me.gingerninja.authenticator.core.common.toDatabaseByteArray
 import me.gingerninja.authenticator.core.datastore.NinjAuthSettings
 import me.gingerninja.authenticator.core.design.component.NinjaSecretTextFieldState
 import me.gingerninja.authenticator.core.model.settings.SecurityConfig
-import javax.inject.Inject
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 

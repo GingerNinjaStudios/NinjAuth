@@ -9,14 +9,17 @@ import java.security.NoSuchAlgorithmException
 import java.util.Locale
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
+import javax.inject.Inject
 import kotlin.math.floor
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
-class OtpGenerator(
+class OtpGenerator @Inject constructor(
     private val timeProvider: TimeProvider = DefaultTimeProvider
-) {
+): CodeGenerator {
+    override fun getCurrentTime() = timeProvider.getCurrentTime()
+
     @Throws(NoSuchAlgorithmException::class, InvalidKeyException::class)
     private fun getRawHMAC(
         data: ByteArray,
@@ -109,7 +112,7 @@ class OtpGenerator(
      * @see HotpAccount
      * @see TotpAccount
      */
-    fun getCode(account: Account): String {
+    override fun getCode(account: Account): String {
         val secret: String = account.secret
         val digits: Int = account.digits
         val algo: OtpAlgorithm = when (account.algorithm) {
@@ -144,14 +147,18 @@ class OtpGenerator(
      * @return the remaining duration of the current period
      * @see TotpAccount
      */
-    fun getRemainingTime(account: TotpAccount): Duration {
-        val period = account.period.coerceAtLeast(1).seconds
+    override fun getRemainingTime(account: Account): Duration? {
+        return if (account is TotpAccount) {
+            val period = account.period.coerceAtLeast(1).seconds
 
-        val time = timeProvider.getCurrentTime().toEpochMilliseconds().milliseconds
+            val time = timeProvider.getCurrentTime().toEpochMilliseconds().milliseconds
 
-        val fracturedTime = period * floor(time / period)
+            val fracturedTime = period * floor(time / period)
 
-        return period - (time - fracturedTime)
+            period - (time - fracturedTime)
+        } else {
+            null
+        }
     }
 
     companion object {

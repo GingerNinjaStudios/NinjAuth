@@ -5,7 +5,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import kotlinx.collections.immutable.toImmutableSet
 import me.gingerninja.authenticator.core.model.Account
 import me.gingerninja.authenticator.core.model.HotpAccount
 import me.gingerninja.authenticator.core.model.TotpAccount
@@ -116,7 +115,44 @@ data class AccountEntity(
 }
 
 
-fun AccountEntity.asModel() {
+fun AccountEntity.asModel() = when (type) {
+    AccountEntity.Type.HOTP -> HotpAccount(
+        id = id,
+        uid = uid,
+        accountName = accountName,
+        secret = secret,
+        digits = digits,
+        source = source.asModel(),
+        algorithm = algorithm.asModel(),
+        counter = typeSpecificData,
+        title = title,
+        issuer = issuer,
+        position = position,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        // labels are intentionally empty; AccountWithLabels is used for that
+    )
+
+    AccountEntity.Type.TOTP -> TotpAccount(
+        id = id,
+        uid = uid,
+        accountName = accountName,
+        secret = secret,
+        digits = digits,
+        source = source.asModel(),
+        algorithm = algorithm.asModel(),
+        period = typeSpecificData,
+        title = title,
+        issuer = issuer,
+        position = position,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        // labels are intentionally empty; AccountWithLabels is used for that
+    )
+}
+
+
+fun AccountWithLabels.asModel() = with(account) {
     when (type) {
         AccountEntity.Type.HOTP -> HotpAccount(
             id = id,
@@ -132,7 +168,7 @@ fun AccountEntity.asModel() {
             position = position,
             createdAt = createdAt,
             updatedAt = updatedAt,
-            // labels are intentionally empty; AccountWithLabels is used for that
+            labels = labels.map { it.asModel() }.toSet(),
         )
 
         AccountEntity.Type.TOTP -> TotpAccount(
@@ -149,50 +185,11 @@ fun AccountEntity.asModel() {
             position = position,
             createdAt = createdAt,
             updatedAt = updatedAt,
-            // labels are intentionally empty; AccountWithLabels is used for that
+            labels = labels.map { it.asModel() }.toSet(),
         )
     }
 }
 
-fun AccountWithLabels.asModel() {
-    with(account) {
-        when (type) {
-            AccountEntity.Type.HOTP -> HotpAccount(
-                id = id,
-                uid = uid,
-                accountName = accountName,
-                secret = secret,
-                digits = digits,
-                source = source.asModel(),
-                algorithm = algorithm.asModel(),
-                counter = typeSpecificData,
-                title = title,
-                issuer = issuer,
-                position = position,
-                createdAt = createdAt,
-                updatedAt = updatedAt,
-                labels = labels.map { it.asModel() }.toImmutableSet(),
-            )
-
-            AccountEntity.Type.TOTP -> TotpAccount(
-                id = id,
-                uid = uid,
-                accountName = accountName,
-                secret = secret,
-                digits = digits,
-                source = source.asModel(),
-                algorithm = algorithm.asModel(),
-                period = typeSpecificData,
-                title = title,
-                issuer = issuer,
-                position = position,
-                createdAt = createdAt,
-                updatedAt = updatedAt,
-                labels = labels.map { it.asModel() }.toImmutableSet(),
-            )
-        }
-    }
-}
 
 fun AccountEntity.Source.asModel() = when (this) {
     AccountEntity.Source.URI -> Account.Source.URI
