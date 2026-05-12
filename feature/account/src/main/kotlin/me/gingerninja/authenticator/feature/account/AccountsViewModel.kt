@@ -7,6 +7,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import me.gingerninja.authenticator.core.codegen.CodeGenerator
@@ -14,6 +16,7 @@ import me.gingerninja.authenticator.core.codegen.OtpGenerator
 import me.gingerninja.authenticator.core.data.repository.AccountsRepository
 import me.gingerninja.authenticator.core.model.Account
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class AccountsViewModel @Inject constructor(
@@ -22,7 +25,9 @@ class AccountsViewModel @Inject constructor(
     internal val codeGenerator: CodeGenerator,
 ) : ViewModel() {
     private val filters = combine(
-        savedStateHandle.getStateFlow<String?>(SAVED_STATE_KEY_SEARCH, null),
+        savedStateHandle.getStateFlow<String?>(SAVED_STATE_KEY_SEARCH, null)
+            .debounce(200.milliseconds)
+            .distinctUntilChanged(),
         savedStateHandle.getStateFlow<LongArray?>(SAVED_STATE_KEY_LABELS, null),
     ) { search, labels ->
         AccountsFilters(
@@ -53,6 +58,10 @@ class AccountsViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = AccountsUiState()
         )
+
+    internal fun search(term: String) {
+        savedStateHandle[SAVED_STATE_KEY_SEARCH] = term
+    }
 
     companion object {
         private const val SAVED_STATE_KEY_SEARCH = "search"

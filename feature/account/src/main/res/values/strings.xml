@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_add_new_title">Add new account</string>
+    <string name="account_add_scan_camera">Scan QR code with camera</string>
+    <string name="account_add_scan_image">Scan QR code from image</string>
+    <string name="account_add_manual">Enter details</string>
+</resources>

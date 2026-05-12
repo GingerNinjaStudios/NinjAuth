@@ -1,6 +1,7 @@
 package me.gingerninja.authenticator.core.codegen
 
-import androidx.compose.animation.core.rememberInfiniteTransition
+import android.os.PowerManager
+import androidx.compose.animation.core.withInfiniteAnimationFrameMillis
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -11,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
@@ -21,6 +23,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import me.gingerninja.authenticator.core.model.Account
 import me.gingerninja.authenticator.core.model.TotpAccount
 import kotlin.time.Duration
@@ -49,6 +52,12 @@ fun rememberCodeState(
     generator: CodeGeneratorState,
     account: Account,
 ): CodeState {
+    val context = LocalContext.current
+
+    val isPowerSaving = remember(context) {
+        context.getSystemService(PowerManager::class.java)?.isPowerSaveMode ?: false
+    }
+
     val state = remember(account, generator) {
         CodeState(
             account = account,
@@ -58,12 +67,37 @@ fun rememberCodeState(
     }
     val lifecycleOwner = LocalLifecycleOwner.current
 
-
-    LaunchedEffect(generator, account, lifecycleOwner) {
+    LaunchedEffect(generator, account, lifecycleOwner, isPowerSaving) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-            generator.clock.collect {
-                state.code = generator.codeGenerator.getCode(account)
-                state.remainingTime = generator.codeGenerator.getRemainingTime(account)
+            state.code = generator.codeGenerator.getCode(account)
+            state.remainingTime = generator.codeGenerator.getRemainingTime(account)
+
+            if (account is TotpAccount) {
+                launch {
+                    generator.clock.collect {
+                        state.code = generator.codeGenerator.getCode(account)
+
+                        if (isPowerSaving) {
+                            state.remainingTime = generator.codeGenerator.getRemainingTime(account)
+                        }
+                    }
+                }
+
+                launch {
+                    while (!isPowerSaving && isActive) {
+                        withInfiniteAnimationFrameMillis {
+                            val remaining = generator.codeGenerator.getRemainingTime(account)
+
+                            if ((remaining ?: Duration.ZERO) > (state.remainingTime
+                                    ?: Duration.ZERO)
+                            ) {
+                                state.code = generator.codeGenerator.getCode(account)
+                            }
+
+                            state.remainingTime = remaining
+                        }
+                    }
+                }
             }
         }
     }
@@ -79,7 +113,7 @@ class CodeGeneratorState(
     val clock = flow {
         while (currentCoroutineContext().isActive) {
             emit(codeGenerator.getCurrentTime())
-            delay(500.milliseconds)
+            delay(1000.milliseconds)
         }
     }.stateIn(
         scope = scope,
@@ -102,7 +136,7 @@ class CodeState(
 
     val remainingTimeFraction by derivedStateOf {
         if (account is TotpAccount) {
-            (remainingTime?.inWholeSeconds ?: 0) / account.period.toFloat()
+            (remainingTime?.inWholeMilliseconds ?: 0) / account.period.times(1000).toFloat()
         } else {
             Float.NaN
         }
