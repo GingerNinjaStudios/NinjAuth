@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -58,7 +60,7 @@ class AuthViewModel @AssistedInject constructor(
      * the entered value when the app config changes (e.g. screen orientation changes) without
      * possibly saving the value to the disk (which would happen with rememberSaveable).
      */
-    internal val passwordState = NinjaSecretTextFieldState()
+    internal val passwordState = NinjaSecretTextFieldState(TextFieldState())
 
     private val internalState = MutableStateFlow(
         AuthUiState(
@@ -79,6 +81,11 @@ class AuthViewModel @AssistedInject constructor(
             lockType = settingsData.security.lockType
         )
     }
+        .onEach {
+            if (!it.isAuthenticated && it.lockType == SecurityConfig.LockType.NONE) {
+                runAuthentication { authenticate() }
+            }
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
@@ -120,7 +127,7 @@ class AuthViewModel @AssistedInject constructor(
     fun authenticate(/*password: String*/) {
         // TODO remove
         if (state.value?.lockType == SecurityConfig.LockType.NONE) {
-            viewModelScope.launch {
+            runAuthentication {
                 unlockedAuthenticator.authenticate()
             }
             return

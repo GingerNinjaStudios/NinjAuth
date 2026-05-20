@@ -113,7 +113,7 @@ class AccountDaoTest {
 
         val results = accountDao.getAccounts(labels = targetLabelIds, matchAllLabels = true).first()
 
-        results.forEach { (_, labels) ->
+        results.forEach { [_, labels] ->
             val labelIds = labels.map { it.id }.toSet()
             val section = targetLabelIds.intersect(labelIds)
 
@@ -133,7 +133,7 @@ class AccountDaoTest {
         val results =
             accountDao.getAccounts(labels = targetLabelIds, matchAllLabels = false).first()
 
-        results.forEach { (_, labels) ->
+        results.forEach { [_, labels] ->
             val labelIds = labels.map { it.id }.toSet()
             val section = targetLabelIds.intersect(labelIds)
 

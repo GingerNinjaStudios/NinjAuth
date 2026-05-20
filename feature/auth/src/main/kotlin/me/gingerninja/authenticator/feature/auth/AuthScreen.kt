@@ -9,14 +9,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -27,7 +25,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,9 +36,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
@@ -51,11 +45,12 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.flow.collectLatest
-import me.gingerninja.authenticator.core.design.component.NinjaSecretTextField
+import me.gingerninja.authenticator.core.design.component.NinjaButton
+import me.gingerninja.authenticator.core.design.component.NinjaPasswordField
 import me.gingerninja.authenticator.core.design.component.NinjaSecretTextFieldState
 import me.gingerninja.authenticator.core.design.component.rememberSecretTextFieldState
-import me.gingerninja.authenticator.core.design.utils.ThemeWrapper
 import me.gingerninja.authenticator.core.model.settings.SecurityConfig
+import me.gingerninja.authenticator.core.preview.ThemeWrapper
 import me.gingerninja.authenticator.core.ui.DevicePreviews
 import me.gingerninja.authenticator.core.ui.design.R as commonR
 
@@ -169,6 +164,7 @@ private fun AuthScreen(
         Column(
             modifier = modifier
                 .padding(innerPadding)
+                .imePadding()
                 .verticalScroll(scrollState)
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -183,16 +179,16 @@ private fun AuthScreen(
                 )
             }
 
-            PasswordField(
+            NinjaPasswordField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester),
                 state = passwordState,
                 enabled = enabled,
                 isError = error?.wrongPass ?: false,
-                lockType = lockType,
+                isPin = lockType == SecurityConfig.LockType.PIN,
                 focusRequester = focusRequester,
-                onSubmit = onPasswordSubmit
+                onSubmit = onPasswordSubmit,
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -200,7 +196,7 @@ private fun AuthScreen(
             Column(
                 modifier = Modifier.width(IntrinsicSize.Max)
             ) {
-                Button(
+                NinjaButton(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
                         passwordState.showSecret = false
@@ -267,66 +263,6 @@ private fun ConfirmExitDialog(
             }
         )
     }
-}
-
-@Composable
-private fun PasswordField(
-    modifier: Modifier = Modifier,
-    state: NinjaSecretTextFieldState,
-    enabled: Boolean,
-    isError: Boolean,
-    lockType: SecurityConfig.LockType,
-    onSubmit: () -> Unit,
-    focusRequester: FocusRequester,
-) {
-    val keyboardOptions = remember(lockType) {
-        val keyboardType = when (lockType) {
-            SecurityConfig.LockType.NONE -> KeyboardType.Text
-            SecurityConfig.LockType.PIN -> KeyboardType.NumberPassword
-            SecurityConfig.LockType.PASSWORD -> KeyboardType.Password
-        }
-
-        KeyboardOptions(keyboardType = keyboardType, imeAction = ImeAction.Done)
-    }
-
-    val [showError, setShowError] = rememberSaveable(isError) {
-        mutableStateOf(isError)
-    }
-
-    DisposableEffect(state.value) {
-        setShowError(false)
-        onDispose { }
-    }
-
-    val errorTextRes = remember(showError, lockType) {
-        if (showError) {
-            when (lockType) {
-                SecurityConfig.LockType.PIN -> R.string.auth_error_wrong_pin
-                SecurityConfig.LockType.PASSWORD -> R.string.auth_error_wrong_password
-                else -> null
-            }
-        } else {
-            null
-        }
-    }
-
-    NinjaSecretTextField(
-        modifier = modifier,
-        state = state,
-        enabled = enabled,
-        isError = showError,
-        textAlign = if (lockType == SecurityConfig.LockType.PIN) TextAlign.Center else TextAlign.Start,
-        supportingText = errorTextRes?.let { stringResource(id = it) }
-            ?: "", // intentionally using empty string as placeholder
-        keyboardOptions = keyboardOptions,
-        keyboardActions = KeyboardActions {
-            if (state.value.isNotEmpty()) {
-                state.showSecret = false
-                focusRequester.freeFocus()
-                onSubmit()
-            }
-        }
-    )
 }
 
 @Composable

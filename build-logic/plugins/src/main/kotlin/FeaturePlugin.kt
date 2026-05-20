@@ -28,6 +28,7 @@ class FeaturePlugin : Plugin<Project> {
                 add("implementation", project(":core:datastore"))
                 add("implementation", project(":core:model"))
                 add("implementation", project(":core:navigation"))
+                add("implementation", project(":core:preview"))
                 add("implementation", project(":core:ui"))
                 add("implementation", project(":core:ui-design"))
                 //add("implementation", project(":core:domain"))

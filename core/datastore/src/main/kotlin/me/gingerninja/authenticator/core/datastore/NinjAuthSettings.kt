@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.stateIn
 import me.gingerninja.authenticator.core.common.ApplicationScope
 import me.gingerninja.authenticator.core.model.settings.AppearanceConfig
 import me.gingerninja.authenticator.core.model.settings.SecurityConfig
@@ -34,7 +35,9 @@ class NinjAuthSettings @Inject constructor(
         UserSettings(
             appearance = AppearanceConfig(
                 theme = AppearanceConfig.Theme.fromString(it[Keys.appearanceTheme])
-                    ?: Defaults.appearance.theme
+                    ?: Defaults.appearance.theme,
+                dynamicColors = it[Keys.appearanceDynamicColors]
+                    ?: Defaults.appearance.dynamicColors,
             ),
             security = SecurityConfig(
                 lockType = SecurityConfig.LockType.fromString(it[Keys.securityLockType])
@@ -51,7 +54,8 @@ class NinjAuthSettings @Inject constructor(
             firstRunComplete = it[Keys.firstRunComplete] ?: Defaults.firstRunComplete
         )
     }
-        .shareIn(scope, SharingStarted.Eagerly, 1)
+        //.shareIn(scope, SharingStarted.Eagerly, 1)
+        .stateIn(scope, SharingStarted.Eagerly, Defaults)
 
     suspend fun getBiometricKey() = dataStore.data.first()[Keys.authBiometricKey]
 
@@ -111,6 +115,10 @@ class NinjAuthSettings @Inject constructor(
         saveValue(Keys.appearanceTheme, theme.value)
     }
 
+    suspend fun setDynamicColors(dynamicColors: Boolean) {
+        saveValue(Keys.appearanceDynamicColors, dynamicColors)
+    }
+
     suspend fun setSecurityLockType(lockType: SecurityConfig.LockType) {
         saveValue(Keys.securityLockType, lockType.value)
     }
@@ -146,13 +154,15 @@ class NinjAuthSettings @Inject constructor(
         val securityHideRecent = booleanPreferencesKey("settings_security_hide_recent")
         val firstRunComplete = booleanPreferencesKey("settings_first_run_complete")
         val appearanceTheme = stringPreferencesKey("settings_appearance_theme")
+        val appearanceDynamicColors = booleanPreferencesKey("settings_appearance_dynamic_colors")
         val securityBioVersion = intPreferencesKey("sec_bio_ver")
     }
 
     companion object {
         val Defaults = UserSettings(
             appearance = AppearanceConfig(
-                theme = AppearanceConfig.Theme.DARK
+                theme = AppearanceConfig.Theme.DARK,
+                dynamicColors = true,
             ),
             security = SecurityConfig(
                 lockType = SecurityConfig.LockType.NONE,

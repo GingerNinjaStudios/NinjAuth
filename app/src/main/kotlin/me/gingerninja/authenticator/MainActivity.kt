@@ -1,31 +1,43 @@
 package me.gingerninja.authenticator
 
 import android.annotation.SuppressLint
-import android.icu.util.Measure
-import android.icu.util.MeasureUnit
 import android.os.Bundle
+import android.os.PowerManager
+import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.rememberNavBackStack
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.receiveAsFlow
 import me.gingerninja.authenticator.core.design.theme.NinjAuthTheme
 import me.gingerninja.authenticator.core.design.theme.isAppInDarkTheme
+import me.gingerninja.authenticator.core.model.settings.AppearanceConfig
+import me.gingerninja.authenticator.core.navigation.NinjaScreen
 import me.gingerninja.authenticator.navigation.NinjaNavDisplay
 
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
+    val viewModel: MainViewModel by viewModels()
+
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,15 +47,40 @@ class MainActivity : FragmentActivity() {
 
         setContent {
             val sizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
+            val uiState by viewModel.state.collectAsStateWithLifecycle()
 
-            LaunchedEffect(Unit) {
-                Measure(1, MeasureUnit.PINT)
+            applyTheme(uiState.theme)
+
+            if (uiState.hideRecents) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+            } else {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
             }
 
-            NinjAuthTheme {
+            val backStack = rememberNavBackStack(NinjaScreen.Auth())
+
+            LaunchedEffect(Unit) {
+                viewModel.showLockScreen.receiveAsFlow().collect {
+                    backStack
+                        .takeLastWhile { (it as? NinjaScreen)?.popWhenScreenLocked == true }
+                        .apply(backStack::removeAll)
+
+                    if ((backStack.lastOrNull() as? NinjaScreen)?.isSecure == true) {
+                        // TODO database should be closed here, not in the viewModel.stopLockScreenCounter()
+                        backStack.add(
+                            NinjaScreen.Auth(isReauthenticating = true)
+                        )
+                    }
+                }
+            }
+
+            NinjAuthTheme(
+                darkTheme = uiState.theme.isDark(),
+                dynamicColor = uiState.dynamicColors,
+            ) {
                 SystemBars()
 
-                NinjaNavDisplay()
+                NinjaNavDisplay(backStack)
 
                 /*
                 val ctx = LocalContext.current
@@ -227,6 +264,52 @@ class MainActivity : FragmentActivity() {
             }
         }
     }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.startLockScreenCounter(isFinishing || isChangingConfigurations || !shouldShowLockScreen())
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (viewModel.stopLockScreenCounter()) {
+            // TODO
+            Toast.makeText(this, "LOCKED", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun shouldShowLockScreen(): Boolean {
+        // TODO check the current navigation destination and return false if it's one of the ones that should not be locked
+        //  - auth screen
+        //  - onboarding
+        //  - splash
+        return true
+    }
+
+    private fun applyTheme(theme: AppearanceConfig.Theme) {
+        val mode = when (theme) {
+            AppearanceConfig.Theme.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+            AppearanceConfig.Theme.DARK -> AppCompatDelegate.MODE_NIGHT_YES
+            AppearanceConfig.Theme.BATTERY_SAVER -> AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
+
+        AppCompatDelegate.setDefaultNightMode(mode)
+    }
+
+    @Composable
+    private fun AppearanceConfig.Theme.isDark(): Boolean {
+        return when (this) {
+            AppearanceConfig.Theme.DARK -> true
+            AppearanceConfig.Theme.LIGHT -> false
+            AppearanceConfig.Theme.BATTERY_SAVER -> {
+                val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+                powerManager.isPowerSaveMode
+            }
+
+            AppearanceConfig.Theme.SYSTEM -> isSystemInDarkTheme()
+        }
+    }
 }
 
 @Composable
@@ -235,7 +318,18 @@ private fun SystemBars() {
     val isDark = isAppInDarkTheme()
 
     SideEffect {
-        val navbar = if (isDark) {
+        val statusBar = if (isDark) {
+            SystemBarStyle.dark(
+                scrim = Color.Transparent.toArgb(),
+            )
+        } else {
+            SystemBarStyle.light(
+                scrim = Color.Transparent.toArgb(),
+                darkScrim = Color.Transparent.toArgb(),
+            )
+        }
+
+        val navBar = if (isDark) {
             SystemBarStyle.dark(
                 scrim = Color.Transparent.toArgb(),
             )
@@ -247,7 +341,8 @@ private fun SystemBars() {
         }
 
         activity?.enableEdgeToEdge(
-            navigationBarStyle = navbar,
+            statusBarStyle = statusBar,
+            navigationBarStyle = navBar,
         )
     }
 }

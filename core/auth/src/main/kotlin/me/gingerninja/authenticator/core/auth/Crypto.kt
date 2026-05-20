@@ -51,18 +51,20 @@ class Crypto {
     @Throws(IllegalBlockSizeException::class, BadPaddingException::class)
     fun encrypt(cipher: Cipher, chars: CharArray): String {
         val byteBuffer = StandardCharsets.UTF_8.encode(CharBuffer.wrap(chars))
-        val bytes = Arrays.copyOf(byteBuffer.array(), byteBuffer.limit())
+        val bytes = byteBuffer.array().copyOf(byteBuffer.limit())
 
         return encrypt(cipher, bytes)
     }
 
     @Throws(BadPaddingException::class, IllegalBlockSizeException::class)
-    fun encrypt(cipher: Cipher, bytes: ByteArray): String {
+    fun encrypt(cipher: Cipher, bytes: ByteArray, clearBytes: Boolean = true): String {
         val iv = cipher.iv // needed for GCM as Android may change the IV
         val encryptedRaw = cipher.doFinal(bytes)
 
-        // clear the original byte array
-        bytes.fill(0)
+        if (clearBytes) {
+            // clear the original byte array
+            bytes.fill(0)
+        }
 
         val results = ByteArray(1 + iv.size + encryptedRaw.size) // IV-length + IV + wrapped key
         results[0] = iv.size.toByte()

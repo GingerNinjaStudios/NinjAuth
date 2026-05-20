@@ -4,7 +4,6 @@ import android.database.sqlite.SQLiteException
 import androidx.room.RoomDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import net.zetetic.database.sqlcipher.SQLiteDatabase
@@ -15,27 +14,23 @@ import javax.inject.Singleton
 
 @Singleton
 class NinjAuthDatabaseAuthenticator @Inject constructor(
-    //@ApplicationContext private val context: Context,
     private val dbBuilder: Provider<RoomDatabase.Builder<NinjAuthDatabase>>
 ) {
     init {
         System.loadLibrary("sqlcipher")
     }
 
-    private val internalDatabase = MutableStateFlow<NinjAuthDatabase?>(null)
-
-    internal val database: StateFlow<NinjAuthDatabase?> = internalDatabase.asStateFlow()
+    internal val database: StateFlow<NinjAuthDatabase?>
+        field = MutableStateFlow<NinjAuthDatabase?>(null)
 
     internal val isOpen = database.map { it != null && it.isOpen }
 
     fun openDatabase(passphrase: ByteArray, clearPassphrase: Boolean = true) {
-        //SQLiteDatabase.loadLibs(context)
-
-        if (internalDatabase.value?.isOpen == true) {
+        if (database.value?.isOpen == true) {
             return
         }
 
-        internalDatabase.value?.close()
+        database.value?.close()
 
         val factory = SupportOpenHelperFactory(passphrase)
 
@@ -57,12 +52,12 @@ class NinjAuthDatabaseAuthenticator @Inject constructor(
                 }
             }
 
-        internalDatabase.value = db
+        database.value = db
     }
 
     fun changePassword(password: ByteArray) {
         val dbOjb =
-            internalDatabase.value ?: throw IllegalStateException("The database is not open")
+            database.value ?: throw IllegalStateException("The database is not open")
 
         // as we created the database with the SQL Cipher factory, we can retrieve the encrypted DB
         val db = dbOjb.openHelper.writableDatabase as SQLiteDatabase
@@ -72,7 +67,7 @@ class NinjAuthDatabaseAuthenticator @Inject constructor(
     }
 
     fun close() {
-        internalDatabase.update {
+        database.update {
             it?.close()
 
             null

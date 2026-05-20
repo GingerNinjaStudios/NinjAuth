@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import me.gingerninja.authenticator.core.codegen.CodeGenerator
-import me.gingerninja.authenticator.core.codegen.OtpGenerator
 import me.gingerninja.authenticator.core.data.repository.AccountsRepository
 import me.gingerninja.authenticator.core.model.Account
 import javax.inject.Inject
@@ -48,7 +47,7 @@ class AccountsViewModel @Inject constructor(
         filters
     ) { accounts, filters ->
         AccountsUiState(
-            isLoading = false,
+            loading = false,
             accounts = accounts,
             filters = filters,
         )
@@ -70,7 +69,7 @@ class AccountsViewModel @Inject constructor(
 }
 
 data class AccountsUiState(
-    val isLoading: Boolean = true,
+    val loading: Boolean = true,
     val accounts: List<Account> = emptyList(),
     val filters: AccountsFilters = AccountsFilters(),
 )

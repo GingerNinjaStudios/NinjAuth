@@ -30,17 +30,18 @@ data class SecurityConfig(
      */
     val biometricsVersion: Int?,
 ) {
-    val shouldLockWhenLeave: Boolean get() = !lockLeave.isNegative()
+    val shouldLockWhenLeave: Boolean get() = !lockLeave.isNegative() && lockType != LockType.NONE
 
     enum class LockType(val value: String) {
         NONE("none"), PIN("pin"), PASSWORD("password");
 
         companion object {
-            fun fromString(data: String?): LockType? = LockType.values().find { it.value == data }
+            fun fromString(data: String?): LockType? = entries.find { it.value == data }
         }
     }
 
     companion object {
+        val ImmediateLock = 0.seconds
         val NeverLock = (-1).seconds
     }
 }

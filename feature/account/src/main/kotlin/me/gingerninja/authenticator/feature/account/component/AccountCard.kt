@@ -52,7 +52,7 @@ import me.gingerninja.authenticator.core.codegen.OtpGenerator
 import me.gingerninja.authenticator.core.codegen.TimeProvider
 import me.gingerninja.authenticator.core.codegen.rememberCodeGeneratorState
 import me.gingerninja.authenticator.core.codegen.rememberCodeState
-import me.gingerninja.authenticator.core.design.utils.PreviewContainerWrapper
+import me.gingerninja.authenticator.core.preview.PreviewContainerWrapper
 import me.gingerninja.authenticator.core.model.Account
 import me.gingerninja.authenticator.core.model.Label
 import me.gingerninja.authenticator.core.model.TotpAccount

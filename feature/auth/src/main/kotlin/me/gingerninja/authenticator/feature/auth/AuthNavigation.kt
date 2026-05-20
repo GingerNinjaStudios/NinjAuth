@@ -13,7 +13,9 @@ fun EntryProviderScope<NavKey>.authScreen() {
             isReauthenticating = screen.isReauthenticating,
             onAuthComplete = {
                 navigator.popBackStack()
-                navigator.navigate(NinjaScreen.Accounts)
+                if (!screen.isReauthenticating) {
+                    navigator.navigate(NinjaScreen.Accounts)
+                }
             },
         )
     }

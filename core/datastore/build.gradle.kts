@@ -16,8 +16,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.datetime)
 
-    implementation(project(":core:common"))
-    implementation(project(":core:model"))
+    api(project(":core:common"))
+    api(project(":core:model"))
 
     androidTestImplementation(project(":core:testing"))
     androidTestImplementation(project(":core:datastore-test"))

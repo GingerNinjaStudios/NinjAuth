@@ -46,7 +46,11 @@ class PasswordAuthenticator @Inject internal constructor(
 
         val pass = crypto.generateDbPass()
         try {
-            val encryptedPass = crypto.encrypt(masterCipher, pass)
+            val encryptedPass = crypto.encrypt(
+                cipher = masterCipher,
+                bytes = pass,
+                clearBytes = false,
+            )
 
             settings.setSecurityWithDatabasePass(config.type, encryptedPass)
 
@@ -70,6 +74,8 @@ class PasswordAuthenticator @Inject internal constructor(
 
     @Throws(PasswordAuthException::class)
     override suspend fun update(config: UpdateConfig) {
+        settings.setSecurityLockType(config.type)
+
         PasswordKeyHandler(context, dispatcher).use {
             it.authenticate(config.oldPassword)
             it.changePassword(config.newPassword)
@@ -133,20 +139,21 @@ class PasswordAuthenticator @Inject internal constructor(
 
     class EnableConfig(
         internal val password: ByteArray,
-        internal val type: SecurityConfig.LockType
+        internal val type: SecurityConfig.LockType,
     )
 
     class DisableConfig(
-        internal val password: ByteArray
+        internal val password: ByteArray,
     )
 
     class AuthConfig(
-        internal val password: ByteArray
+        internal val password: ByteArray,
     )
 
     class UpdateConfig(
         internal val oldPassword: ByteArray,
-        internal val newPassword: ByteArray
+        internal val newPassword: ByteArray,
+        internal val type: SecurityConfig.LockType,
     )
 
     companion object {

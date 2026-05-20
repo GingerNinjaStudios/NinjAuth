@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.ninjauth.android.app)
     alias(libs.plugins.ninjauth.android.app.compose)
     alias(libs.plugins.ninjauth.android.hilt)
+    alias(libs.plugins.aboutLibraries)
 }
 
 android {
@@ -50,6 +51,8 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.database)
+    implementation(projects.core.datastore)
     implementation(projects.core.navigation)
     implementation(project(":core:data"))
     implementation(project(":core:ui"))
@@ -57,6 +60,7 @@ dependencies {
 
     implementation(project(":feature:account"))
     implementation(project(":feature:auth"))
+    implementation(project(":feature:settings"))
 
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)

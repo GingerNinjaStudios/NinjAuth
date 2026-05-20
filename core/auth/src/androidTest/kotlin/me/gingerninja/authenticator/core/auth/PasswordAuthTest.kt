@@ -13,7 +13,6 @@ import me.gingerninja.authenticator.core.common.toDatabaseByteArray
 import me.gingerninja.authenticator.core.database.LegacyKeyDatabase
 import me.gingerninja.authenticator.core.database.NinjAuthDatabaseAuthenticator
 import me.gingerninja.authenticator.core.database.test.TEST_DATABASE_NAME
-import me.gingerninja.authenticator.core.database.test.createInMemoryTestDatabaseBuilder
 import me.gingerninja.authenticator.core.database.test.createTestDatabaseBuilder
 import me.gingerninja.authenticator.core.datastore.NinjAuthSettings
 import me.gingerninja.authenticator.core.datastore.test.createTestDataStore
@@ -138,7 +137,8 @@ class PasswordAuthTest {
 
         val config = PasswordAuthenticator.UpdateConfig(
             oldPassword = "testpass".toDatabaseByteArray(),
-            newPassword = "newpass".toDatabaseByteArray()
+            newPassword = "newpass".toDatabaseByteArray(),
+            type = SecurityConfig.LockType.PASSWORD,
         )
         authenticator.update(config)
 
@@ -155,7 +155,8 @@ class PasswordAuthTest {
 
         val config = PasswordAuthenticator.UpdateConfig(
             oldPassword = "wrongpass".toDatabaseByteArray(),
-            newPassword = "newpass".toDatabaseByteArray()
+            newPassword = "newpass".toDatabaseByteArray(),
+            type = SecurityConfig.LockType.PASSWORD,
         )
         authenticator.update(config)
 
@@ -221,7 +222,8 @@ class PasswordAuthTest {
 
         val config = PasswordAuthenticator.UpdateConfig(
             oldPassword = "12345678".toDatabaseByteArray(),
-            newPassword = "87654321".toDatabaseByteArray()
+            newPassword = "87654321".toDatabaseByteArray(),
+            type = SecurityConfig.LockType.PIN,
         )
         authenticator.update(config)
 
@@ -238,7 +240,8 @@ class PasswordAuthTest {
 
         val config = PasswordAuthenticator.UpdateConfig(
             oldPassword = "12211221".toDatabaseByteArray(),
-            newPassword = "87654321".toDatabaseByteArray()
+            newPassword = "87654321".toDatabaseByteArray(),
+            type = SecurityConfig.LockType.PIN,
         )
         authenticator.update(config)
 

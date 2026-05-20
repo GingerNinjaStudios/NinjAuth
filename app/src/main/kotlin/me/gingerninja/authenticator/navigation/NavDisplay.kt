@@ -3,50 +3,56 @@ package me.gingerninja.authenticator.navigation
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.ViewModelStoreProvider
+import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreProvider
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavEntryDecorator
+import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
+import me.gingerninja.authenticator.core.design.anim.DefaultMotionAnimOffset
 import me.gingerninja.authenticator.core.design.anim.motionEnterTransition
 import me.gingerninja.authenticator.core.design.anim.motionExitTransition
 import me.gingerninja.authenticator.core.design.anim.motionPopEnterTransition
 import me.gingerninja.authenticator.core.design.anim.motionPopExitTransition
 import me.gingerninja.authenticator.core.navigation.LocalNavigator
-import me.gingerninja.authenticator.core.navigation.NinjaScreen
 import me.gingerninja.authenticator.core.navigation.rememberNinjAuthNavigator
 import me.gingerninja.authenticator.core.navigation.scene.BottomSheetSceneStrategy
 import me.gingerninja.authenticator.feature.account.accountsScreen
-import me.gingerninja.authenticator.feature.auth.AuthScreen
 import me.gingerninja.authenticator.feature.auth.authScreen
+import me.gingerninja.authenticator.feature.settings.PreAuthNavEntryDecorator
+import me.gingerninja.authenticator.feature.settings.settingsScreen
+
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun NinjaNavDisplay(
+    backStack: NavBackStack<NavKey>,
 ) {
-    val backStack = rememberNavBackStack(NinjaScreen.Auth())
     val navigator = rememberNinjAuthNavigator(backStack)
 
-    val animOffset = with(LocalDensity.current) {
-        30.dp.roundToPx()
-    }
+    val animOffset = DefaultMotionAnimOffset
+
+    val viewModelStoreProvider = rememberViewModelStoreProvider()
 
     CompositionLocalProvider(
         LocalNavigator provides navigator,
     ) {
         SharedTransitionLayout {
             NavDisplay(
+                modifier = Modifier.background(MaterialTheme.colorScheme.background),
                 backStack = backStack,
                 onBack = { backStack.removeLastOrNull() },
                 sceneStrategies = listOf(
@@ -56,28 +62,13 @@ fun NinjaNavDisplay(
                 ),
                 entryDecorators = listOf(
                     rememberSaveableStateHolderNavEntryDecorator(),
-                    rememberViewModelStoreNavEntryDecorator(),
+                    rememberViewModelStoreNavEntryDecorator(viewModelStoreProvider),
+                    remember { PreAuthNavEntryDecorator(viewModelStoreProvider, backStack) },
                 ),
                 entryProvider = entryProvider {
                     authScreen()
                     accountsScreen()
-                    /*entry<NinjaScreen.Auth> { screen ->
-                        AuthScreen(
-                            isReauthenticating = screen.isReauthenticating,
-                            onAuthComplete = {
-                                navigator.popBackStack()
-                                navigator.navigate(NinjaScreen.Accounts)
-                            },
-                        )
-                    }*/
-
-                    /*entry<NinjaScreen.Accounts> { screen ->
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(MaterialTheme.colorScheme.secondary),
-                        )
-                    }*/
+                    settingsScreen()
                 },
                 sharedTransitionScope = this,
                 transitionSpec = {
@@ -88,6 +79,11 @@ fun NinjaNavDisplay(
                         animOffset
                     )
                 },
+                predictivePopTransitionSpec = {
+                    motionPopEnterTransition(animOffset) togetherWith motionPopExitTransition(
+                        animOffset
+                    )
+                }
             )
         }
     }

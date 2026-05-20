@@ -5,6 +5,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 
 fun motionEnterTransition(
     animOffset: Int
@@ -76,5 +79,10 @@ fun motionPopExitTransition(
     //it / 2
     animOffset
 }
+
+val DefaultMotionAnimOffset
+    @Composable get() = with(LocalDensity.current) {
+        30.dp.roundToPx()
+    }
 
 private const val durationMillis = 450

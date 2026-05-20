@@ -5,6 +5,7 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 
@@ -21,3 +22,14 @@ val currentNavigator: NinjAuthNavigator
 @Composable
 fun rememberNinjAuthNavigator(backStack: NavBackStack<NavKey>): NinjAuthNavigator =
     remember(backStack) { NinjAuthNavigatorImpl(backStack) }
+
+@Composable
+fun navigateIfResumed(block: NinjAuthNavigator.() -> Unit): () -> Unit {
+    val navigator = currentNavigator
+
+    return dropUnlessResumed {
+        with(navigator) {
+            block()
+        }
+    }
+}

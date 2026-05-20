@@ -70,6 +70,8 @@ import me.gingerninja.authenticator.core.codegen.CodeGeneratorState
 import me.gingerninja.authenticator.core.codegen.rememberCodeGeneratorState
 import me.gingerninja.authenticator.core.design.component.NinjaModalBottomSheet
 import me.gingerninja.authenticator.core.model.Account
+import me.gingerninja.authenticator.core.navigation.NinjaScreen
+import me.gingerninja.authenticator.core.navigation.navigateIfResumed
 import me.gingerninja.authenticator.feature.account.component.AccountCard
 
 @Composable
@@ -551,8 +553,9 @@ private fun TopBar(
                                         text = {
                                             Text("Settings") // TODO translation
                                         },
-                                        onClick = {
-                                            // TODO
+                                        onClick = navigateIfResumed {
+                                            isMenuVisible = false
+                                            navigate(NinjaScreen.Settings.Main)
                                         },
                                     )
                                 }

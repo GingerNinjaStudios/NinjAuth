@@ -8,7 +8,10 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 
 private val LightColorScheme = lightColorScheme(
@@ -75,6 +78,9 @@ private val DarkColorScheme = darkColorScheme(
     outlineVariant = md_theme_dark_outlineVariant,
     scrim = md_theme_dark_scrim,
 )
+val LocalDarkMode: ProvidableCompositionLocal<Boolean> = compositionLocalOf {
+    error("LocalDarkMode is not provided")
+}
 
 @Composable
 fun NinjAuthTheme(
@@ -101,13 +107,15 @@ fun NinjAuthTheme(
         }
     }*/
 
-    MaterialExpressiveTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    CompositionLocalProvider(LocalDarkMode provides darkTheme) {
+        MaterialExpressiveTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }
 
 @Composable
 @ReadOnlyComposable
-fun isAppInDarkTheme() = isSystemInDarkTheme()
+fun isAppInDarkTheme() = LocalDarkMode.current
